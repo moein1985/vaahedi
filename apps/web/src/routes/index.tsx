@@ -7,15 +7,15 @@ export const Route = createFileRoute('/')({
   component: HomePage,
 });
 
-function HomePage() {
+export function HomePage() {
   return (
     <div dir="rtl">
       {/* Navbar */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-border">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-[var(--brand)] text-white flex items-center justify-center font-black text-sm">و</div>
-            <span className="font-black text-foreground">وهدی</span>
+            <div className="h-8 w-8 rounded-lg bg-[var(--brand)] text-white flex items-center justify-center font-black text-sm">ا</div>
+            <span className="font-black text-foreground">واحدی</span>
           </div>
           <div className="flex items-center gap-3">
             <Button variant="ghost" asChild><Link to="/auth/login">ورود</Link></Button>
