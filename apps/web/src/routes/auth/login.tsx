@@ -163,31 +163,22 @@ function LoginPage() {
   }, [loginMethod, requiresCaptcha]);
 
   const onSubmitUserCode = (data: LoginInput) => {
-    alert('🔐 onSubmitUserCode called! Logging in with: ' + data.userCode);
-    console.log('🔐 onSubmitUserCode called!', { data, captchaToken, requiresCaptcha });
     if (requiresCaptcha && !captchaToken) {
-      console.warn('⚠️ CAPTCHA required but not verified');
       alert('لطفاً captcha را تأیید کنید');
       return;
     }
-    console.log('📤 Sending userCode login mutation...');
     loginMutation.mutate({ ...data, captchaToken: captchaToken || 'test-token' });
   };
 
   const onSubmitEmail = (data: LoginWithEmailInput) => {
-    alert('✉️ onSubmitEmail called! Logging in with: ' + data.email);
-    console.log('✉️ onSubmitEmail called!', { data, captchaToken, requiresCaptcha });
     if (requiresCaptcha && !captchaToken) {
-      console.warn('⚠️ CAPTCHA required but not verified');
       alert('لطفاً captcha را تأیید کنید');
       return;
     }
-    console.log('📤 Sending email login mutation...');
     loginWithEmailMutation.mutate({ ...data, captchaToken: captchaToken || 'test-token' });
   };
 
   const onSubmitOtp = (data: OtpLoginInput) => {
-    console.log('📱 onSubmitOtp called!', { data });
     otpLoginMutation.mutate(data);
   };
 
