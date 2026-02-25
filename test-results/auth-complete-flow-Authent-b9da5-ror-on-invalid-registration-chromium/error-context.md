@@ -1,0 +1,57 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: و
+      - heading "وهدی" [level=1] [ref=e7]
+      - paragraph [ref=e8]: مرکز تجارت متمرکز هوشمند
+    - generic [ref=e9]:
+      - heading "ثبت‌نام" [level=3] [ref=e11]
+      - generic [ref=e13]:
+        - generic [ref=e14]:
+          - paragraph [ref=e15]: نوع عضویت
+          - generic [ref=e16]:
+            - generic [ref=e17]:
+              - radio "حقیقی" [checked] [ref=e18]
+              - text: حقیقی
+            - generic [ref=e19]:
+              - radio "حقوقی" [ref=e20]
+              - text: حقوقی
+        - generic [ref=e21]:
+          - generic [ref=e22]:
+            - paragraph [ref=e23]: نام
+            - textbox [ref=e24]
+          - generic [ref=e25]:
+            - paragraph [ref=e26]: نام خانوادگی
+            - textbox [ref=e27]
+        - generic [ref=e28]:
+          - paragraph [ref=e29]: کد ملی
+          - textbox [ref=e30]
+        - generic [ref=e31]:
+          - paragraph [ref=e32]: شماره موبایل
+          - textbox [ref=e33]
+        - generic [ref=e34]:
+          - paragraph [ref=e35]: ایمیل
+          - textbox [ref=e36]
+        - generic [ref=e37]:
+          - paragraph [ref=e38]: رمز عبور
+          - textbox [ref=e39]
+        - generic [ref=e40]:
+          - paragraph [ref=e41]: تکرار رمز عبور
+          - textbox [ref=e42]
+        - generic [ref=e44]: Captcha در محیط توسعه غیرفعال است
+        - generic [ref=e46]:
+          - checkbox "قوانین را می‌پذیرم" [ref=e47]
+          - text: قوانین را می‌پذیرم
+        - button "ثبت‌نام" [disabled]
+  - generic:
+    - contentinfo:
+      - button "Open TanStack Router Devtools" [ref=e48] [cursor=pointer]:
+        - generic [ref=e49]:
+          - img [ref=e51]
+          - img [ref=e86]
+        - generic [ref=e120]: "-"
+        - generic [ref=e121]: TanStack Router
+```

@@ -23,11 +23,12 @@ export async function createTestContext() {
     cache: null, // Mock cache service
     storage: null, // Mock storage service
     ai: null, // Mock AI service
+    emailQueue: null, // required by AppContext
     user: null, // Will be set by auth middleware in tests
   };
 }
 
-export async function createAuthenticatedContext(prisma: typeof import('@repo/db').prisma) {
+export async function createAuthenticatedContext(prisma: typeof import('@repo/db').prisma): Promise<any> {
   const user = await createTestUser(prisma);
 
   return {
@@ -37,6 +38,7 @@ export async function createAuthenticatedContext(prisma: typeof import('@repo/db
     cache: null,
     storage: null,
     ai: null,
+    emailQueue: null,
     user,
   };
 }

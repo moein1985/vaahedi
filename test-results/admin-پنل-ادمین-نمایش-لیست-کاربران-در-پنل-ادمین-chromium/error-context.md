@@ -17,10 +17,10 @@
         - generic [ref=e18]:
           - generic [ref=e19]:
             - generic [ref=e20]: کد کاربری
-            - 'textbox "مثال: 0100001" [ref=e21]': "0000001"
+            - 'textbox "مثال: 0100001" [active] [ref=e21]': "0000001"
           - generic [ref=e22]:
             - generic [ref=e23]: رمز عبور
-            - textbox [active] [ref=e24]: Admin@1234
+            - textbox [ref=e24]
           - generic [ref=e25]: ✓ کاپچا در حالت توسعه غیرفعال است
           - button "ورود" [ref=e26]
   - generic:

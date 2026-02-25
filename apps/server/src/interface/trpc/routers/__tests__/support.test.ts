@@ -171,4 +171,48 @@ describe('Support Router', () => {
       ).rejects.toThrow();
     });
   });
+
+  // ── admin-only procedures ─────────────────────────────────────────────────
+  describe('admin operations', () => {
+    let adminCtx: any;
+    let ticket: any;
+
+    beforeEach(async () => {
+      // create an admin user context using a test user with the flag set
+      const tempUser = await createTestUser(prisma);
+      adminCtx = {
+        ...ctx,
+        user: { ...tempUser, isAdmin: true },
+      };
+      // create a normal ticket as regular user
+      ticket = await caller(ctx).create({
+        subject: 'Admin test ticket',
+        message: 'Please handle',
+        category: 'OTHER',
+      });
+    });
+
+    it('should list tickets and apply filters', async () => {
+      const list = await caller(adminCtx).adminList({ page: 1, limit: 10 });
+      expect(list.items.find((t: any) => t.id === ticket.id)).toBeDefined();
+
+      const filtered = await caller(adminCtx).adminList({ status: 'OPEN', page: 1, limit: 10 });
+      expect(filtered.items.every((t: any) => t.status === 'OPEN')).toBe(true);
+    });
+
+    it('should reply and update status then allow closing via adminUpdateStatus', async () => {
+      const reply = await caller(adminCtx).adminReply({
+        ticketId: ticket.id,
+        message: 'Admin replying',
+        newStatus: 'IN_PROGRESS',
+      });
+      expect(reply.senderType).toBe('admin');
+
+      const updated = await caller(adminCtx).adminUpdateStatus({
+        ticketId: ticket.id,
+        status: 'RESOLVED',
+      });
+      expect(updated.status).toBe('RESOLVED');
+    });
+  });
 });

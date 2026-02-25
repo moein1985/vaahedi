@@ -1,6 +1,12 @@
 import { execSync } from 'child_process';
 import { PrismaClient } from '@prisma/client';
 
+// ensure tests have a default database URL when running locally (matching setup.ts)
+if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = 'postgresql://postgres:password@localhost:5434/vaahedi_test';
+  console.log('test-utils defaulted DATABASE_URL to', process.env.DATABASE_URL);
+}
+
 export async function createTestDatabase() {
   try {
     // For Windows, we'll use a different approach
