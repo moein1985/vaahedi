@@ -1,0 +1,810 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  TRADER           // تاجر
+  PRODUCER         // تولیدکننده
+  KNOWLEDGE_BASED  // دانش‌بنیان
+  WHOLESALER       // عمده‌فروش
+  BROKER           // کارگزار
+  INTERMEDIARY     // شرکت واسط
+  GUILD            // صنفی
+}
+
+enum MembershipType {
+  INDIVIDUAL // حقیقی
+  LEGAL      // حقوقی
+}
+
+enum UserStatus {
+  PENDING   // در انتظار تأیید مدارک
+  ACTIVE    // فعال
+  SUSPENDED // معلق
+  REJECTED  // رد شده
+}
+
+enum AdminRole {
+  SUPER_ADMIN       // ادمین کل
+  MEDIA_SUPERVISOR  // ناظر رسانه‌ای
+  EXPERT            // کارشناس (تأیید مدارک)
+  ANALYST           // تحلیلگر بازرگانی
+}
+
+enum DocumentType {
+  ESTABLISHMENT_NOTICE      // آگهی تأسیس
+  BOARD_CHANGES             // تغییرات هیئت مدیره
+  OPERATION_LICENSE         // پروانه بهره‌برداری
+  PRODUCTION_LICENSE        // مجوز تأسیس تولید صنعتی
+  GUILD_LICENSE             // مجوز صنفی معتبر
+  KNOWLEDGE_BASED_LICENSE   // مجوز دانش‌بنیان
+  OTHER_LICENSES            // سایر مجوزهای مرتبط
+  ISO_CERTIFICATE           // گواهی ایزو / استاندارد
+  BUSINESS_CARD             // کارت بازرگانی
+}
+
+enum VerificationStatus {
+  PENDING        // در انتظار بررسی
+  APPROVED       // تأیید شده
+  REJECTED       // رد شده
+  NEEDS_REVISION // نیاز به اصلاح
+}
+
+enum ProductOrigin {
+  DOMESTIC_FACTORY // تولید کارخانه داخلی
+  KNOWLEDGE_BASED  // دانش‌بنیان
+  IMPORTED         // وارداتی
+}
+
+enum CommodityGroup {
+  INDUSTRIAL     // صنعتی
+  CHEMICAL       // شیمیایی
+  TELECOM        // مخابراتی
+  METAL          // فلزی
+  FOOD           // غذایی
+  TEXTILE        // نساجی
+  AGRICULTURAL   // کشاورزی
+  CONSTRUCTION   // ساختمانی
+  PETROCHEMICAL  // پتروشیمی
+  OTHER          // سایر
+}
+
+enum DeliveryTerms {
+  EXW // Ex Works
+  FCA // Free Carrier
+  FOB // Free On Board
+}
+
+enum PaymentMethod {
+  LC   // Letter of Credit
+  SBLC // Standby Letter of Credit
+  TT   // Telegraphic Transfer
+}
+
+enum TradeType {
+  BUY  // خرید
+  SELL // فروش
+}
+
+enum TradeRequestStatus {
+  PENDING        // در انتظار
+  MATCHED        // تطبیق یافته
+  IN_NEGOTIATION // در حال مذاکره
+  UNDER_REVIEW   // در بررسی انجمن (حکم مرضی‌الطرفین)
+  COMPLETED      // تکمیل شده
+  CANCELLED      // لغو شده
+}
+
+enum AdStatus {
+  PENDING  // در انتظار تأیید
+  ACTIVE   // فعال
+  PAUSED   // متوقف
+  REJECTED // رد شده
+  EXPIRED  // منقضی شده
+}
+
+enum AnalysisRequestStatus {
+  SUBMITTED   // ثبت شده
+  IN_REVIEW   // در حال بررسی
+  IN_PROGRESS // در حال انجام
+  COMPLETED   // تکمیل شده
+  CANCELLED   // لغو شده
+}
+
+enum SupportTicketStatus {
+  OPEN        // باز
+  IN_PROGRESS // در حال بررسی
+  RESOLVED    // حل شده
+  CLOSED      // بسته
+}
+
+enum ChatMessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// USER & AUTH
+// ─────────────────────────────────────────────────────────────────────────────
+
+model User {
+  id             String         @id @default(cuid())
+  userCode       String         @unique // کد کاربری [2digit][2digit][N]
+  membershipType MembershipType
+  role           UserRole
+  status         UserStatus     @default(PENDING)
+
+  // اطلاعات پایه
+  nationalCode   String?        @unique // حقیقی
+  nationalId     String?        @unique // حقوقی (شناسه ملی)
+  mobile         String         @unique
+  email          String?        @unique
+
+  // Auth
+  passwordHash   String
+  lastLoginAt    DateTime?
+  loginAttempts  Int            @default(0)
+  lockedUntil    DateTime?
+
+  // اقرارنامه
+  agreedToTerms    Boolean   @default(false)
+  agreedToTermsAt  DateTime?
+
+  // روابط
+  profile        UserProfile?
+  adminProfile   AdminProfile?
+  products       Product[]
+  tradeRequests  TradeRequest[]
+  aiConversations AiConversation[]
+  supportTickets  SupportTicket[]
+  advertisements Advertisement[]
+  analysisRequests AnalysisRequest[]
+  conversationParticipants ConversationParticipant[]
+  messages Message[]
+  notifications Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userCode])
+  @@index([mobile])
+  @@index([status])
+  @@map("users")
+}
+
+model AdminProfile {
+  id        String    @id @default(cuid())
+  userId    String    @unique
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  adminRole AdminRole @default(EXPERT)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("admin_profiles")
+}
+
+model OtpCode {
+  id        String   @id @default(cuid())
+  mobile    String
+  code      String
+  purpose   String   // LOGIN | REGISTER | RESET_PASSWORD
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([mobile, purpose])
+  @@map("otp_codes")
+}
+
+model RefreshToken {
+  id          String   @id @default(cuid())
+  userId      String
+  tokenHash   String   @unique
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  userAgent   String?
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PROFILE & DOCUMENTS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model UserProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // اطلاعات شرکت/واحد
+  companyName String?
+  unitName    String?
+  unitType    String?  // ⚠️ باید از کارفرما مشخص شود
+  guildCode   String?
+  businessId  String?
+
+  // اطلاعات تماس
+  phone  String?
+  fax    String?
+  website String?
+
+  // آدرس
+  province    String?
+  city        String?
+  addressLine String?
+  postalCode  String?
+
+  // فعالیت
+  activityType    String?
+  commodityGroup  CommodityGroup?
+  position        String?
+  experienceYears Int?
+  description     String?
+
+  // وضعیت تأیید
+  verificationStatus VerificationStatus @default(PENDING)
+  verifiedAt         DateTime?
+  verifiedById       String?            // admin user id
+  rejectionReason    String?
+
+  // گرید عضویت (⚠️ باید از کارفرما مشخص شود)
+  membershipGrade Int @default(0)
+
+  documents Document[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([verificationStatus])
+  @@index([commodityGroup])
+  @@map("user_profiles")
+}
+
+model Document {
+  id        String             @id @default(cuid())
+  profileId String
+  profile   UserProfile        @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  type      DocumentType
+  fileName  String
+  fileKey   String             // کلید در MinIO
+  fileSize  Int
+  mimeType  String
+
+  status         VerificationStatus @default(PENDING)
+  verifiedAt     DateTime?
+  verifiedById   String?
+  rejectionReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([profileId, type])
+  @@map("documents")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PRODUCTS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Product {
+  id      String @id @default(cuid())
+  userId  String
+  user    User   @relation(fields: [userId], references: [id])
+
+  // شناسه‌ها
+  nameFa      String
+  nameEn      String
+  grade       String?
+  serviceCode String?
+  hsCode      String
+  isicCode    String?
+
+  // دسته‌بندی
+  commodityGroup  CommodityGroup
+  origin          ProductOrigin
+  countryOfOrigin String?
+
+  // مشخصات فنی
+  technicalSpecs String @db.Text
+  standardNumber String?
+  description    String? @db.Text
+
+  // بسته‌بندی و ابعاد
+  packagingType String?
+  weightKg      Decimal?
+  lengthCm      Decimal?
+  widthCm       Decimal?
+  heightCm      Decimal?
+  weightUnit    String?  @default("kg")
+
+  // تحویل و پرداخت
+  deliveryTerms       DeliveryTerms
+  deliveryLocation    String
+  minOrderQuantity    String
+  preparationTimeDays Int
+  paymentMethod       PaymentMethod
+
+  // شرایط فروش
+  advancePercent    Int?
+  onDeliveryPercent Int?
+
+  // تاریخ
+  productionDate DateTime?
+  expiryDate     DateTime?
+
+  // وضعیت
+  isAvailableInStock Boolean @default(false)
+  isApproved         Boolean @default(false)
+  approvedAt         DateTime?
+  approvedById       String?
+  rejectionReason    String?
+
+  // رسانه
+  media       ProductMedia[]
+  tradeItems  TradeRequest[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([hsCode])
+  @@index([commodityGroup])
+  @@index([userId])
+  @@index([isApproved])
+  @@map("products")
+}
+
+model ProductMedia {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  type      String  // 'image' | 'video'
+  fileKey   String  // کلید در MinIO
+  thumbnailKey String?  // کلید تصویر بندانگشتی در MinIO
+  fileName  String
+  fileSize  Int
+  mimeType  String
+  sortOrder Int     @default(0)
+  isMain    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+  @@map("product_media")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TRADE REQUESTS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model TradeRequest {
+  id          String     @id @default(cuid())
+  requesterId String
+  requester   User       @relation(fields: [requesterId], references: [id])
+
+  type       TradeType
+  status     TradeRequestStatus @default(PENDING)
+
+  // کالا
+  productId     String?
+  product       Product? @relation(fields: [productId], references: [id])
+  productNameFa String?  // اگر محصول در سیستم ثبت نشده
+  productNameEn String?
+  hsCode        String?
+  commodityGroup CommodityGroup?
+
+  // مشخصات درخواست
+  quantity        String
+  targetPrice     String?
+  currency        String @default("USD")
+  deliveryLocation String?
+  notes           String? @db.Text
+
+  // تطبیق
+  matchedWithId  String?
+  matchedAt      DateTime?
+  matchedBy      String?  // admin id
+
+  expiresAt DateTime?
+
+  // پیوست‌ها
+  attachments TradeAttachment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([requesterId])
+  @@index([type, status])
+  @@index([commodityGroup])
+  @@map("trade_requests")
+}
+
+model TradeAttachment {
+  id             String       @id @default(cuid())
+  tradeRequestId String
+  tradeRequest   TradeRequest @relation(fields: [tradeRequestId], references: [id], onDelete: Cascade)
+
+  fileKey  String
+  fileName String
+  fileSize Int
+  mimeType String
+
+  createdAt DateTime @default(now())
+
+  @@map("trade_attachments")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SERVICES — HS CODES & ISIC
+// ─────────────────────────────────────────────────────────────────────────────
+
+model HsCode {
+  id          String  @id @default(cuid())
+  code        String  @unique
+  descriptionFa String
+  descriptionEn String?
+  parentCode  String?
+  level       Int     @default(1) // 2, 4, 6, 8, 10 digit levels
+
+  @@index([code])
+  @@index([parentCode])
+  @@map("hs_codes")
+}
+
+model IsicCode {
+  id            String  @id @default(cuid())
+  code          String  @unique
+  descriptionFa String
+  descriptionEn String?
+  section       String?
+  division      String?
+
+  @@index([code])
+  @@map("isic_codes")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ANNOUNCEMENTS & CIRCULARS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Circular {
+  id          String @id @default(cuid())
+  title       String
+  content     String @db.Text
+  summary     String?
+  fileKey     String? // پیوست PDF
+  publishedAt DateTime?
+  isPublished Boolean @default(false)
+  authorId    String
+
+  tags        String[] @default([])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isPublished, publishedAt])
+  @@map("circulars")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DOWNLOADS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model DownloadItem {
+  id          String @id @default(cuid())
+  title       String
+  description String?
+  fileKey     String
+  fileName    String
+  fileSize    Int
+  mimeType    String
+  category    String // 'catalog' | 'video' | 'form' | 'other'
+  sortOrder   Int    @default(0)
+  isActive    Boolean @default(true)
+  downloadCount Int  @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("download_items")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ADVERTISING
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Advertisement {
+  id          String   @id @default(cuid())
+  requesterId String
+  requester   User     @relation(fields: [requesterId], references: [id])
+
+  title       String
+  description String?
+  fileKey     String?  // بنر / تصویر
+  targetUrl   String?
+  adType      String   // 'banner' | 'sponsored' | 'newsletter'
+
+  status    AdStatus  @default(PENDING)
+  startDate DateTime?
+  endDate   DateTime?
+
+  reviewedAt   DateTime?
+  reviewedById String?
+  rejectionReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@map("advertisements")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SUPPORT & CHAT
+// ─────────────────────────────────────────────────────────────────────────────
+
+model SupportTicket {
+  id        String @id @default(cuid())
+  userId    String
+  user      User   @relation(fields: [userId], references: [id])
+
+  subject  String
+  category String? // 'customs' | 'currency' | 'logistics' | 'general'
+  status   SupportTicketStatus @default(OPEN)
+
+  assignedTo  String?
+  resolvedAt  DateTime?
+  closedAt    DateTime?
+
+  messages SupportMessage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, status])
+  @@map("support_tickets")
+}
+
+model SupportMessage {
+  id       String        @id @default(cuid())
+  ticketId String
+  ticket   SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  senderId    String
+  senderType  String  // 'user' | 'admin'
+  content     String  @db.Text
+  attachmentKey String?
+
+  createdAt DateTime @default(now())
+
+  @@index([ticketId])
+  @@map("support_messages")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AI CHAT (فاز آینده)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model AiConversation {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  title    String?
+  isActive Boolean @default(true)
+
+  messages AiMessage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("ai_conversations")
+}
+
+model AiMessage {
+  id             String         @id @default(cuid())
+  conversationId String
+  conversation   AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  role    ChatMessageRole
+  content String          @db.Text
+  tokens  Int?            // تعداد توکن مصرفی
+
+  createdAt DateTime @default(now())
+
+  @@index([conversationId])
+  @@map("ai_messages")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ANALYSIS REQUESTS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model AnalysisRequest {
+  id          String @id @default(cuid())
+  requesterId String
+  requester   User   @relation(fields: [requesterId], references: [id])
+
+  subject      String
+  commodityGroup CommodityGroup?
+  targetMarket String?
+  description  String @db.Text
+  status       AnalysisRequestStatus @default(SUBMITTED)
+
+  assignedToId String?
+  resultFileKey String?
+  notes        String? @db.Text
+
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([requesterId, status])
+  @@map("analysis_requests")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SURVEYS & CONTACT
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Survey {
+  id          String @id @default(cuid())
+  title       String
+  description String?
+  questions   Json   // آرایه‌ای از سؤالات
+  isActive    Boolean @default(true)
+
+  responses SurveyResponse[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("surveys")
+}
+
+model SurveyResponse {
+  id       String @id @default(cuid())
+  surveyId String
+  survey   Survey @relation(fields: [surveyId], references: [id])
+
+  respondentEmail String?
+  answers         Json    // پاسخ‌ها به صورت آبجکت
+
+  createdAt DateTime @default(now())
+
+  @@index([surveyId])
+  @@map("survey_responses")
+}
+
+model ContactMessage {
+  id       String @id @default(cuid())
+  name     String
+  email    String
+  phone    String?
+  subject  String
+  message  String @db.Text
+  isRead   Boolean @default(false)
+  readAt   DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@map("contact_messages")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CHAT SYSTEM
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Conversation {
+  id        String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // شرکت‌کنندگان
+  participants ConversationParticipant[]
+
+  // پیام‌ها
+  messages Message[]
+
+  // آخرین پیام برای نمایش سریع
+  lastMessageId String?
+  lastMessage   Message? @relation("ConversationLastMessage", fields: [lastMessageId], references: [id])
+
+  @@map("conversations")
+}
+
+model ConversationParticipant {
+  id             String @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  joinedAt DateTime @default(now())
+
+  @@unique([conversationId, userId])
+  @@index([conversationId])
+  @@index([userId])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id             String @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  senderId String
+  sender   User   @relation(fields: [senderId], references: [id])
+
+  content  String @db.Text
+  isRead   Boolean @default(false)
+  readAt   DateTime?
+
+  createdAt DateTime @default(now())
+
+  // برای lastMessage
+  lastMessageFor Conversation[] @relation("ConversationLastMessage")
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([createdAt])
+  @@map("messages")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// NOTIFICATIONS
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum NotificationType {
+  TRADE_REQUEST_MATCH     // تطبیق درخواست تجاری
+  PRODUCT_APPROVED        // تأیید محصول
+  DOCUMENT_VERIFIED       // تأیید مدارک
+  NEW_MESSAGE             // پیام جدید
+  SYSTEM_ANNOUNCEMENT    // اطلاعیه سیستم
+}
+
+model Notification {
+  id        String @id @default(cuid())
+  userId    String
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type      NotificationType
+  title     String
+  message   String @db.Text
+
+  // داده‌های اضافی (JSON)
+  data      Json?
+
+  isRead    Boolean @default(false)
+  readAt    DateTime?
+
+  // لینک مرتبط (اختیاری)
+  link      String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}

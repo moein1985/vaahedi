@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "types": [],
+    "baseUrl": ".",
+    "paths": {
+      "zod": ["../../node_modules/zod/index.d.ts"],
+      "zod/*": ["../../node_modules/zod/*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -1,0 +1,66 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e4]:
+    - heading "ثبت‌نام" [level=1] [ref=e5]
+    - paragraph [ref=e6]: حساب کاربری خود را ایجاد کنید
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - text: نوع عضویت
+        - generic [ref=e9]:
+          - generic [ref=e10]:
+            - radio "حقیقی" [checked] [ref=e11]
+            - text: حقیقی
+          - generic [ref=e12]:
+            - radio "حقوقی" [ref=e13]
+            - text: حقوقی
+      - generic [ref=e14]:
+        - generic [ref=e15]:
+          - text: نام
+          - textbox [ref=e16]
+        - generic [ref=e17]:
+          - text: نام خانوادگی
+          - textbox [ref=e18]
+      - generic [ref=e19]:
+        - text: کد ملی
+        - textbox [ref=e20]
+      - generic [ref=e21]:
+        - text: شماره موبایل
+        - textbox "09123456789" [ref=e22]
+      - generic [ref=e23]:
+        - text: ایمیل (اختیاری)
+        - textbox [ref=e24]
+      - generic [ref=e25]:
+        - text: رمز عبور
+        - textbox [ref=e26]
+      - generic [ref=e27]:
+        - text: تکرار رمز عبور
+        - textbox [ref=e28]
+      - generic [ref=e29]:
+        - text: نقش شما
+        - generic [ref=e31]:
+          - radio "خریدار/فروشنده" [checked] [ref=e32]
+          - text: خریدار/فروشنده
+      - generic [ref=e34]:
+        - checkbox "با قوانین و شرایط موافقم" [ref=e35]
+        - generic [ref=e36]:
+          - text: با
+          - link "قوانین و شرایط" [ref=e37] [cursor=pointer]:
+            - /url: "#"
+          - text: موافقم
+      - generic [ref=e38]: Captcha در محیط توسعه غیرفعال است
+      - button "ثبت‌نام" [disabled] [ref=e39]
+    - generic [ref=e40]:
+      - text: حساب کاربری دارید؟
+      - link "ورود" [ref=e41] [cursor=pointer]:
+        - /url: /auth/login
+  - generic:
+    - contentinfo:
+      - button "Open TanStack Router Devtools" [ref=e42] [cursor=pointer]:
+        - generic [ref=e43]:
+          - img [ref=e45]
+          - img [ref=e80]
+        - generic [ref=e114]: "-"
+        - generic [ref=e115]: TanStack Router
+```

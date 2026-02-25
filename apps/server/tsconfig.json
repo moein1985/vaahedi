@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "typeRoots": ["../../node_modules/@types", "node_modules/@types"],
+    "types": ["node", "bcryptjs", "jsonwebtoken", "nodemailer"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@repo/shared": ["../../packages/shared/src"],
+      "@repo/db": ["../../packages/db/src"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

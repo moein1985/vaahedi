@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Allow: /catalog
+Allow: /catalog/
+
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /admin
+Disallow: /trade
+Disallow: /chat
+Disallow: /support
+
+Sitemap: https://your-domain.ir/sitemap.xml
