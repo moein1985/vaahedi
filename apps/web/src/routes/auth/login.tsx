@@ -163,6 +163,7 @@ function LoginPage() {
   }, [loginMethod, requiresCaptcha]);
 
   const onSubmitUserCode = (data: LoginInput) => {
+    alert('🔐 onSubmitUserCode called! Logging in with: ' + data.userCode);
     console.log('🔐 onSubmitUserCode called!', { data, captchaToken, requiresCaptcha });
     if (requiresCaptcha && !captchaToken) {
       console.warn('⚠️ CAPTCHA required but not verified');
@@ -174,6 +175,7 @@ function LoginPage() {
   };
 
   const onSubmitEmail = (data: LoginWithEmailInput) => {
+    alert('✉️ onSubmitEmail called! Logging in with: ' + data.email);
     console.log('✉️ onSubmitEmail called!', { data, captchaToken, requiresCaptcha });
     if (requiresCaptcha && !captchaToken) {
       console.warn('⚠️ CAPTCHA required but not verified');
@@ -251,13 +253,7 @@ function LoginPage() {
 
               {loginMethod === 'userCode' && (
                 <form 
-                  onSubmit={(e) => {
-                    alert('✅ FORM SUBMITTED!');
-                    console.log('🔗 Form onSubmit triggered');
-                    e.preventDefault();
-                    const handler = handleSubmitUserCode(onSubmitUserCode);
-                    handler(e);
-                  }} 
+                  onSubmit={handleSubmitUserCode(onSubmitUserCode)} 
                   className="space-y-4"
                 >
                   <div>
@@ -266,9 +262,6 @@ function LoginPage() {
                       {...registerUserCode('userCode')}
                       dir="ltr"
                       placeholder="مثال: 0100001"
-                      onInput={(e) => {
-                        console.log('👤 UserCode input:', (e.target as HTMLInputElement).value);
-                      }}
                     />
                     {errorsUserCode.userCode && (
                       <p className="field-error">{errorsUserCode.userCode.message}</p>
@@ -281,9 +274,6 @@ function LoginPage() {
                       {...registerUserCode('password')}
                       type="password"
                       dir="ltr"
-                      onInput={(e) => {
-                        console.log('🔑 Password input:', (e.target as HTMLInputElement).value.length, 'chars');
-                      }}
                     />
                     {errorsUserCode.password && (
                       <p className="field-error">{errorsUserCode.password.message}</p>
@@ -318,10 +308,6 @@ function LoginPage() {
                     type="submit" 
                     className="w-full" 
                     loading={loginMutation.isPending}
-                    onClick={(e) => {
-                      alert('🖱️ USERCODE BUTTON CLICKED!');
-                      console.log('🖱️ Button clicked', { isPending: loginMutation.isPending });
-                    }}
                   >
                     ورود
                   </Button>
@@ -330,13 +316,7 @@ function LoginPage() {
 
               {loginMethod === 'email' && (
                 <form 
-                  onSubmit={(e) => {
-                    alert('✅ FORM SUBMITTED!');
-                    console.log('🔗 Form onSubmit triggered');
-                    e.preventDefault();
-                    const handler = handleSubmitEmail(onSubmitEmail);
-                    handler(e);
-                  }} 
+                  onSubmit={handleSubmitEmail(onSubmitEmail)} 
                   className="space-y-4"
                 >
                   <div>
@@ -346,9 +326,6 @@ function LoginPage() {
                       type="email"
                       dir="ltr"
                       placeholder="example@domain.com"
-                      onInput={(e) => {
-                        console.log('📧 Email input:', (e.target as HTMLInputElement).value);
-                      }}
                     />
                     {errorsEmail.email && (
                       <p className="field-error">{errorsEmail.email.message}</p>
@@ -361,9 +338,6 @@ function LoginPage() {
                       {...registerEmail('password')}
                       type="password"
                       dir="ltr"
-                      onInput={(e) => {
-                        console.log('🔑 Password input:', (e.target as HTMLInputElement).value.length, 'chars');
-                      }}
                     />
                     {errorsEmail.password && (
                       <p className="field-error">{errorsEmail.password.message}</p>
@@ -398,10 +372,6 @@ function LoginPage() {
                     type="submit" 
                     className="w-full" 
                     loading={loginWithEmailMutation.isPending}
-                    onClick={(e) => {
-                      alert('🖱️ EMAIL BUTTON CLICKED!');
-                      console.log('🖱️ Button clicked', { isPending: loginWithEmailMutation.isPending });
-                    }}
                   >
                     ورود
                   </Button>

@@ -73,13 +73,13 @@ export const registerSchema = z.union([
 export const loginSchema = z.object({
   userCode: z.string().min(4, 'کد کاربری معتبر نیست'),
   password: z.string().min(1, 'رمز عبور الزامی است'),
-  captchaToken: z.string().min(1, 'کد امنیتی الزامی است'),
+  captchaToken: z.string().optional(),
 });
 
 export const loginWithEmailSchema = z.object({
   email: z.string().email('ایمیل معتبر نیست'),
   password: z.string().min(1, 'رمز عبور الزامی است'),
-  captchaToken: z.string().min(1, 'کد امنیتی الزامی است'),
+  captchaToken: z.string().optional(),
 });
 
 // ─── OTP ─────────────────────────────────────────────────────────────────────
