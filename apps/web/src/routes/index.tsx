@@ -28,8 +28,8 @@ export function HomePage() {
       <section className="max-w-6xl mx-auto px-4 py-20 text-center">
         <Badge className="mb-4">پلتفرم جدید تجارت هوشمند ایران</Badge>
         <h1 className="text-4xl lg:text-6xl font-black text-foreground mb-6 leading-tight">
-          تجارت هوشمند<br />
-          <span className="text-[var(--brand)]">با واحدی</span>
+          مرکز توسعه مطالعات<br />
+          <span className="text-[var(--brand)]">و مدیریت بازرگانی متمرکز ایرانیان</span>
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
           اتصال تولیدکنندگان، بازرگانان و خریداران در یک پلتفرم یکپارچه
