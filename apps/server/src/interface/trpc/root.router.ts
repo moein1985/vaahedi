@@ -9,6 +9,7 @@ import { servicesRouter } from './routers/services.router.js';
 import { adminRouter } from './routers/admin.router.js';
 import { supportRouter } from './routers/support.router.js';
 import { notificationRouter } from './routers/notification.router.js';
+import { newsRouter } from './routers/news.router.js';
 
 // ─── App Router ───────────────────────────────────────────────────────────────
 
@@ -23,6 +24,7 @@ export const appRouter = router({
   admin: adminRouter,
   support: supportRouter,
   notification: notificationRouter,
+  news: newsRouter,
 });
 
 export type AppRouter = typeof appRouter;

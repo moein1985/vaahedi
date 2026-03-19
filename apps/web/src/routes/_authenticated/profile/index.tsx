@@ -18,9 +18,12 @@ const formSchema = z.object({
   role: z.nativeEnum(UserRole),
   companyName: z.string().min(2).max(150).optional().or(z.literal('')),
   unitName: z.string().min(2).max(150).optional().or(z.literal('')),
-  unitType: z.enum(['TYPE_1', 'TYPE_2', 'TYPE_3']).optional(),
+  unitType: z.enum(['COMPANY', 'GUILD', 'PRODUCER', 'TRADER', 'WHOLESALER', 'INDUSTRIAL']).optional().or(z.literal('')),
   guildCode: z.string().max(20).optional().or(z.literal('')),
   businessId: z.string().max(30).optional().or(z.literal('')),
+  producedGoods: z.string().max(500).optional().or(z.literal('')),
+  productIdNumber: z.string().max(50).optional().or(z.literal('')),
+  singleProduct: z.boolean().optional(),
   phone: z.string().regex(/^0\d{10}$/, 'شماره تلفن معتبر نیست').optional().or(z.literal('')),
   fax: z.string().regex(/^0\d{10}$/, 'شماره فکس معتبر نیست').optional().or(z.literal('')),
   website: z.string().url('آدرس سایت معتبر نیست').optional().or(z.literal('')),
@@ -48,6 +51,8 @@ const ROLE_LABELS: Record<string, string> = {
   BROKER: 'کارگزار',
   INTERMEDIARY: 'شرکت واسط',
   GUILD: 'صنفی',
+  FARMER: 'کشاورز',
+  INVESTOR: 'سرمایه‌گذار',
 };
 
 const COMMODITY_LABELS: Record<string, string> = {
@@ -73,6 +78,7 @@ const DOC_TYPE_LABELS: Record<string, string> = {
   OTHER_LICENSES: 'سایر مجوزها',
   ISO_CERTIFICATE: 'گواهی ایزو',
   BUSINESS_CARD: 'کارت بازرگانی',
+  ID_DOCUMENT: 'مدرک شناسایی',
 };
 
 function ProfilePage() {
@@ -138,8 +144,12 @@ function ProfilePage() {
           role: (data.user.role as UserRole) ?? UserRole.TRADER,
           companyName: data.profile.companyName ?? '',
           unitName: data.profile.unitName ?? '',
+          unitType: (data.profile.unitType as any) ?? '',
           guildCode: data.profile.guildCode ?? '',
           businessId: data.profile.businessId ?? '',
+          producedGoods: data.profile.producedGoods ?? '',
+          productIdNumber: data.profile.productIdNumber ?? '',
+          singleProduct: data.profile.singleProduct ?? false,
           phone: data.profile.phone ?? '',
           fax: data.profile.fax ?? '',
           website: data.profile.website ?? '',
@@ -238,6 +248,21 @@ function ProfilePage() {
               />
             </div>
             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">نوع واحد</label>
+              <select
+                {...register('unitType')}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">انتخاب کنید</option>
+                <option value="COMPANY">شرکتی</option>
+                <option value="GUILD">صنفی</option>
+                <option value="PRODUCER">تولیدکننده</option>
+                <option value="TRADER">بازرگان/تاجر</option>
+                <option value="WHOLESALER">عمده‌فروش</option>
+                <option value="INDUSTRIAL">صنعتی کارگاهی</option>
+              </select>
+            </div>
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">شناسه صنفی</label>
               <input
                 {...register('guildCode')}
@@ -250,6 +275,30 @@ function ProfilePage() {
                 {...register('businessId')}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+            </div>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">نام کالاهای تولید شده</label>
+              <input
+                {...register('producedGoods')}
+                placeholder="با کاما جدا کنید: فولاد، مس، آلومینیوم"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">شماره شناسایی کالای تولیدی</label>
+              <input
+                {...register('productIdNumber')}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                dir="ltr"
+              />
+            </div>
+            <div className="flex items-center gap-2 mt-5">
+              <input
+                type="checkbox"
+                {...register('singleProduct')}
+                className="rounded text-blue-600"
+              />
+              <label className="text-sm text-gray-700">تک‌محصول</label>
             </div>
           </div>
         </div>

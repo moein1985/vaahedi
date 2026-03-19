@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { trpc } from '../../../trpc.js';
-import { TradeType } from '@repo/shared';
+import { TradeType, ConsultationCategory, CommodityGroup } from '@repo/shared';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,6 +10,7 @@ import { Input } from '../../../components/ui/input.js';
 import { Button } from '../../../components/ui/button.js';
 import { Badge } from '../../../components/ui/badge.js';
 import { cn } from '../../../lib/utils.js';
+import { useTranslation } from 'react-i18next';
 
 export const Route = createFileRoute('/_authenticated/trade/')({
   component: TradePage,
@@ -43,8 +44,38 @@ const CURRENCY_LABELS: Record<string, string> = {
   IRR: 'ریال',
 };
 
+const CONSULTATION_LABELS: Record<string, string> = {
+  COMMERCIAL: 'بازرگانی',
+  TECHNICAL: 'فنی',
+  LEGAL: 'حقوقی',
+  FINANCIAL: 'مالی',
+  CUSTOMS: 'امور گمرکی',
+  CURRENCY: 'ارزی',
+  COMMODITY_PURCHASE: 'خرید کالایی',
+  FOREX_OBLIGATIONS: 'رفع تعهدات ارزی',
+  LOGISTICS: 'لجستیک',
+};
+
+const COMMODITY_LABELS: Record<string, string> = {
+  INDUSTRIAL: 'صنعتی', CHEMICAL: 'شیمیایی', TELECOM: 'مخابراتی', METAL: 'فلزی',
+  FOOD: 'غذایی', TEXTILE: 'نساجی', AGRICULTURAL: 'کشاورزی',
+  CONSTRUCTION: 'ساختمانی', PETROCHEMICAL: 'پتروشیمی', OTHER: 'سایر',
+};
+
+const analysisFormSchema = z.object({
+  subject: z.string().min(5, 'موضوع تحلیل الزامی است').max(300),
+  consultationCategory: z.string().optional(),
+  commodityGroup: z.string().optional(),
+  targetMarket: z.string().max(200).optional(),
+  description: z.string().min(20, 'شرح درخواست حداقل ۲۰ کاراکتر').max(3000),
+});
+
+type AnalysisFormData = z.infer<typeof analysisFormSchema>;
+
 function TradePage() {
+  const { t } = useTranslation();
   const [showForm, setShowForm] = useState(false);
+  const [showAnalysisForm, setShowAnalysisForm] = useState(false);
   const [page, setPage] = useState(1);
   const utils = trpc.useUtils();
 
@@ -67,6 +98,22 @@ function TradePage() {
     defaultValues: { type: TradeType.BUY, currency: 'USD' },
   });
 
+  const analysisReq = trpc.trade.requestAnalysis.useMutation({
+    onSuccess: () => {
+      setShowAnalysisForm(false);
+      analysisReset();
+    },
+  });
+
+  const {
+    register: analysisRegister,
+    handleSubmit: analysisHandleSubmit,
+    reset: analysisReset,
+    formState: { errors: analysisErrors },
+  } = useForm<AnalysisFormData>({
+    resolver: zodResolver(analysisFormSchema) as any,
+  });
+
   const items = data?.items ?? [];
 
   return (
@@ -74,10 +121,79 @@ function TradePage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">درخواست‌های تجاری</h1>
-          <p className="text-gray-500 text-sm mt-1">مدیریت خرید و فروش کالا</p>
+          <p className="text-gray-500 text-sm mt-1">مدیریت خرید و فروش کالا و درخواست تحلیل بازرگانی</p>
         </div>
-        <Button onClick={() => setShowForm(true)} className="">+ درخواست جدید</Button>
+        <div className="flex gap-2">
+          <Button onClick={() => setShowAnalysisForm(true)} variant="outline">درخواست تحلیل</Button>
+          <Button onClick={() => setShowForm(true)}>+ درخواست جدید</Button>
+        </div>
       </div>
+
+      {/* Analysis Request Modal */}
+      {showAnalysisForm && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-lg font-bold text-gray-900">درخواست تحلیل بازرگانی</h2>
+              <button onClick={() => { setShowAnalysisForm(false); analysisReset(); }} className="text-gray-400 hover:text-gray-600 text-xl leading-none">✕</button>
+            </div>
+
+            <form onSubmit={analysisHandleSubmit((d) => analysisReq.mutate(d as any))} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">موضوع تحلیل <span className="text-red-500">*</span></label>
+                <Input {...analysisRegister('subject')} placeholder="مثال: بررسی بازار فولاد ترکیه" />
+                {analysisErrors.subject && <p className="text-red-500 text-xs mt-1">{analysisErrors.subject.message}</p>}
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">دسته‌بندی مشاوره</label>
+                  <select
+                    {...analysisRegister('consultationCategory')}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">انتخاب کنید</option>
+                    {Object.entries(CONSULTATION_LABELS).map(([val, label]) => (
+                      <option key={val} value={val}>{label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">گروه کالایی</label>
+                  <select
+                    {...analysisRegister('commodityGroup')}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">انتخاب کنید</option>
+                    {Object.entries(COMMODITY_LABELS).map(([val, label]) => (
+                      <option key={val} value={val}>{label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">بازار هدف</label>
+                <Input {...analysisRegister('targetMarket')} placeholder="مثال: ترکیه، عراق، امارات" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">شرح درخواست <span className="text-red-500">*</span></label>
+                <textarea {...analysisRegister('description')} rows={4} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="توضیحات کامل درباره نیاز تحلیلی خود..." />
+                {analysisErrors.description && <p className="text-red-500 text-xs mt-1">{analysisErrors.description.message}</p>}
+              </div>
+
+              {analysisReq.error && <p className="text-red-500 text-sm">{analysisReq.error.message}</p>}
+              {analysisReq.isSuccess && <p className="text-green-600 text-sm">درخواست تحلیل بازرگانی ثبت شد</p>}
+
+              <div className="flex gap-3 pt-2">
+                <Button type="submit" className="flex-1" loading={analysisReq.isPending}>ثبت درخواست تحلیل</Button>
+                <Button variant="secondary" type="button" onClick={() => { setShowAnalysisForm(false); analysisReset(); }}>انصراف</Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* New Request Modal */}
       {showForm && (

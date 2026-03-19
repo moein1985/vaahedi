@@ -63,9 +63,28 @@ export const registerLegalSchema = z.object({
   path: ['confirmPassword'],
 });
 
+export const registerGuildMemberSchema = z.object({
+  membershipType: z.literal(MembershipType.GUILD_MEMBER),
+  firstName: z.string().min(2, 'نام حداقل ۲ کاراکتر').max(50),
+  lastName: z.string().min(2, 'نام خانوادگی حداقل ۲ کاراکتر').max(50),
+  nationalCode: nationalCodeSchema,
+  guildName: z.string().min(2, 'نام صنف حداقل ۲ کاراکتر').max(100),
+  mobile: mobileSchema,
+  email: z.string().email('ایمیل معتبر نیست'),
+  password: passwordSchema,
+  confirmPassword: passwordSchema,
+  role: z.nativeEnum(UserRole),
+  agreedToTerms: z.literal(true, { errorMap: () => ({ message: 'تأیید قوانین الزامی است' }) }),
+  captchaToken: z.string().min(1, 'کد امنیتی الزامی است'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'رمز عبور و تکرار آن یکسان نیست',
+  path: ['confirmPassword'],
+});
+
 export const registerSchema = z.union([
   registerIndividualSchema,
   registerLegalSchema,
+  registerGuildMemberSchema,
 ]);
 
 // ─── Login ───────────────────────────────────────────────────────────────────

@@ -282,4 +282,74 @@ export const servicesRouter = router({
       const url = await ctx.storage.getPresignedUploadUrl(key, 'application/octet-stream', 600);
       return { url, key };
     }),
+
+  // ── ارتباط با ما ──────────────────────────────────────────────────────────
+  submitContactMessage: publicProcedure
+    .input(
+      z.object({
+        name: z.string().min(2, 'نام الزامی است').max(100),
+        email: z.string().email('ایمیل معتبر نیست'),
+        phone: z.string().regex(/^09\d{9}$/, 'شماره موبایل معتبر نیست').optional(),
+        subject: z.string().min(3, 'موضوع الزامی است').max(200),
+        message: z.string().min(10, 'پیام باید حداقل ۱۰ کاراکتر باشد').max(2000),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.contactMessage.create({ data: input });
+      return { message: 'پیام شما با موفقیت ارسال شد' };
+    }),
+
+  // ── درخواست تبلیغات ────────────────────────────────────────────────────────
+  submitAdRequest: activeProcedure
+    .input(
+      z.object({
+        title: z.string().min(3, 'عنوان الزامی است').max(200),
+        description: z.string().max(1000).optional(),
+        adType: z.enum(['BANNER', 'SIDEBAR', 'POPUP', 'PRODUCT_HIGHLIGHT']),
+        targetUrl: z.string().url('آدرس معتبر نیست').optional(),
+        fileKey: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.advertisement.create({
+        data: {
+          requesterId: ctx.user.id,
+          title: input.title,
+          description: input.description,
+          adType: input.adType,
+          targetUrl: input.targetUrl,
+          fileKey: input.fileKey,
+          status: 'PENDING',
+        },
+      });
+      return { message: 'درخواست تبلیغ با موفقیت ثبت شد و در انتظار بررسی است' };
+    }),
+
+  // ── نظرسنجی فعال ──────────────────────────────────────────────────────────
+  activeSurveys: publicProcedure.query(async ({ ctx }) => {
+    return ctx.db.survey.findMany({
+      where: { isActive: true },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+    });
+  }),
+
+  submitSurveyResponse: publicProcedure
+    .input(
+      z.object({
+        surveyId: z.string(),
+        respondentEmail: z.string().email().optional(),
+        answers: z.record(z.string(), z.any()),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.surveyResponse.create({
+        data: {
+          surveyId: input.surveyId,
+          respondentEmail: input.respondentEmail,
+          answers: input.answers,
+        },
+      });
+      return { message: 'پاسخ شما ثبت شد. ممنون از مشارکت شما' };
+    }),
 });

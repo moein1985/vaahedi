@@ -8,12 +8,15 @@ export const UserRole = {
   BROKER: 'BROKER',                           // کارگزار
   INTERMEDIARY: 'INTERMEDIARY',               // شرکت واسط
   GUILD: 'GUILD',                             // صنفی
+  FARMER: 'FARMER',                           // کشاورز (تولیدکننده)
+  INVESTOR: 'INVESTOR',                       // سرمایه‌گذار
 } as const;
 export type UserRole = (typeof UserRole)[keyof typeof UserRole];
 
 export const MembershipType = {
-  INDIVIDUAL: 'INDIVIDUAL', // حقیقی
-  LEGAL: 'LEGAL',           // حقوقی
+  INDIVIDUAL: 'INDIVIDUAL',   // حقیقی
+  LEGAL: 'LEGAL',             // حقوقی
+  GUILD_MEMBER: 'GUILD_MEMBER', // صنفی
 } as const;
 export type MembershipType = (typeof MembershipType)[keyof typeof MembershipType];
 
@@ -37,6 +40,7 @@ export const DocumentType = {
   OTHER_LICENSES: 'OTHER_LICENSES',                       // سایر مجوزهای مرتبط
   ISO_CERTIFICATE: 'ISO_CERTIFICATE',                     // گواهی ایزو / استاندارد
   BUSINESS_CARD: 'BUSINESS_CARD',                         // کارت بازرگانی
+  ID_DOCUMENT: 'ID_DOCUMENT',                             // تصویر مدرک شناسایی مخاطب
 } as const;
 export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
 
@@ -152,3 +156,19 @@ export const AnalysisRequestStatus = {
 } as const;
 export type AnalysisRequestStatus =
   (typeof AnalysisRequestStatus)[keyof typeof AnalysisRequestStatus];
+
+// ─── Consultation ────────────────────────────────────────────────────────────
+
+export const ConsultationCategory = {
+  COMMERCIAL: 'COMMERCIAL',             // بازرگانی
+  TECHNICAL: 'TECHNICAL',               // فنی
+  LEGAL: 'LEGAL',                       // حقوقی
+  FINANCIAL: 'FINANCIAL',               // مالی
+  CUSTOMS: 'CUSTOMS',                   // امور گمرکی
+  CURRENCY: 'CURRENCY',                 // ارزی
+  COMMODITY_PURCHASE: 'COMMODITY_PURCHASE', // خرید کالایی
+  FOREX_OBLIGATIONS: 'FOREX_OBLIGATIONS',   // رفع تعهدات ارزی
+  LOGISTICS: 'LOGISTICS',               // لجستیک
+} as const;
+export type ConsultationCategory =
+  (typeof ConsultationCategory)[keyof typeof ConsultationCategory];

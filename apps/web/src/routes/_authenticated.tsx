@@ -4,6 +4,7 @@ import {
   LayoutDashboard, Package, ArrowLeftRight, Ticket, MessageSquare,
   Bell, User, LogOut, ChevronLeft, ChevronRight, Globe, Shield,
   Users, FileText, Megaphone, BookOpen, BarChart3, Settings, Hash,
+  Download,
 } from 'lucide-react';
 import { useAuthStore } from '../store/auth.store.js';
 import { trpc } from '../trpc.js';
@@ -33,6 +34,8 @@ const NAV_MAIN = [
 const NAV_SERVICES = [
   { href: '/services/hs-codes',   icon: Hash,      label: 'کدهای گمرکی' },
   { href: '/services/circulars',  icon: BookOpen,  label: 'بخشنامه‌ها' },
+  { href: '/downloads',           icon: Download,  label: 'دانلودها' },
+  { href: '/ads-request',         icon: Megaphone, label: 'درخواست تبلیغ' },
 ];
 
 const NAV_ADMIN = [
@@ -154,12 +157,12 @@ function Sidebar({ isAdmin }: { isAdmin: boolean }) {
       {/* Logo */}
       <div className={cn('flex items-center gap-3 px-4 py-5 border-b border-border', collapsed && 'justify-center px-2')}>
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--brand)] text-white font-black text-sm">
-          و
+          ت
         </div>
         {!collapsed && (
           <div>
-            <div className="text-sm font-black text-foreground">وهدی</div>
-            <div className="text-[10px] text-muted-foreground">تجارت هوشمند</div>
+            <div className="text-sm font-black text-foreground">تجارت هوشمند</div>
+            <div className="text-[10px] text-muted-foreground">سامانه بورس هوشمند</div>
           </div>
         )}
       </div>
@@ -229,8 +232,8 @@ function TopHeader() {
   return (
     <header className="lg:hidden sticky top-0 z-30 bg-card border-b border-border px-4 py-3 flex items-center justify-between" dir="rtl">
       <div className="flex items-center gap-2">
-        <div className="h-7 w-7 rounded-lg bg-[var(--brand)] text-white flex items-center justify-center font-black text-xs">و</div>
-        <span className="text-sm font-black text-foreground">وهدی</span>
+        <div className="h-7 w-7 rounded-lg bg-[var(--brand)] text-white flex items-center justify-center font-black text-xs">ت</div>
+        <span className="text-sm font-black text-foreground">تجارت هوشمند</span>
       </div>
       <div className="flex items-center gap-2">
         <Link to="/notifications" className="relative p-2 text-muted-foreground hover:text-foreground transition-colors">

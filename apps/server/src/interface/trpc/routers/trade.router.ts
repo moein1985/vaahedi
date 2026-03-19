@@ -216,6 +216,7 @@ export const tradeRouter = router({
         data: {
           requesterId: ctx.user.id,
           subject: input.subject,
+          consultationCategory: input.consultationCategory,
           commodityGroup: input.commodityGroup,
           targetMarket: input.targetMarket,
           description: input.description,

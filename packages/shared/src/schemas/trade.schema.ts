@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CommodityGroup, TradeType, TradeRequestStatus } from '../enums/index.js';
+import { CommodityGroup, TradeType, TradeRequestStatus, ConsultationCategory } from '../enums/index.js';
 
 // ─── Create Trade Request ─────────────────────────────────────────────────────
 
@@ -40,6 +40,7 @@ export const listTradeRequestsSchema = z.object({
 
 export const createAnalysisRequestSchema = z.object({
   subject: z.string().min(5, 'موضوع تحلیل الزامی است').max(300),
+  consultationCategory: z.nativeEnum(ConsultationCategory).optional(),
   commodityGroup: z.nativeEnum(CommodityGroup).optional(),
   targetMarket: z.string().max(200).optional(),
   description: z.string().min(20, 'شرح درخواست کافی نیست').max(3000),

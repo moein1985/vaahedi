@@ -63,9 +63,7 @@ function RegisterPage() {
   const membershipType = watch('membershipType') ?? MembershipType.INDIVIDUAL;
   const agreedToTerms = watch('agreedToTerms');
 
-  useEffect(() => {
-    setValue('role', UserRole.TRADER);
-  }, [setValue]);
+  const selectedRole = watch('role') ?? UserRole.TRADER;
 
   useEffect(() => {
     if (requiresCaptcha) {
@@ -80,7 +78,7 @@ function RegisterPage() {
       alert('لطفاً captcha را تأیید کنید');
       return;
     }
-    registerMutation.mutate({ ...data, role: UserRole.TRADER });
+    registerMutation.mutate(data);
   };
 
   const onInvalid = (formErrors: typeof errors) => {
@@ -95,17 +93,38 @@ function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-muted/50 p-4" dir="rtl">
       <div className="w-full max-w-lg">
         <div className="text-center mb-8">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--brand)] text-white text-2xl font-black mb-3">و</div>
-          <h1 className="text-2xl font-bold text-foreground">وهدی</h1>
-          <p className="text-muted-foreground text-sm mt-1">مرکز تجارت متمرکز هوشمند</p>
+          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--brand)] text-white text-2xl font-black mb-3">ت</div>
+          <h1 className="text-2xl font-bold text-foreground">تجارت هوشمند</h1>
+          <p className="text-muted-foreground text-sm mt-1">مرکز تجارت متمرکز هوشمند ایرانیان</p>
         </div>
 
         <Card>
           <CardHeader><CardTitle>{t('auth.register')}</CardTitle></CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-6">
-              <input type="hidden" value={UserRole.TRADER} {...register('role')} />
               <input type="hidden" {...register('captchaToken')} />
+
+              {/* Role Selection */}
+              <div>
+                <p className="label-text">نقش</p>
+                <select
+                  {...register('role')}
+                  className={cn(
+                    'w-full rounded-md border border-input bg-background px-3 py-2 text-sm',
+                    'focus:outline-none focus:ring-2 focus:ring-ring',
+                  )}
+                >
+                  <option value={UserRole.TRADER}>{t('role.TRADER')}</option>
+                  <option value={UserRole.PRODUCER}>{t('role.PRODUCER')}</option>
+                  <option value={UserRole.KNOWLEDGE_BASED}>{t('role.KNOWLEDGE_BASED')}</option>
+                  <option value={UserRole.WHOLESALER}>{t('role.WHOLESALER')}</option>
+                  <option value={UserRole.BROKER}>{t('role.BROKER')}</option>
+                  <option value={UserRole.INTERMEDIARY}>{t('role.INTERMEDIARY')}</option>
+                  <option value={UserRole.GUILD}>{t('role.GUILD')}</option>
+                  <option value={UserRole.FARMER}>{t('role.FARMER')}</option>
+                  <option value={UserRole.INVESTOR}>{t('role.INVESTOR')}</option>
+                </select>
+              </div>
 
               {/* Membership Type */}
               <div>
@@ -128,6 +147,15 @@ function RegisterPage() {
                       className="ml-2"
                     />
                     حقوقی
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      value={MembershipType.GUILD_MEMBER}
+                      {...register('membershipType')}
+                      className="ml-2"
+                    />
+                    صنفی
                   </label>
                 </div>
               </div>
@@ -191,6 +219,34 @@ function RegisterPage() {
                     <p className="label-text">کد ملی مدیرعامل</p>
                     <Input {...register('ceoNationalCode')} dir="ltr" />
                     {(errors as any).ceoNationalCode && <p className="field-error">{(errors as any).ceoNationalCode.message}</p>}
+                  </div>
+                </>
+              )}
+
+              {/* Guild Member Fields */}
+              {membershipType === MembershipType.GUILD_MEMBER && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="label-text">نام</p>
+                      <Input {...register('firstName')} />
+                      {'firstName' in errors && errors.firstName && <p className="field-error">{errors.firstName.message}</p>}
+                    </div>
+                    <div>
+                      <p className="label-text">نام خانوادگی</p>
+                      <Input {...register('lastName')} />
+                      {(errors as any).lastName && <p className="field-error">{(errors as any).lastName.message}</p>}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="label-text">کد ملی</p>
+                    <Input {...register('nationalCode')} dir="ltr" />
+                    {(errors as any).nationalCode && <p className="field-error">{(errors as any).nationalCode.message}</p>}
+                  </div>
+                  <div>
+                    <p className="label-text">نام صنف</p>
+                    <Input {...register('guildName' as any)} />
+                    {(errors as any).guildName && <p className="field-error">{(errors as any).guildName.message}</p>}
                   </div>
                 </>
               )}

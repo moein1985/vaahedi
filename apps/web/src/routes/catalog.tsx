@@ -68,7 +68,7 @@ function CatalogPage() {
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-          <Link to="/" className="text-xl font-bold text-blue-700 shrink-0">وهدی</Link>
+          <Link to="/" className="text-xl font-bold text-blue-700 shrink-0">تجارت هوشمند</Link>
           <form onSubmit={handleSearch} className="flex gap-2 flex-1 max-w-lg">
             <input
               value={q}

@@ -9,15 +9,21 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as NewsRouteImport } from './routes/news'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CatalogRouteImport } from './routes/catalog'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UUserCodeRouteImport } from './routes/u.$userCode'
+import { Route as NewsNewsIdRouteImport } from './routes/news.$newsId'
 import { Route as CatalogProductIdRouteImport } from './routes/catalog.$productId'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginOtpRouteImport } from './routes/auth/login-otp'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
+import { Route as AuthenticatedDownloadsRouteImport } from './routes/_authenticated/downloads'
+import { Route as AuthenticatedAdsRequestRouteImport } from './routes/_authenticated/ads-request'
 import { Route as AuthenticatedTradeIndexRouteImport } from './routes/_authenticated/trade/index'
 import { Route as AuthenticatedSupportIndexRouteImport } from './routes/_authenticated/support/index'
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile/index'
@@ -32,14 +38,30 @@ import { Route as AuthenticatedProductsNewRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedAdminSupportRouteImport } from './routes/_authenticated/admin/support'
 import { Route as AuthenticatedAdminProductsRouteImport } from './routes/_authenticated/admin/products'
+import { Route as AuthenticatedAdminNewsRouteImport } from './routes/_authenticated/admin/news'
 import { Route as AuthenticatedAdminDocumentsRouteImport } from './routes/_authenticated/admin/documents'
 import { Route as AuthenticatedAdminCircularsRouteImport } from './routes/_authenticated/admin/circulars'
 import { Route as AuthenticatedAdminAdsRouteImport } from './routes/_authenticated/admin/ads'
 import { Route as AuthenticatedAdminUsersUserIdRouteImport } from './routes/_authenticated/admin/users.$userId'
 
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CatalogRoute = CatalogRouteImport.update({
   id: '/catalog',
   path: '/catalog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
@@ -55,6 +77,11 @@ const UUserCodeRoute = UUserCodeRouteImport.update({
   id: '/u/$userCode',
   path: '/u/$userCode',
   getParentRoute: () => rootRouteImport,
+} as any)
+const NewsNewsIdRoute = NewsNewsIdRouteImport.update({
+  id: '/$newsId',
+  path: '/$newsId',
+  getParentRoute: () => NewsRoute,
 } as any)
 const CatalogProductIdRoute = CatalogProductIdRouteImport.update({
   id: '/$productId',
@@ -82,6 +109,16 @@ const AuthenticatedNotificationsRoute =
     path: '/notifications',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedDownloadsRoute = AuthenticatedDownloadsRouteImport.update({
+  id: '/downloads',
+  path: '/downloads',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAdsRequestRoute = AuthenticatedAdsRequestRouteImport.update({
+  id: '/ads-request',
+  path: '/ads-request',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedTradeIndexRoute = AuthenticatedTradeIndexRouteImport.update({
   id: '/trade/',
   path: '/trade/',
@@ -161,6 +198,11 @@ const AuthenticatedAdminProductsRoute =
     path: '/admin/products',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAdminNewsRoute = AuthenticatedAdminNewsRouteImport.update({
+  id: '/admin/news',
+  path: '/admin/news',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedAdminDocumentsRoute =
   AuthenticatedAdminDocumentsRouteImport.update({
     id: '/admin/documents',
@@ -187,16 +229,23 @@ const AuthenticatedAdminUsersUserIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/catalog': typeof CatalogRouteWithChildren
+  '/contact': typeof ContactRoute
+  '/news': typeof NewsRouteWithChildren
+  '/ads-request': typeof AuthenticatedAdsRequestRoute
+  '/downloads': typeof AuthenticatedDownloadsRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/login-otp': typeof AuthLoginOtpRoute
   '/auth/register': typeof AuthRegisterRoute
   '/catalog/$productId': typeof CatalogProductIdRoute
+  '/news/$newsId': typeof NewsNewsIdRoute
   '/u/$userCode': typeof UUserCodeRoute
   '/admin/ads': typeof AuthenticatedAdminAdsRoute
   '/admin/circulars': typeof AuthenticatedAdminCircularsRoute
   '/admin/documents': typeof AuthenticatedAdminDocumentsRoute
+  '/admin/news': typeof AuthenticatedAdminNewsRoute
   '/admin/products': typeof AuthenticatedAdminProductsRoute
   '/admin/support': typeof AuthenticatedAdminSupportRoute
   '/admin/users': typeof AuthenticatedAdminUsersRouteWithChildren
@@ -215,16 +264,23 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/catalog': typeof CatalogRouteWithChildren
+  '/contact': typeof ContactRoute
+  '/news': typeof NewsRouteWithChildren
+  '/ads-request': typeof AuthenticatedAdsRequestRoute
+  '/downloads': typeof AuthenticatedDownloadsRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/login-otp': typeof AuthLoginOtpRoute
   '/auth/register': typeof AuthRegisterRoute
   '/catalog/$productId': typeof CatalogProductIdRoute
+  '/news/$newsId': typeof NewsNewsIdRoute
   '/u/$userCode': typeof UUserCodeRoute
   '/admin/ads': typeof AuthenticatedAdminAdsRoute
   '/admin/circulars': typeof AuthenticatedAdminCircularsRoute
   '/admin/documents': typeof AuthenticatedAdminDocumentsRoute
+  '/admin/news': typeof AuthenticatedAdminNewsRoute
   '/admin/products': typeof AuthenticatedAdminProductsRoute
   '/admin/support': typeof AuthenticatedAdminSupportRoute
   '/admin/users': typeof AuthenticatedAdminUsersRouteWithChildren
@@ -245,16 +301,23 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/about': typeof AboutRoute
   '/catalog': typeof CatalogRouteWithChildren
+  '/contact': typeof ContactRoute
+  '/news': typeof NewsRouteWithChildren
+  '/_authenticated/ads-request': typeof AuthenticatedAdsRequestRoute
+  '/_authenticated/downloads': typeof AuthenticatedDownloadsRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/login-otp': typeof AuthLoginOtpRoute
   '/auth/register': typeof AuthRegisterRoute
   '/catalog/$productId': typeof CatalogProductIdRoute
+  '/news/$newsId': typeof NewsNewsIdRoute
   '/u/$userCode': typeof UUserCodeRoute
   '/_authenticated/admin/ads': typeof AuthenticatedAdminAdsRoute
   '/_authenticated/admin/circulars': typeof AuthenticatedAdminCircularsRoute
   '/_authenticated/admin/documents': typeof AuthenticatedAdminDocumentsRoute
+  '/_authenticated/admin/news': typeof AuthenticatedAdminNewsRoute
   '/_authenticated/admin/products': typeof AuthenticatedAdminProductsRoute
   '/_authenticated/admin/support': typeof AuthenticatedAdminSupportRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRouteWithChildren
@@ -275,16 +338,23 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/catalog'
+    | '/contact'
+    | '/news'
+    | '/ads-request'
+    | '/downloads'
     | '/notifications'
     | '/auth/login'
     | '/auth/login-otp'
     | '/auth/register'
     | '/catalog/$productId'
+    | '/news/$newsId'
     | '/u/$userCode'
     | '/admin/ads'
     | '/admin/circulars'
     | '/admin/documents'
+    | '/admin/news'
     | '/admin/products'
     | '/admin/support'
     | '/admin/users'
@@ -303,16 +373,23 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/catalog'
+    | '/contact'
+    | '/news'
+    | '/ads-request'
+    | '/downloads'
     | '/notifications'
     | '/auth/login'
     | '/auth/login-otp'
     | '/auth/register'
     | '/catalog/$productId'
+    | '/news/$newsId'
     | '/u/$userCode'
     | '/admin/ads'
     | '/admin/circulars'
     | '/admin/documents'
+    | '/admin/news'
     | '/admin/products'
     | '/admin/support'
     | '/admin/users'
@@ -332,16 +409,23 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/about'
     | '/catalog'
+    | '/contact'
+    | '/news'
+    | '/_authenticated/ads-request'
+    | '/_authenticated/downloads'
     | '/_authenticated/notifications'
     | '/auth/login'
     | '/auth/login-otp'
     | '/auth/register'
     | '/catalog/$productId'
+    | '/news/$newsId'
     | '/u/$userCode'
     | '/_authenticated/admin/ads'
     | '/_authenticated/admin/circulars'
     | '/_authenticated/admin/documents'
+    | '/_authenticated/admin/news'
     | '/_authenticated/admin/products'
     | '/_authenticated/admin/support'
     | '/_authenticated/admin/users'
@@ -362,7 +446,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AboutRoute: typeof AboutRoute
   CatalogRoute: typeof CatalogRouteWithChildren
+  ContactRoute: typeof ContactRoute
+  NewsRoute: typeof NewsRouteWithChildren
   AuthLoginRoute: typeof AuthLoginRoute
   AuthLoginOtpRoute: typeof AuthLoginOtpRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
@@ -371,11 +458,32 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/catalog': {
       id: '/catalog'
       path: '/catalog'
       fullPath: '/catalog'
       preLoaderRoute: typeof CatalogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -398,6 +506,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/u/$userCode'
       preLoaderRoute: typeof UUserCodeRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/news/$newsId': {
+      id: '/news/$newsId'
+      path: '/$newsId'
+      fullPath: '/news/$newsId'
+      preLoaderRoute: typeof NewsNewsIdRouteImport
+      parentRoute: typeof NewsRoute
     }
     '/catalog/$productId': {
       id: '/catalog/$productId'
@@ -432,6 +547,20 @@ declare module '@tanstack/react-router' {
       path: '/notifications'
       fullPath: '/notifications'
       preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/downloads': {
+      id: '/_authenticated/downloads'
+      path: '/downloads'
+      fullPath: '/downloads'
+      preLoaderRoute: typeof AuthenticatedDownloadsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/ads-request': {
+      id: '/_authenticated/ads-request'
+      path: '/ads-request'
+      fullPath: '/ads-request'
+      preLoaderRoute: typeof AuthenticatedAdsRequestRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/trade/': {
@@ -532,6 +661,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminProductsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/news': {
+      id: '/_authenticated/admin/news'
+      path: '/admin/news'
+      fullPath: '/admin/news'
+      preLoaderRoute: typeof AuthenticatedAdminNewsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin/documents': {
       id: '/_authenticated/admin/documents'
       path: '/admin/documents'
@@ -578,10 +714,13 @@ const AuthenticatedAdminUsersRouteWithChildren =
   )
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedAdsRequestRoute: typeof AuthenticatedAdsRequestRoute
+  AuthenticatedDownloadsRoute: typeof AuthenticatedDownloadsRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedAdminAdsRoute: typeof AuthenticatedAdminAdsRoute
   AuthenticatedAdminCircularsRoute: typeof AuthenticatedAdminCircularsRoute
   AuthenticatedAdminDocumentsRoute: typeof AuthenticatedAdminDocumentsRoute
+  AuthenticatedAdminNewsRoute: typeof AuthenticatedAdminNewsRoute
   AuthenticatedAdminProductsRoute: typeof AuthenticatedAdminProductsRoute
   AuthenticatedAdminSupportRoute: typeof AuthenticatedAdminSupportRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRouteWithChildren
@@ -599,10 +738,13 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdsRequestRoute: AuthenticatedAdsRequestRoute,
+  AuthenticatedDownloadsRoute: AuthenticatedDownloadsRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedAdminAdsRoute: AuthenticatedAdminAdsRoute,
   AuthenticatedAdminCircularsRoute: AuthenticatedAdminCircularsRoute,
   AuthenticatedAdminDocumentsRoute: AuthenticatedAdminDocumentsRoute,
+  AuthenticatedAdminNewsRoute: AuthenticatedAdminNewsRoute,
   AuthenticatedAdminProductsRoute: AuthenticatedAdminProductsRoute,
   AuthenticatedAdminSupportRoute: AuthenticatedAdminSupportRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRouteWithChildren,
@@ -634,10 +776,23 @@ const CatalogRouteChildren: CatalogRouteChildren = {
 const CatalogRouteWithChildren =
   CatalogRoute._addFileChildren(CatalogRouteChildren)
 
+interface NewsRouteChildren {
+  NewsNewsIdRoute: typeof NewsNewsIdRoute
+}
+
+const NewsRouteChildren: NewsRouteChildren = {
+  NewsNewsIdRoute: NewsNewsIdRoute,
+}
+
+const NewsRouteWithChildren = NewsRoute._addFileChildren(NewsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AboutRoute: AboutRoute,
   CatalogRoute: CatalogRouteWithChildren,
+  ContactRoute: ContactRoute,
+  NewsRoute: NewsRouteWithChildren,
   AuthLoginRoute: AuthLoginRoute,
   AuthLoginOtpRoute: AuthLoginOtpRoute,
   AuthRegisterRoute: AuthRegisterRoute,

@@ -16,9 +16,12 @@ export const createProfileSchema = z.object({
   role: z.nativeEnum(UserRole),
   companyName: z.string().min(2).max(150).optional(),
   unitName: z.string().min(2).max(150).optional(),
-  unitType: z.enum(['TYPE_1', 'TYPE_2', 'TYPE_3']).optional(), // ⚠️ باید از کارفرما مشخص شود
+  unitType: z.enum(['COMPANY', 'GUILD', 'PRODUCER', 'TRADER', 'WHOLESALER', 'INDUSTRIAL']).optional(),
   guildCode: z.string().max(20).optional(),
   businessId: z.string().max(30).optional(),
+  producedGoods: z.string().max(500).optional(),       // نام کالاهای تولید شده
+  productIdNumber: z.string().max(50).optional(),      // شماره شناسایی کالای تولیدی
+  singleProduct: z.boolean().optional(),               // نوع کالا: تک‌محصول
   phone: z
     .string()
     .regex(/^0\d{10}$/, 'شماره تلفن ثابت معتبر نیست')

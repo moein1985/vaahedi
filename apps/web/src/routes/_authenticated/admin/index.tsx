@@ -129,6 +129,7 @@ function AdminDashboardPage() {
             { label: 'مدیریت کاربران', href: '/admin/users', icon: '👥' },
             { label: 'تایید مدارک', href: '/admin/documents', icon: '📋' },
             { label: 'تایید محصولات', href: '/admin/products', icon: '📦' },
+            { label: 'مدیریت اخبار', href: '/admin/news', icon: '📰' },
             { label: 'پشتیبانی', href: '/admin/support', icon: '🎫' },
           ] as const
         ).map((item) => (

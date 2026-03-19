@@ -1,23 +1,41 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
+import { useState } from 'react';
 import { Badge } from '../components/ui/badge.js';
 import { Button } from '../components/ui/button.js';
 import { Card, CardContent } from '../components/ui/card.js';
+import { Input } from '../components/ui/input.js';
+import { trpc } from '../trpc.js';
+import { useTranslation } from 'react-i18next';
 
 export const Route = createFileRoute('/')({
   component: HomePage,
 });
 
 export function HomePage() {
+  const { t } = useTranslation();
+  const [nlEmail, setNlEmail] = useState('');
+  const [nlMsg, setNlMsg] = useState('');
+  const subscribe = trpc.news.subscribe.useMutation({
+    onSuccess: (data) => {
+      setNlMsg(data.message);
+      setNlEmail('');
+    },
+    onError: (err) => setNlMsg(err.message),
+  });
+
   return (
     <div dir="rtl">
       {/* Navbar */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-border">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-[var(--brand)] text-white flex items-center justify-center font-black text-sm">ا</div>
-            <span className="font-black text-foreground">واحدی</span>
+            <div className="h-8 w-8 rounded-lg bg-[var(--brand)] text-white flex items-center justify-center font-black text-sm">ت</div>
+            <span className="font-black text-foreground">تجارت هوشمند</span>
           </div>
           <div className="flex items-center gap-3">
+            <Button variant="ghost" asChild><Link to="/news">اخبار</Link></Button>
+            <Button variant="ghost" asChild><Link to="/about">درباره ما</Link></Button>
+            <Button variant="ghost" asChild><Link to="/contact">ارتباط با ما</Link></Button>
             <Button variant="ghost" asChild><Link to="/auth/login">ورود</Link></Button>
             <Button asChild><Link to="/auth/register">ثبت‌نام رایگان</Link></Button>
           </div>
@@ -60,6 +78,42 @@ export function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Newsletter */}
+      <section className="py-16">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <h2 className="text-2xl font-bold text-foreground mb-2">{t('newsletter.subscribe')}</h2>
+          <p className="text-muted-foreground mb-6 text-sm">آخرین اخبار تجاری و بخشنامه‌ها را در ایمیل خود دریافت کنید</p>
+          <div className="flex gap-2 max-w-md mx-auto">
+            <Input
+              type="email"
+              value={nlEmail}
+              onChange={(e) => setNlEmail(e.target.value)}
+              placeholder={t('newsletter.email')}
+              dir="ltr"
+              className="flex-1"
+            />
+            <Button
+              onClick={() => nlEmail && subscribe.mutate({ email: nlEmail })}
+              disabled={subscribe.isPending || !nlEmail}
+            >
+              {subscribe.isPending ? '...' : 'عضویت'}
+            </Button>
+          </div>
+          {nlMsg && (
+            <p className="text-sm mt-3 text-green-600">{nlMsg}</p>
+          )}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-border bg-muted/30 py-10">
+        <div className="max-w-6xl mx-auto px-4 text-center space-y-3">
+          <p className="text-sm font-semibold text-foreground">مرکز توسعه مطالعات و مدیریت بازرگانی متمرکز ایرانیان</p>
+          <p className="text-xs text-muted-foreground">شرکت آماد گستر و انجمن صنفی واردکنندگان و صادرکنندگان کالا و خدمات خراسان رضوی</p>
+          <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} تمامی حقوق محفوظ است</p>
+        </div>
+      </footer>
     </div>
   );
 }

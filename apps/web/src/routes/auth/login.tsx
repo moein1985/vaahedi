@@ -193,9 +193,9 @@ function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--brand)] text-white text-2xl font-black mb-3">و</div>
-          <h1 className="text-2xl font-bold text-foreground">وهدی</h1>
-          <p className="text-muted-foreground text-sm mt-1">مرکز تجارت متمرکز هوشمند</p>
+          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--brand)] text-white text-2xl font-black mb-3">ت</div>
+          <h1 className="text-2xl font-bold text-foreground">تجارت هوشمند</h1>
+          <p className="text-muted-foreground text-sm mt-1">مرکز تجارت متمرکز هوشمند ایرانیان</p>
         </div>
 
         <Card>

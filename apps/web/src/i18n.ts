@@ -93,6 +93,48 @@ const resources = {
       'message.confirmDelete': 'آیا از حذف این مورد اطمینان دارید؟',
       'message.operationSuccess': 'عملیات با موفقیت انجام شد',
       'message.operationFailed': 'عملیات با خطا مواجه شد',
+
+      // Roles
+      'role.TRADER': 'تاجر',
+      'role.PRODUCER': 'تولیدکننده',
+      'role.KNOWLEDGE_BASED': 'دانش‌بنیان',
+      'role.WHOLESALER': 'عمده‌فروش',
+      'role.BROKER': 'کارگزار',
+      'role.INTERMEDIARY': 'شرکت واسط',
+      'role.GUILD': 'صنفی',
+      'role.FARMER': 'کشاورز (تولیدکننده)',
+      'role.INVESTOR': 'سرمایه‌گذار',
+
+      // Document Types
+      'doc.ESTABLISHMENT_NOTICE': 'آگهی تأسیس شرکت',
+      'doc.BOARD_CHANGES': 'تغییرات هیئت مدیره',
+      'doc.OPERATION_LICENSE': 'پروانه بهره‌برداری',
+      'doc.PRODUCTION_LICENSE': 'مجوز تأسیس تولید صنعتی',
+      'doc.GUILD_LICENSE': 'مجوز صنفی معتبر',
+      'doc.KNOWLEDGE_BASED_LICENSE': 'مجوز دانش‌بنیان',
+      'doc.OTHER_LICENSES': 'سایر مجوزهای مرتبط',
+      'doc.ISO_CERTIFICATE': 'گواهی ایزو / استاندارد',
+      'doc.BUSINESS_CARD': 'کارت بازرگانی',
+      'doc.ID_DOCUMENT': 'تصویر مدرک شناسایی',
+
+      // Consultation Categories
+      'consultation.COMMERCIAL': 'بازرگانی',
+      'consultation.TECHNICAL': 'فنی',
+      'consultation.LEGAL': 'حقوقی',
+      'consultation.FINANCIAL': 'مالی',
+
+      // News
+      'news.title': 'اخبار بازرگانی',
+      'news.latest': 'آخرین اخبار',
+      'news.readMore': 'ادامه مطلب',
+      'newsletter.subscribe': 'عضویت در خبرنامه',
+      'newsletter.email': 'آدرس ایمیل',
+      'newsletter.subscribed': 'عضویت شما ثبت شد',
+
+      // Membership Type
+      'membership.INDIVIDUAL': 'حقیقی',
+      'membership.LEGAL': 'حقوقی',
+      'membership.GUILD_MEMBER': 'صنفی',
     },
   },
   en: {
@@ -185,6 +227,48 @@ const resources = {
       'message.confirmDelete': 'Are you sure you want to delete this item?',
       'message.operationSuccess': 'Operation completed successfully',
       'message.operationFailed': 'Operation failed',
+
+      // Roles
+      'role.TRADER': 'Trader',
+      'role.PRODUCER': 'Producer',
+      'role.KNOWLEDGE_BASED': 'Knowledge-Based',
+      'role.WHOLESALER': 'Wholesaler',
+      'role.BROKER': 'Broker',
+      'role.INTERMEDIARY': 'Intermediary',
+      'role.GUILD': 'Guild',
+      'role.FARMER': 'Farmer (Producer)',
+      'role.INVESTOR': 'Investor',
+
+      // Document Types
+      'doc.ESTABLISHMENT_NOTICE': 'Establishment Notice',
+      'doc.BOARD_CHANGES': 'Board Changes',
+      'doc.OPERATION_LICENSE': 'Operation License',
+      'doc.PRODUCTION_LICENSE': 'Production License',
+      'doc.GUILD_LICENSE': 'Guild License',
+      'doc.KNOWLEDGE_BASED_LICENSE': 'Knowledge-Based License',
+      'doc.OTHER_LICENSES': 'Other Licenses',
+      'doc.ISO_CERTIFICATE': 'ISO Certificate',
+      'doc.BUSINESS_CARD': 'Business Card',
+      'doc.ID_DOCUMENT': 'ID Document',
+
+      // Consultation Categories
+      'consultation.COMMERCIAL': 'Commercial',
+      'consultation.TECHNICAL': 'Technical',
+      'consultation.LEGAL': 'Legal',
+      'consultation.FINANCIAL': 'Financial',
+
+      // News
+      'news.title': 'Trade News',
+      'news.latest': 'Latest News',
+      'news.readMore': 'Read More',
+      'newsletter.subscribe': 'Subscribe to Newsletter',
+      'newsletter.email': 'Email Address',
+      'newsletter.subscribed': 'Subscription confirmed',
+
+      // Membership Type
+      'membership.INDIVIDUAL': 'Individual',
+      'membership.LEGAL': 'Legal Entity',
+      'membership.GUILD_MEMBER': 'Guild Member',
     },
   },
 };
