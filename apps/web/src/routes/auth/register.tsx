@@ -299,6 +299,18 @@ function RegisterPage() {
               <input type="checkbox" {...register('agreedToTerms')} className="mt-0.5" />
               قوانین را می‌پذیرم
             </label>
+            <div className="mt-2 rounded-md border border-border bg-muted/40 p-3 text-xs leading-6">
+              <p>
+                با ثبت‌نام در سامانه، متقاضی اقرار می‌کند انجمن صنفی را به‌عنوان
+                حکم مرضی‌الطرفین، ناظر و مشاور قانونی در فرآیندهای خرید، فروش و
+                مشاوره تخصصی می‌پذیرد.
+              </p>
+              <p className="mt-2">
+                همچنین مسئولیت قانونی صحت اطلاعات، مجوزها، استانداردها و محتوای
+                ثبت‌شده کالا/خدمت بر عهده متقاضی است و پذیرش این بندها به‌منزله
+                اقرار الکترونیکی معتبر تلقی می‌شود.
+              </p>
+            </div>
             {errors.agreedToTerms && <p className="field-error">{errors.agreedToTerms.message}</p>}
           </div>
 

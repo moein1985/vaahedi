@@ -1,6 +1,18 @@
 import { z } from 'zod';
 import { CommodityGroup, DeliveryTerms, PaymentMethod, ProductOrigin } from '../enums/index.js';
 
+const dateTimeInputSchema = z
+  .string()
+  .refine(
+    (value) => {
+      if (!value) return false;
+      const iso = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?(Z|[+-]\d{2}:\d{2})?$/.test(value);
+      const local = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value);
+      return iso || local;
+    },
+    'فرمت تاریخ معتبر نیست',
+  );
+
 // ─── Dimensions ──────────────────────────────────────────────────────────────
 
 export const dimensionsSchema = z.object({
@@ -47,8 +59,8 @@ export const createProductSchema = z.object({
   preparationTimeDays: z.number().int().min(1).max(365),
   saleConditions: saleConditionsSchema.optional(),
   paymentMethod: z.nativeEnum(PaymentMethod),
-  productionDate: z.string().datetime().optional(),
-  expiryDate: z.string().datetime().optional(),
+  productionDate: dateTimeInputSchema.optional(),
+  expiryDate: dateTimeInputSchema.optional(),
   isAvailableInStock: z.boolean().default(false),
   description: z.string().max(3000).optional(),
 });

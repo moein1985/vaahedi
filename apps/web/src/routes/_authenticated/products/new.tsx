@@ -36,6 +36,17 @@ const PAYMENT_OPTIONS = [
   { value: PaymentMethod.TT, label: 'TT - حواله بانکی' },
 ];
 
+const PACKAGING_OPTIONS = [
+  { value: 'BULK', label: 'فله' },
+  { value: 'JUMBO_BAG', label: 'جامبوبگ' },
+  { value: 'SACK', label: 'کیسه' },
+  { value: 'TANK', label: 'تانکر' },
+  { value: 'PALLET', label: 'پالت' },
+  { value: 'CARTON', label: 'کارتن' },
+  { value: 'DRUM', label: 'بشکه' },
+  { value: 'OTHER', label: 'سایر' },
+];
+
 function NewProductPage() {
   const navigate = useNavigate();
   const [createdId, setCreatedId] = useState<string | null>(null);
@@ -48,6 +59,7 @@ function NewProductPage() {
     defaultValues: {
       isAvailableInStock: false,
       preparationTimeDays: 7,
+      dimensions: { unit: 'kg' },
     },
   });
 
@@ -195,8 +207,16 @@ function NewProductPage() {
               {errors.hsCode && <p className="field-error">{errors.hsCode.message}</p>}
             </div>
             <div>
+              <label className="label-text">گرید محصول</label>
+              <input {...register('grade')} className="input-field" placeholder="A / Premium / ..." />
+            </div>
+            <div>
               <label className="label-text">کد ISIC</label>
               <input {...register('isicCode')} dir="ltr" className="input-field" placeholder="2411" />
+            </div>
+            <div>
+              <label className="label-text">شناسه کالا/خدمت</label>
+              <input {...register('serviceCode')} dir="ltr" className="input-field" placeholder="SRV-001" />
             </div>
             <div>
               <label className="label-text">گروه کالایی *</label>
@@ -217,6 +237,14 @@ function NewProductPage() {
                 ))}
               </select>
               {errors.origin && <p className="field-error">{errors.origin.message}</p>}
+            </div>
+            <div>
+              <label className="label-text">کشور مبدأ</label>
+              <input {...register('countryOfOrigin')} className="input-field" placeholder="ایران / ترکیه / ..." />
+            </div>
+            <div>
+              <label className="label-text">شماره استاندارد</label>
+              <input {...register('standardNumber')} className="input-field" placeholder="ISIRI / ISO / ..." />
             </div>
           </div>
         </div>
@@ -246,6 +274,15 @@ function NewProductPage() {
               {errors.deliveryTerms && <p className="field-error">{errors.deliveryTerms.message}</p>}
             </div>
             <div>
+              <label className="label-text">نوع بسته‌بندی</label>
+              <select {...register('packagingType')} className="input-field">
+                <option value="">انتخاب کنید...</option>
+                {PACKAGING_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
               <label className="label-text">محل تحویل *</label>
               <input {...register('deliveryLocation')} className="input-field" placeholder="بندر شهید رجایی" />
               {errors.deliveryLocation && <p className="field-error">{errors.deliveryLocation.message}</p>}
@@ -259,6 +296,63 @@ function NewProductPage() {
                 ))}
               </select>
               {errors.paymentMethod && <p className="field-error">{errors.paymentMethod.message}</p>}
+            </div>
+
+            <div>
+              <label className="label-text">وزن</label>
+              <input
+                {...register('dimensions.weight', { setValueAs: (v) => (v === '' ? undefined : Number(v)) })}
+                type="number"
+                step="0.01"
+                min={0}
+                className="input-field"
+                placeholder="0"
+              />
+            </div>
+            <div>
+              <label className="label-text">واحد وزن</label>
+              <select {...register('dimensions.unit')} className="input-field">
+                <option value="kg">کیلوگرم</option>
+                <option value="ton">تن</option>
+                <option value="liter">لیتر</option>
+                <option value="piece">عدد</option>
+                <option value="meter">متر</option>
+                <option value="sqm">مترمربع</option>
+              </select>
+            </div>
+            <div>
+              <label className="label-text">طول (cm)</label>
+              <input
+                {...register('dimensions.length', { setValueAs: (v) => (v === '' ? undefined : Number(v)) })}
+                type="number"
+                step="0.01"
+                min={0}
+                className="input-field"
+              />
+            </div>
+            <div>
+              <label className="label-text">عرض (cm)</label>
+              <input
+                {...register('dimensions.width', { setValueAs: (v) => (v === '' ? undefined : Number(v)) })}
+                type="number"
+                step="0.01"
+                min={0}
+                className="input-field"
+              />
+            </div>
+            <div>
+              <label className="label-text">ارتفاع (cm)</label>
+              <input
+                {...register('dimensions.height', { setValueAs: (v) => (v === '' ? undefined : Number(v)) })}
+                type="number"
+                step="0.01"
+                min={0}
+                className="input-field"
+              />
+            </div>
+            <div className="flex items-center gap-2 mt-7">
+              <input id="inStock" type="checkbox" {...register('isAvailableInStock')} className="h-4 w-4" />
+              <label htmlFor="inStock" className="text-sm text-gray-700">موجود در انبار</label>
             </div>
           </div>
         </div>
@@ -285,6 +379,42 @@ function NewProductPage() {
                 className="input-field resize-none"
                 placeholder="توضیحات بیشتر در مورد محصول ..."
               />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="label-text">درصد پیش‌پرداخت</label>
+                <input
+                  {...register('saleConditions.advancePercent', { setValueAs: (v) => (v === '' ? undefined : Number(v)) })}
+                  type="number"
+                  min={0}
+                  max={100}
+                  className="input-field"
+                  placeholder="مثال: 30"
+                />
+              </div>
+              <div>
+                <label className="label-text">درصد هنگام تحویل</label>
+                <input
+                  {...register('saleConditions.onDeliveryPercent', { setValueAs: (v) => (v === '' ? undefined : Number(v)) })}
+                  type="number"
+                  min={0}
+                  max={100}
+                  className="input-field"
+                  placeholder="مثال: 70"
+                />
+              </div>
+              {(errors as any).saleConditions?.message && (
+                <p className="field-error col-span-2">{(errors as any).saleConditions.message}</p>
+              )}
+              <div>
+                <label className="label-text">تاریخ تولید</label>
+                <input {...register('productionDate')} type="datetime-local" className="input-field" />
+              </div>
+              <div>
+                <label className="label-text">تاریخ انقضا</label>
+                <input {...register('expiryDate')} type="datetime-local" className="input-field" />
+              </div>
             </div>
           </div>
         </div>

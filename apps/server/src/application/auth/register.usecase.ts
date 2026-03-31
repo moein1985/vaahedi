@@ -39,10 +39,8 @@ export class RegisterUseCase {
     }
 
     // ۳. تولید کد کاربری
-    // ⚠️ نگاشت activityCode و commodityCode از کارفرما دریافت می‌شود
-    // فعلاً با مقادیر پیش‌فرض
     const activityCode = this.getActivityCode(input.role);
-    const commodityCode = '00'; // ⚠️ باید از پروفایل گرفته شود
+    const commodityCode = this.getCommodityCode(input);
     const prefix = buildUserCodePrefix(activityCode, commodityCode);
     const count = await this.userRepository.countByPrefix(prefix);
     const userCode = `${prefix}${String(count + 1).padStart(4, '0')}`;
@@ -81,7 +79,6 @@ export class RegisterUseCase {
   }
 
   private getActivityCode(role: string): string {
-    // ⚠️ این جدول باید از کارفرما تکمیل شود
     const map: Record<string, string> = {
       TRADER: '01',
       PRODUCER: '02',
@@ -90,7 +87,16 @@ export class RegisterUseCase {
       BROKER: '05',
       INTERMEDIARY: '06',
       GUILD: '07',
+      FARMER: '08',
+      INVESTOR: '09',
     };
     return map[role] ?? '00';
+  }
+
+  private getCommodityCode(input: RegisterInput): string {
+    if (input.membershipType === MembershipType.GUILD_MEMBER) return '03';
+    if (input.membershipType === MembershipType.LEGAL) return '02';
+    if (input.membershipType === MembershipType.INDIVIDUAL) return '01';
+    return '00';
   }
 }

@@ -151,12 +151,17 @@ export const productRouter = router({
         minOrderQuantity: input.minOrderQuantity,
         preparationTimeDays: input.preparationTimeDays,
         paymentMethod: input.paymentMethod,
+        advancePercent: input.saleConditions?.advancePercent ?? null,
+        onDeliveryPercent: input.saleConditions?.onDeliveryPercent ?? null,
+        productionDate: input.productionDate ? new Date(input.productionDate) : null,
+        expiryDate: input.expiryDate ? new Date(input.expiryDate) : null,
         description: input.description,
         isAvailableInStock: input.isAvailableInStock,
         weightKg: input.dimensions?.weight ?? null,
         lengthCm: input.dimensions?.length ?? null,
         widthCm: input.dimensions?.width ?? null,
         heightCm: input.dimensions?.height ?? null,
+        weightUnit: input.dimensions?.unit ?? 'kg',
       },
     });
 
