@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/ca
 import { Input } from '../../components/ui/input.js';
 import { Button } from '../../components/ui/button.js';
 import { cn } from '../../lib/utils.js';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/auth/register')({
   component: RegisterPage,
@@ -42,7 +43,7 @@ function RegisterPage() {
       void navigate({ to: '/dashboard' });
     },
     onError: (error) => {
-      alert(`خطا: ${error.message}`);
+      toast.error(`خطا: ${error.message}`);
     },
   });
 
@@ -75,7 +76,7 @@ function RegisterPage() {
 
   const onSubmit = (data: RegisterInput) => {
     if (requiresCaptcha && !captchaToken) {
-      alert('لطفاً captcha را تأیید کنید');
+      toast.warning('لطفاً captcha را تأیید کنید');
       return;
     }
     registerMutation.mutate(data);
@@ -86,7 +87,7 @@ function RegisterPage() {
     const message = firstError && typeof firstError === 'object' && 'message' in firstError
       ? String(firstError.message)
       : 'لطفاً فیلدهای فرم را کامل و صحیح وارد کنید';
-    alert(`خطای فرم: ${message}`);
+    toast.error(`خطای فرم: ${message}`);
   };
 
   return (

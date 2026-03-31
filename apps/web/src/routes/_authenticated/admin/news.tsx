@@ -4,6 +4,7 @@ import { trpc } from '../../../trpc.js';
 import { Button } from '../../../components/ui/button.js';
 import { Input } from '../../../components/ui/input.js';
 import { Badge } from '../../../components/ui/badge.js';
+import { useConfirm } from '../../../components/ui/confirm-dialog.js';
 
 export const Route = createFileRoute('/_authenticated/admin/news')({
   component: AdminNewsPage,
@@ -11,6 +12,7 @@ export const Route = createFileRoute('/_authenticated/admin/news')({
 
 function AdminNewsPage() {
   const utils = trpc.useUtils();
+  const { confirm, dialog: confirmDialog } = useConfirm();
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -321,9 +323,9 @@ function AdminNewsPage() {
                     ✏️
                   </button>
                   <button
-                    onClick={() => {
-                      if (confirm('آیا از حذف این خبر مطمئن هستید؟'))
-                        deleteNews.mutate({ id: item.id });
+                    onClick={async () => {
+                      const ok = await confirm({ title: 'آیا از حذف این خبر مطمئن هستید؟', variant: 'destructive' });
+                      if (ok) deleteNews.mutate({ id: item.id });
                     }}
                     className="text-red-500 hover:bg-red-50 p-2 rounded-lg text-sm"
                   >
@@ -358,6 +360,7 @@ function AdminNewsPage() {
           </button>
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 }

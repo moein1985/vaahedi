@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { trpc } from '../../../trpc.js';
 import { VerificationStatus } from '@repo/shared';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/_authenticated/admin/documents')({
   component: AdminDocumentsPage,
@@ -10,7 +11,11 @@ function AdminDocumentsPage() {
   const utils = trpc.useUtils();
   const { data, isLoading } = trpc.admin.pendingDocuments.useQuery({ page: 1, limit: 20 });
   const verifyDoc = trpc.admin.verifyDocument.useMutation({
-    onSuccess: () => void utils.admin.pendingDocuments.invalidate(),
+    onSuccess: (_, vars) => {
+      void utils.admin.pendingDocuments.invalidate();
+      toast.success(vars.status === VerificationStatus.APPROVED ? 'مدرک تایید شد' : 'مدرک رد شد');
+    },
+    onError: (err) => toast.error(err.message),
   });
 
   return (
@@ -29,7 +34,8 @@ function AdminDocumentsPage() {
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[600px]">
             <thead className="bg-gray-50">
               <tr>
                 <th className="text-right px-4 py-3 font-medium text-gray-700">کاربر</th>
@@ -84,6 +90,7 @@ function AdminDocumentsPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>

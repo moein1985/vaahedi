@@ -6,3 +6,6 @@ export * from './separator.js';
 export * from './input.js';
 export * from './progress.js';
 export * from './avatar.js';
+export * from './dialog.js';
+export * from './toaster.js';
+export * from './confirm-dialog.js';

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { trpc } from '../../../trpc.js';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/_authenticated/admin/products')({
   component: AdminProductsPage,
@@ -18,11 +19,13 @@ function AdminProductsPage() {
   });
 
   const review = trpc.admin.reviewProduct.useMutation({
-    onSuccess: () => {
+    onSuccess: (_, vars) => {
       void utils.admin.pendingProducts.invalidate();
       setRejectId(null);
       setRejectReason('');
+      toast.success(vars.approved ? 'محصول تایید شد' : 'محصول رد شد');
     },
+    onError: (err) => toast.error(err.message),
   });
 
   const products = data?.items ?? [];

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { trpc } from '../../../trpc.js';
 import { UserStatus } from '@repo/shared';
+import { toast } from 'sonner';
+import { useConfirm } from '../../../components/ui/confirm-dialog.js';
 
 export const Route = createFileRoute('/_authenticated/admin/users')({
   component: AdminUsersPage,
@@ -26,6 +28,7 @@ function AdminUsersPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('');
   const utils = trpc.useUtils();
+  const { confirm, dialog: confirmDialog } = useConfirm();
 
   const { data, isLoading } = trpc.admin.userList.useQuery({
     page,
@@ -35,17 +38,21 @@ function AdminUsersPage() {
   });
 
   const updateStatus = trpc.admin.updateUserStatus.useMutation({
-    onSuccess: () => void utils.admin.userList.invalidate(),
+    onSuccess: () => {
+      void utils.admin.userList.invalidate();
+      toast.success('وضعیت کاربر به‌روز شد');
+    },
+    onError: (err) => toast.error(err.message),
   });
 
   return (
     <div className="p-6" dir="rtl">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">مدیریت کاربران</h1>
           <p className="text-gray-500 text-sm mt-1">لیست کلیه کاربران سیستم</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-2 sm:gap-3">
           <select
             value={statusFilter}
             onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
@@ -71,7 +78,8 @@ function AdminUsersPage() {
         {isLoading ? (
           <div className="text-center py-16 text-gray-400">در حال بارگذاری...</div>
         ) : (
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[600px]">
             <thead className="bg-gray-50">
               <tr>
                 <th className="text-right px-4 py-3 font-medium text-gray-700">موبایل</th>
@@ -106,12 +114,17 @@ function AdminUsersPage() {
                     <select
                       value={user.status}
                       disabled={updateStatus.isPending}
-                      onChange={(e) =>
-                        updateStatus.mutate({
-                          userId: user.id,
-                          status: e.target.value as UserStatus,
-                        })
-                      }
+                      onChange={async (e) => {
+                        const newStatus = e.target.value as UserStatus;
+                        if (newStatus === 'SUSPENDED' || newStatus === 'REJECTED') {
+                          const ok = await confirm({
+                            title: `آیا از تغییر وضعیت به ${STATUS_LABELS[newStatus]} اطمینان دارید؟`,
+                            variant: 'destructive',
+                          });
+                          if (!ok) { e.target.value = user.status; return; }
+                        }
+                        updateStatus.mutate({ userId: user.id, status: newStatus });
+                      }}
                       className="text-xs border border-gray-200 rounded px-2 py-1 focus:outline-none"
                     >
                       {Object.values(UserStatus).map((s) => (
@@ -123,6 +136,7 @@ function AdminUsersPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 
@@ -147,6 +161,7 @@ function AdminUsersPage() {
           </button>
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 }

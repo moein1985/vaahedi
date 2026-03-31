@@ -9,6 +9,7 @@ import { Input } from '../../../components/ui/input.js';
 import { Button } from '../../../components/ui/button.js';
 import { Badge } from '../../../components/ui/badge.js';
 import { cn } from '../../../lib/utils.js';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/_authenticated/profile/')({
   component: ProfilePage,
@@ -86,7 +87,11 @@ function ProfilePage() {
   const utils = trpc.useUtils();
 
   const upsert = trpc.profile.upsert.useMutation({
-    onSuccess: () => void utils.profile.me.invalidate(),
+    onSuccess: () => {
+      void utils.profile.me.invalidate();
+      toast.success('پروفایل با موفقیت ذخیره شد');
+    },
+    onError: (err) => toast.error(err.message),
   });
 
   // ── Document upload ────────────────────────────────────────────────────────
@@ -376,6 +381,7 @@ function ProfilePage() {
                 className="w-full"
                 dir="ltr"
               />
+              <p className="text-[11px] text-gray-400 mt-0.5">۱۰ رقم بدون خط تیره</p>
               {errors.address?.postalCode && <p className="text-red-500 text-xs mt-1">{errors.address.postalCode.message}</p>}
             </div>
           </div>
@@ -460,17 +466,7 @@ function ProfilePage() {
           />
         </div>
 
-        {upsert.error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-600">
-            {upsert.error.message}
-          </div>
-        )}
-
-        {upsert.isSuccess && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700">
-            پروفایل با موفقیت ذخیره شد
-          </div>
-        )}
+        {upsert.error && !upsert.error.message && null}
 
         <div className="flex gap-3">
           <button

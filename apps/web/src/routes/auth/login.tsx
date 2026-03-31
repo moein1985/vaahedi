@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/ca
 import { Input } from '../../components/ui/input.js';
 import { Button } from '../../components/ui/button.js';
 import { cn } from '../../lib/utils.js';
+import { toast } from 'sonner';
 
 const otpLoginSchema = z.object({
   mobile: z.string().regex(/^09[0-9]{9}$/, 'شماره همراه معتبر نیست'),
@@ -108,10 +109,10 @@ function LoginPage() {
 
   const sendOtpMutation = trpc.auth.sendOtp.useMutation({
     onSuccess: () => {
-      alert('کد OTP به شماره موبایل شما ارسال شد');
+      toast.success('کد OTP به شماره موبایل شما ارسال شد');
     },
     onError: (error) => {
-      alert(`خطا: ${error.message}`);
+      toast.error(`خطا: ${error.message}`);
     },
   });
 
@@ -164,7 +165,7 @@ function LoginPage() {
 
   const onSubmitUserCode = (data: LoginInput) => {
     if (requiresCaptcha && !captchaToken) {
-      alert('لطفاً captcha را تأیید کنید');
+      toast.warning('لطفاً captcha را تأیید کنید');
       return;
     }
     loginMutation.mutate({ ...data, captchaToken: captchaToken || 'test-token' });
@@ -172,7 +173,7 @@ function LoginPage() {
 
   const onSubmitEmail = (data: LoginWithEmailInput) => {
     if (requiresCaptcha && !captchaToken) {
-      alert('لطفاً captcha را تأیید کنید');
+      toast.warning('لطفاً captcha را تأیید کنید');
       return;
     }
     loginWithEmailMutation.mutate({ ...data, captchaToken: captchaToken || 'test-token' });

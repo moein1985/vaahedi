@@ -5,6 +5,7 @@ import { useRef, useState } from 'react';
 import { trpc } from '../../../trpc.js';
 import { createProductSchema, CommodityGroup, ProductOrigin, DeliveryTerms, PaymentMethod } from '@repo/shared';
 import type { z } from 'zod';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/_authenticated/products/new')({
   component: NewProductPage,
@@ -50,6 +51,7 @@ const PACKAGING_OPTIONS = [
 function NewProductPage() {
   const navigate = useNavigate();
   const [createdId, setCreatedId] = useState<string | null>(null);
+  const [step, setStep] = useState(1);
   const [mediaFiles, setMediaFiles] = useState<{ name: string; status: 'pending' | 'uploading' | 'done' | 'error' }[]>([]);
   const [uploadingMedia, setUploadingMedia] = useState(false);
   const mediaInputRef = useRef<HTMLInputElement>(null);
@@ -64,7 +66,11 @@ function NewProductPage() {
   });
 
   const createMutation = trpc.product.create.useMutation({
-    onSuccess: (data) => setCreatedId(data.id),
+    onSuccess: (data) => {
+      setCreatedId(data.id);
+      toast.success('محصول با موفقیت ثبت شد');
+    },
+    onError: (err) => toast.error(err.message),
   });
 
   const uploadMedia = trpc.product.uploadMedia.useMutation();
@@ -186,8 +192,30 @@ function NewProductPage() {
         <p className="text-gray-500 text-sm mt-1">مشخصات محصول یا کالای خود را وارد کنید</p>
       </div>
 
+      {/* Stepper */}
+      <div className="flex items-center gap-2 mb-6">
+        {[
+          { n: 1, label: 'اطلاعات پایه' },
+          { n: 2, label: 'اطلاعات تجاری' },
+          { n: 3, label: 'مشخصات فنی' },
+        ].map(({ n, label }, i) => (
+          <div key={n} className="flex items-center gap-2 flex-1">
+            <button
+              type="button"
+              onClick={() => setStep(n)}
+              className={`shrink-0 w-8 h-8 rounded-full text-sm font-bold flex items-center justify-center transition-colors ${step === n ? 'bg-[var(--brand)] text-white' : step > n ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'}`}
+            >
+              {step > n ? '✓' : n}
+            </button>
+            <span className={`text-xs hidden sm:inline ${step === n ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>{label}</span>
+            {i < 2 && <div className={`flex-1 h-0.5 ${step > n ? 'bg-green-400' : 'bg-gray-200'}`} />}
+          </div>
+        ))}
+      </div>
+
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        {/* Basic info */}
+        {/* Step 1: Basic info */}
+        <div className={step !== 1 ? 'hidden' : ''}>
         <div className="bg-white border border-gray-100 rounded-xl p-5">
           <h2 className="font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-50">اطلاعات پایه</h2>
           <div className="grid grid-cols-2 gap-4">
@@ -204,6 +232,7 @@ function NewProductPage() {
             <div>
               <label className="label-text">کد HS (تعرفه گمرکی) *</label>
               <input {...register('hsCode')} dir="ltr" className="input-field" placeholder="3906100000" />
+              <p className="text-[11px] text-gray-400 mt-0.5">کد ۸ تا ۱۰ رقمی تعرفه گمرکی</p>
               {errors.hsCode && <p className="field-error">{errors.hsCode.message}</p>}
             </div>
             <div>
@@ -213,6 +242,7 @@ function NewProductPage() {
             <div>
               <label className="label-text">کد ISIC</label>
               <input {...register('isicCode')} dir="ltr" className="input-field" placeholder="2411" />
+              <p className="text-[11px] text-gray-400 mt-0.5">طبقه‌بندی بین‌المللی فعالیت اقتصادی</p>
             </div>
             <div>
               <label className="label-text">شناسه کالا/خدمت</label>
@@ -248,14 +278,17 @@ function NewProductPage() {
             </div>
           </div>
         </div>
+        </div>
 
-        {/* Trade info */}
+        {/* Step 2: Trade info */}
+        <div className={step !== 2 ? 'hidden' : ''}>
         <div className="bg-white border border-gray-100 rounded-xl p-5">
           <h2 className="font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-50">اطلاعات تجاری</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="label-text">حداقل مقدار سفارش *</label>
               <input {...register('minOrderQuantity')} className="input-field" placeholder="۱۰۰ کیلوگرم" />
+              <p className="text-[11px] text-gray-400 mt-0.5">عدد + واحد (مثلاً: ۱۰۰ کیلوگرم)</p>
               {errors.minOrderQuantity && <p className="field-error">{errors.minOrderQuantity.message}</p>}
             </div>
             <div>
@@ -356,8 +389,10 @@ function NewProductPage() {
             </div>
           </div>
         </div>
+        </div>
 
-        {/* Details */}
+        {/* Step 3: Details */}
+        <div className={step !== 3 ? 'hidden' : ''}>
         <div className="bg-white border border-gray-100 rounded-xl p-5">
           <h2 className="font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-50">مشخصات تکنیکی</h2>
           <div className="space-y-4">
@@ -424,19 +459,40 @@ function NewProductPage() {
             {createMutation.error.message}
           </div>
         )}
+        </div>
 
+        {/* Step Navigation */}
         <div className="flex gap-3">
-          <button
-            type="submit"
-            disabled={createMutation.isPending}
-            className="btn-primary disabled:opacity-50"
-          >
-            {createMutation.isPending ? 'در حال ثبت...' : 'ثبت محصول'}
-          </button>
+          {step > 1 && (
+            <button
+              type="button"
+              onClick={() => setStep((s) => s - 1)}
+              className="px-4 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50"
+            >
+              مرحله قبل
+            </button>
+          )}
+          {step < 3 ? (
+            <button
+              type="button"
+              onClick={() => setStep((s) => s + 1)}
+              className="btn-primary"
+            >
+              مرحله بعد
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={createMutation.isPending}
+              className="btn-primary disabled:opacity-50"
+            >
+              {createMutation.isPending ? 'در حال ثبت...' : 'ثبت محصول'}
+            </button>
+          )}
           <button
             type="button"
             onClick={() => navigate({ to: '/products' })}
-            className="px-4 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50"
+            className="px-4 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 mr-auto"
           >
             انصراف
           </button>

@@ -14,6 +14,7 @@ import { Badge } from '../components/ui/badge.js';
 import { Progress } from '../components/ui/progress.js';
 import { Avatar, AvatarFallback } from '../components/ui/avatar.js';
 import { Separator } from '../components/ui/separator.js';
+import { ThemeToggle } from '../components/theme-toggle.js';
 import { useTranslation } from 'react-i18next';
 
 export const Route = createFileRoute('/_authenticated')({
@@ -193,6 +194,7 @@ function Sidebar({ isAdmin }: { isAdmin: boolean }) {
       {/* Bottom */}
       <div className={cn('border-t border-border p-2 space-y-1', collapsed && 'flex flex-col items-center')}>
         <NavItem href="/profile" icon={User} label="پروفایل" collapsed={collapsed} />
+        <ThemeToggle collapsed={collapsed} />
         <button
           onClick={() => logoutMutation.mutate()}
           className={cn(
@@ -200,6 +202,7 @@ function Sidebar({ isAdmin }: { isAdmin: boolean }) {
             collapsed && 'justify-center px-2 w-10 h-10'
           )}
           title={collapsed ? 'خروج' : undefined}
+          aria-label="خروج از حساب"
         >
           <LogOut className="h-4 w-4 shrink-0" />
           {!collapsed && <span>خروج</span>}
@@ -209,6 +212,7 @@ function Sidebar({ isAdmin }: { isAdmin: boolean }) {
       {/* Toggle Button */}
       <button
         onClick={() => setCollapsed(!collapsed)}
+        aria-label={collapsed ? 'باز کردن منو' : 'جمع کردن منو'}
         className="absolute top-1/2 -translate-y-1/2 -left-3 h-6 w-6 rounded-full border border-border bg-card text-muted-foreground hover:text-foreground flex items-center justify-center shadow-sm transition-all hover:shadow-md z-10"
         style={{ position: 'sticky', bottom: 80, alignSelf: 'flex-end', margin: '0 8px 8px' }}
       >
@@ -236,7 +240,7 @@ function TopHeader() {
         <span className="text-sm font-black text-foreground">تجارت هوشمند</span>
       </div>
       <div className="flex items-center gap-2">
-        <Link to="/notifications" className="relative p-2 text-muted-foreground hover:text-foreground transition-colors">
+        <Link to="/notifications" className="relative p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="اعلان‌ها">
           <Bell className="h-5 w-5" />
           {unreadCount && unreadCount > 0 && (
             <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
@@ -252,6 +256,7 @@ function TopHeader() {
           size="icon"
           onClick={() => logoutMutation.mutate()}
           className="h-8 w-8 text-muted-foreground hover:text-red-600"
+          aria-label="خروج از حساب"
         >
           <LogOut className="h-4 w-4" />
         </Button>
@@ -334,7 +339,9 @@ function AuthenticatedLayout() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <TopHeader />
         <main className="flex-1 overflow-y-auto pb-20 lg:pb-6">
-          <Outlet />
+          <div key={location.pathname} className="page-enter">
+            <Outlet />
+          </div>
         </main>
       </div>
       <MobileNav />
