@@ -49,7 +49,7 @@ export function HomePage() {
       nav: { home: 'خانه', about: 'درباره ما', products: 'کالاها', news: 'اخبار', contact: 'ارتباط' },
       heroSlides: [
         {
-          title: 'VAAHEDI TRADE HUB',
+          title: 'انجمن صادرکنندگان و واردکنندگان',
           subtitle: 'شبکه تجارت صادرات و واردات',
           desc: 'به شبکه ای از تجار بین المللی متصل شوید و محصولات خود را در بازارهای جدید عرضه کنید.',
           ctaText: 'درخواست همکاری',
@@ -74,7 +74,7 @@ export function HomePage() {
         },
       ] as const,
       heroProductsCta: 'مشاهده کالاها',
-      introTitle: 'VAAHEDI TRADE HUB',
+      introTitle: 'انجمن صنفی کارفرمایی صادرکنندگان و واردکنندگان',
       introText: 'ما یک پلتفرم یکپارچه برای تسهیل صادرات و واردات هستیم. با اتصال تامین کنندگان، تولیدکنندگان و خریداران، فرآیندهای پیچیده تجارت بین الملل را ساده و قابل مدیریت می کنیم.',
       introMore: 'بیشتر درباره ما',
       whyTitle: 'چرا ما را انتخاب کنید؟',
@@ -106,7 +106,7 @@ export function HomePage() {
       subscribeBtn: 'عضویت',
       footer: {
         about: 'درباره ما',
-        aboutDesc: 'واهدی به عنوان ترمینال صادرات و واردات، فرآیند تجارت بین الملل را برای کسب وکارها ساده می کند.',
+        aboutDesc: 'انجمن صنفی کارفرمایی صادرکنندگان و واردکنندگان کالا و خدمات، به عنوان مرجع تسهیل تجارت، فرآیندهای بین المللی را برای کسب وکارها ساده می کند.',
         goods: 'کالاها',
         services: 'خدمات',
         contact: 'تماس',
@@ -124,7 +124,7 @@ export function HomePage() {
       nav: { home: 'Home', about: 'About', products: 'Products', news: 'News', contact: 'Contact' },
       heroSlides: [
         {
-          title: 'VAAHEDI TRADE HUB',
+          title: 'EXPORTERS & IMPORTERS ASSOCIATION',
           subtitle: 'Export and Import Trade Network',
           desc: 'Connect with international traders and present your products in new markets with confidence.',
           ctaText: 'Partnership Request',
@@ -149,7 +149,7 @@ export function HomePage() {
         },
       ] as const,
       heroProductsCta: 'Browse Products',
-      introTitle: 'VAAHEDI TRADE HUB',
+      introTitle: 'Employers Association of Exporters and Importers',
       introText: 'We provide an integrated platform for export and import. By connecting suppliers, producers, and buyers, we make international trade workflows simpler and more manageable.',
       introMore: 'Learn More',
       whyTitle: 'Why Choose Us?',
@@ -181,7 +181,7 @@ export function HomePage() {
       subscribeBtn: 'Subscribe',
       footer: {
         about: 'About',
-        aboutDesc: 'Vaahedi, as an export and import terminal, simplifies global trade operations for businesses.',
+        aboutDesc: 'The Employers Association of Exporters and Importers simplifies global trade operations for businesses.',
         goods: 'Products',
         services: 'Services',
         contact: 'Contact',
@@ -199,7 +199,7 @@ export function HomePage() {
       nav: { home: 'الرئيسية', about: 'من نحن', products: 'المنتجات', news: 'الأخبار', contact: 'تواصل معنا' },
       heroSlides: [
         {
-          title: 'VAAHEDI TRADE HUB',
+          title: 'جمعية المصدرين والمستوردين',
           subtitle: 'شبكة تجارة الاستيراد والتصدير',
           desc: 'اتصل بالتجار الدوليين واعرض منتجاتك في أسواق جديدة بثقة عالية.',
           ctaText: 'طلب شراكة',
@@ -224,7 +224,7 @@ export function HomePage() {
         },
       ] as const,
       heroProductsCta: 'تصفح المنتجات',
-      introTitle: 'VAAHEDI TRADE HUB',
+      introTitle: 'جمعية أصحاب العمل للمصدرين والمستوردين',
       introText: 'نقدم منصة متكاملة لتسهيل التصدير والاستيراد. من خلال ربط الموردين والمنتجين والمشترين، نجعل مسارات التجارة الدولية أكثر بساطة وكفاءة.',
       introMore: 'المزيد عنا',
       whyTitle: 'لماذا نحن؟',
@@ -256,7 +256,7 @@ export function HomePage() {
       subscribeBtn: 'اشتراك',
       footer: {
         about: 'من نحن',
-        aboutDesc: 'واحدي، كمحطة للتصدير والاستيراد، تبسّط عمليات التجارة الدولية للشركات.',
+        aboutDesc: 'جمعية أصحاب العمل للمصدرين والمستوردين تسهّل عمليات التجارة الدولية للشركات.',
         goods: 'المنتجات',
         services: 'الخدمات',
         contact: 'التواصل',
@@ -268,6 +268,12 @@ export function HomePage() {
   } as const;
 
   const content = pageCopy[language];
+  const officialBrandNameFa = 'انجمن صنفی کارفرمایی صادرکنندگان و واردکنندگان کالا و خدمات';
+  const officialBrandNameByLanguage = {
+    fa: 'انجمن صنفی کارفرمایی صادرکنندگان و واردکنندگان کالا و خدمات',
+    en: 'Employers Association of Exporters and Importers of Goods and Services',
+    ar: 'جمعية أصحاب العمل للمصدرين والمستوردين للسلع والخدمات',
+  } as const;
 
   const heroSlides = content.heroSlides;
   const categories = content.categories;
@@ -309,11 +315,19 @@ export function HomePage() {
           </div>
         </div>
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-slate-900 via-slate-700 to-cyan-700 text-white flex items-center justify-center font-black text-sm">VH</div>
-            <div>
-              <p className="text-xs text-muted-foreground leading-none">VAAHEDI</p>
-              <p className="font-black text-foreground leading-none mt-1">Trade Hub</p>
+          <Link to="/" className="flex items-center gap-3 min-w-0">
+            <img
+              src="/brand/logo.jpg"
+              alt={officialBrandNameFa}
+              className="h-14 w-auto rounded-md border border-slate-200 bg-white object-contain"
+            />
+            <div className="min-w-0">
+              <p className="text-[11px] text-muted-foreground leading-5 line-clamp-2">
+                {officialBrandNameFa}
+              </p>
+              <p className="text-[10px] text-slate-500 leading-none mt-1 line-clamp-1">
+                {officialBrandNameByLanguage[language]}
+              </p>
             </div>
           </Link>
           <div className="hidden md:flex items-center gap-3 text-xs">
@@ -418,7 +432,7 @@ export function HomePage() {
       {/* Terminal Banner */}
       <section className="py-14 bg-slate-900 text-white text-center">
         <div className="max-w-5xl mx-auto px-4">
-          <p className="uppercase tracking-[0.16em] text-xs text-slate-300">VAAHEDI</p>
+          <p className="tracking-[0.03em] text-xs text-slate-300">{officialBrandNameFa}</p>
           <h2 className="text-3xl lg:text-4xl font-black mt-2">{content.terminalTitle}</h2>
         </div>
       </section>
@@ -553,11 +567,11 @@ export function HomePage() {
             <h4 className="font-bold text-white mb-3">{content.footer.contact}</h4>
             <p className="text-xs text-slate-300 leading-7">{content.footer.city}</p>
             <p className="text-xs text-slate-300">+98 21 0000 0000</p>
-            <p className="text-xs text-slate-300">info@vaahedi.ir</p>
+            <p className="text-xs text-slate-300">contact@eikhs.ir</p>
           </div>
         </div>
         <div className="max-w-6xl mx-auto px-4 mt-8 pt-5 border-t border-slate-700 text-center text-xs text-slate-400">
-          © {new Date().getFullYear()} Vaahedi - All rights reserved.
+          © {new Date().getFullYear()} {officialBrandNameFa}
         </div>
       </footer>
     </div>

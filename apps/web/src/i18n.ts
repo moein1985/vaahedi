@@ -140,7 +140,7 @@ const resources = {
   en: {
     translation: {
       // Common
-      'app.name': 'Vaahedi',
+      'app.name': 'Exporters and Importers Association',
       'app.description': 'Iranian Smart Centralized Trade Center',
       'loading': 'Loading...',
       'error': 'Error',

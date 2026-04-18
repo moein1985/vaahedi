@@ -87,7 +87,7 @@ function CatalogPage() {
     },
     en: {
       title: 'Product Catalog',
-      titleSeo: 'Product Catalog | Vaahedi Trade Platform',
+      titleSeo: 'Product Catalog | Employers Association of Exporters and Importers',
       descriptionSeo: 'Search and explore industrial, chemical and commercial products from verified suppliers.',
       heroTitle: 'Smart Catalog for Export & Import Products',
       heroDesc: 'Filter products by commodity group, origin, HS code and name, then access details instantly.',
@@ -155,6 +155,12 @@ function CatalogPage() {
   const commodityLabels = COMMODITY_LABELS[language];
   const originLabels = ORIGIN_LABELS[language];
   const SORT_OPTIONS = content.sortOptions;
+  const officialBrandNameFa = 'انجمن صنفی کارفرمایی صادرکنندگان و واردکنندگان کالا و خدمات';
+  const officialBrandNameByLanguage = {
+    fa: 'انجمن صنفی کارفرمایی صادرکنندگان و واردکنندگان کالا و خدمات',
+    en: 'Employers Association of Exporters and Importers of Goods and Services',
+    ar: 'جمعية أصحاب العمل للمصدرين والمستوردين للسلع والخدمات',
+  } as const;
 
   const [q, setQ] = useState('');
   const [search, setSearch] = useState('');
@@ -195,11 +201,15 @@ function CatalogPage() {
       {/* Header */}
       <header className="bg-white/95 border-b border-gray-200 sticky top-0 z-10 backdrop-blur">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-          <Link to="/" className="flex items-center gap-2 shrink-0">
-            <div className="h-9 w-9 rounded-full bg-gradient-to-br from-slate-900 via-slate-700 to-cyan-700 text-white flex items-center justify-center text-xs font-black">VH</div>
-            <div>
-              <p className="text-[11px] text-gray-500 leading-none">VAAHEDI</p>
-              <p className="text-sm font-bold text-gray-900 leading-none mt-1">{content.catalogLabel}</p>
+          <Link to="/" className="flex items-center gap-3 shrink-0 min-w-0">
+            <img
+              src="/brand/logo.jpg"
+              alt={officialBrandNameFa}
+              className="h-12 w-auto rounded-md border border-slate-200 bg-white object-contain"
+            />
+            <div className="min-w-0">
+              <p className="text-[11px] text-gray-600 leading-5 line-clamp-2">{officialBrandNameFa}</p>
+              <p className="text-[10px] text-gray-500 leading-none mt-1 line-clamp-1">{officialBrandNameByLanguage[language]}</p>
             </div>
           </Link>
           <form onSubmit={handleSearch} className="flex gap-2 flex-1 max-w-xl">
