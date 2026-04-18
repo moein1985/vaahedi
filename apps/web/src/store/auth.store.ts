@@ -47,7 +47,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'vaahedi-auth',
+      name: 'trade-association-auth',
       // user و isAuthenticated را ذخیره می‌کنیم؛ accessToken را نه (امنیت)
       partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
       onRehydrateStorage: () => (state) => {
