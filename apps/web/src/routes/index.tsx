@@ -277,6 +277,8 @@ export function HomePage() {
 
   const heroSlides = content.heroSlides;
   const categories = content.categories;
+  const prevArrow = isRtl ? '›' : '‹';
+  const nextArrow = isRtl ? '‹' : '›';
 
   const currentSlide = heroSlides[heroIndex] ?? heroSlides[0];
   const latestNews = (news.data ?? []) as Array<{ id: string; title: string; summary: string | null }>;
@@ -317,15 +319,15 @@ export function HomePage() {
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-3 min-w-0">
             <img
-              src="/brand/logo.jpg"
+              src="/brand/logo_without_persian_words.png"
               alt={officialBrandNameFa}
-              className="h-14 w-auto rounded-md border border-slate-200 bg-white object-contain"
+              className="h-16 sm:h-20 w-auto rounded-md border border-slate-200 bg-white object-contain p-1"
             />
             <div className="min-w-0">
-              <p className="text-[11px] text-muted-foreground leading-5 line-clamp-2">
+              <p className="text-xs sm:text-sm text-muted-foreground leading-5 line-clamp-2">
                 {officialBrandNameFa}
               </p>
-              <p className="text-[10px] text-slate-500 leading-none mt-1 line-clamp-1">
+              <p className="text-[11px] text-slate-500 leading-none mt-1 line-clamp-1">
                 {officialBrandNameByLanguage[language]}
               </p>
             </div>
@@ -374,19 +376,19 @@ export function HomePage() {
         </div>
         <button
           type="button"
-          className="absolute z-20 top-1/2 -translate-y-1/2 left-3 lg:left-5 h-11 w-11 rounded-full bg-white/15 border border-white/35 text-white hover:bg-white/25 backdrop-blur-sm transition"
+          className={`absolute z-20 top-1/2 -translate-y-1/2 h-11 w-11 rounded-full bg-white/15 border border-white/35 text-white hover:bg-white/25 backdrop-blur-sm transition ${isRtl ? 'right-3 lg:right-5' : 'left-3 lg:left-5'}`}
           onClick={goToPrevSlide}
           aria-label="hero-prev"
         >
-          ‹
+          {prevArrow}
         </button>
         <button
           type="button"
-          className="absolute z-20 top-1/2 -translate-y-1/2 right-3 lg:right-5 h-11 w-11 rounded-full bg-white/15 border border-white/35 text-white hover:bg-white/25 backdrop-blur-sm transition"
+          className={`absolute z-20 top-1/2 -translate-y-1/2 h-11 w-11 rounded-full bg-white/15 border border-white/35 text-white hover:bg-white/25 backdrop-blur-sm transition ${isRtl ? 'left-3 lg:left-5' : 'right-3 lg:right-5'}`}
           onClick={goToNextSlide}
           aria-label="hero-next"
         >
-          ›
+          {nextArrow}
         </button>
         <div className="absolute left-0 right-0 bottom-4 flex justify-center gap-2">
           {heroSlides.map((_, idx) => (

@@ -155,6 +155,8 @@ function CatalogPage() {
   const commodityLabels = COMMODITY_LABELS[language];
   const originLabels = ORIGIN_LABELS[language];
   const SORT_OPTIONS = content.sortOptions;
+  const previousArrow = isRtl ? '›' : '‹';
+  const nextArrow = isRtl ? '‹' : '›';
   const officialBrandNameFa = 'انجمن صنفی کارفرمایی صادرکنندگان و واردکنندگان کالا و خدمات';
   const officialBrandNameByLanguage = {
     fa: 'انجمن صنفی کارفرمایی صادرکنندگان و واردکنندگان کالا و خدمات',
@@ -203,13 +205,13 @@ function CatalogPage() {
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-3 shrink-0 min-w-0">
             <img
-              src="/brand/logo.jpg"
+              src="/brand/logo_without_persian_words.png"
               alt={officialBrandNameFa}
-              className="h-12 w-auto rounded-md border border-slate-200 bg-white object-contain"
+              className="h-14 sm:h-16 w-auto rounded-md border border-slate-200 bg-white object-contain p-1"
             />
             <div className="min-w-0">
-              <p className="text-[11px] text-gray-600 leading-5 line-clamp-2">{officialBrandNameFa}</p>
-              <p className="text-[10px] text-gray-500 leading-none mt-1 line-clamp-1">{officialBrandNameByLanguage[language]}</p>
+              <p className="text-xs sm:text-sm text-gray-600 leading-5 line-clamp-2">{officialBrandNameFa}</p>
+              <p className="text-[11px] text-gray-500 leading-none mt-1 line-clamp-1">{officialBrandNameByLanguage[language]}</p>
             </div>
           </Link>
           <form onSubmit={handleSearch} className="flex gap-2 flex-1 max-w-xl">
@@ -377,7 +379,7 @@ function CatalogPage() {
                       <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
                         <span className="text-xs text-gray-400">{product.user?.userCode}</span>
                         <span className="text-xs text-blue-600 font-medium">
-                          {content.details} ›
+                          {content.details} {isRtl ? '‹' : '›'}
                         </span>
                       </div>
                     </div>
@@ -388,9 +390,9 @@ function CatalogPage() {
               {/* Pagination */}
               {data.pagination.totalPages > 1 && (
                 <div className="flex items-center justify-center gap-2 mt-8">
-                  <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)} className="btn-secondary disabled:opacity-40 min-w-24">‹ {content.previous}</button>
+                  <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)} className="btn-secondary disabled:opacity-40 min-w-24">{previousArrow} {content.previous}</button>
                   <span className="text-sm text-gray-600 px-3">{page} / {data.pagination.totalPages}</span>
-                  <button disabled={page >= data.pagination.totalPages} onClick={() => setPage((p) => p + 1)} className="btn-secondary disabled:opacity-40 min-w-24">{content.next} ›</button>
+                  <button disabled={page >= data.pagination.totalPages} onClick={() => setPage((p) => p + 1)} className="btn-secondary disabled:opacity-40 min-w-24">{content.next} {nextArrow}</button>
                 </div>
               )}
             </>
