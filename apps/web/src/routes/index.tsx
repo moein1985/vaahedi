@@ -321,8 +321,8 @@ export function HomePage() {
   const heroSlides = content.heroSlides;
   const currentSlide = heroSlides[heroIndex] ?? heroSlides[0];
 
-  const prevArrow = isRtl ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />;
-  const nextArrow = isRtl ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />;
+  const prevArrow = <ChevronLeft className="h-5 w-5" />;
+  const nextArrow = <ChevronRight className="h-5 w-5" />;
 
   useEffect(() => {
     if (isHeroPaused || heroSlides.length <= 1) return;
