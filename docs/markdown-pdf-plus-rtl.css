@@ -1,0 +1,89 @@
+@page {
+  size: A4;
+  margin: 16mm 14mm;
+}
+
+html,
+body {
+  direction: rtl;
+  text-align: right;
+  unicode-bidi: plaintext;
+  font-family: "Vazirmatn", "IRANSansX", "Segoe UI", Tahoma, sans-serif;
+  line-height: 1.85;
+  color: #111;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+li,
+table,
+blockquote {
+  direction: rtl;
+  text-align: right;
+}
+
+ul,
+ol {
+  padding-right: 1.2rem;
+  padding-left: 0;
+  margin-right: 0;
+  margin-left: 0;
+}
+
+li {
+  margin: 0.2rem 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 6px 8px;
+  vertical-align: top;
+}
+
+th {
+  background: #f7f7f7;
+}
+
+/* Keep code blocks LTR so CLI/code samples render correctly. */
+pre,
+code,
+kbd,
+samp {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: embed;
+  font-family: "Cascadia Mono", "Consolas", "Courier New", monospace;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: #f8f8f8;
+  border: 1px solid #e7e7e7;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+blockquote {
+  border-right: 4px solid #d0d0d0;
+  border-left: none;
+  margin: 0.8rem 0;
+  padding: 0.2rem 0.8rem;
+  color: #444;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
