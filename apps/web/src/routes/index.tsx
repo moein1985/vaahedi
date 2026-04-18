@@ -390,19 +390,19 @@ export function HomePage() {
           </div>
         </div>
 
-        <div className="bg-[linear-gradient(180deg,#1883b7_0%,#0a3761_100%)]">
-          <div className="max-w-[1020px] mx-auto px-4 flex items-stretch">
+        <div className="max-w-[1020px] mx-auto px-4 relative z-30 -mb-7 sm:-mb-8">
+          <div className="flex items-stretch overflow-hidden rounded-tl-lg rounded-tr-lg sm:rounded-tr-none shadow-[0_8px_20px_rgba(0,0,0,0.2)] bg-[linear-gradient(180deg,#1a8ec3_0%,#0f5f8f_25%,#0a3f67_68%,#082f4e_100%)] border border-[#0d4d75]">
             <nav className="flex-1 overflow-x-auto">
               <div className={`min-w-max flex ${isRtl ? 'justify-end' : ''}`}>
-                <Link to="/" className="px-4 py-3 text-xs font-semibold text-white uppercase tracking-wide border-x border-white/10">{content.nav.home}</Link>
-                <Link to="/about" className="px-4 py-3 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/10">{content.nav.about}</Link>
-                <Link to="/catalog" className="px-4 py-3 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/10">{content.nav.products}</Link>
-                <Link to="/contact" className="px-4 py-3 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/10">{content.nav.services}</Link>
-                <Link to="/news" className="px-4 py-3 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/10">{content.nav.news}</Link>
-                <Link to="/contact" className="px-4 py-3 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/10">{content.nav.contact}</Link>
+                <Link to="/" className="px-5 py-[14px] text-sm font-bold text-white uppercase tracking-wide border-x border-white/10 bg-[linear-gradient(180deg,rgba(5,31,54,0.4),rgba(3,18,33,0.68))]">{content.nav.home}</Link>
+                <Link to="/about" className="px-5 py-[14px] text-sm font-semibold text-white uppercase tracking-wide border-r border-white/10 hover:bg-white/10 transition-colors">{content.nav.about}</Link>
+                <Link to="/catalog" className="px-5 py-[14px] text-sm font-semibold text-white uppercase tracking-wide border-r border-white/10 hover:bg-white/10 transition-colors">{content.nav.products}</Link>
+                <Link to="/contact" className="px-5 py-[14px] text-sm font-semibold text-white uppercase tracking-wide border-r border-white/10 hover:bg-white/10 transition-colors">{content.nav.services}</Link>
+                <Link to="/news" className="px-5 py-[14px] text-sm font-semibold text-white uppercase tracking-wide border-r border-white/10 hover:bg-white/10 transition-colors">{content.nav.news}</Link>
+                <Link to="/contact" className="px-5 py-[14px] text-sm font-semibold text-white uppercase tracking-wide border-r border-white/10 hover:bg-white/10 transition-colors">{content.nav.contact}</Link>
               </div>
             </nav>
-            <Link to="/contact" className="shrink-0 bg-[#f5861f] hover:bg-[#ec7410] text-white px-5 py-3 text-xs font-bold uppercase tracking-wide">
+            <Link to="/contact" className="shrink-0 bg-[#f5861f] hover:bg-[#ea760f] text-white px-8 py-[14px] text-sm font-bold uppercase tracking-wide border-l border-[#d86d10]">
               {content.ctaRequest}
             </Link>
           </div>
