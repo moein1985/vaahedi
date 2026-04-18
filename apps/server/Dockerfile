@@ -10,7 +10,11 @@ COPY packages/db/package.json ./packages/db/
 COPY apps/server/package.json ./apps/server/
 
 # Install all deps
-RUN npm ci
+RUN npm ci \
+    --fetch-retries=5 \
+    --fetch-retry-factor=2 \
+    --fetch-retry-mintimeout=20000 \
+    --fetch-retry-maxtimeout=120000
 
 # Copy source
 COPY packages/shared/ ./packages/shared/
@@ -51,7 +55,12 @@ COPY packages/db/package.json ./packages/db/
 COPY apps/server/package.json ./apps/server/
 
 # Install only production deps
-RUN npm ci --omit=dev && npm cache clean --force
+RUN npm ci --omit=dev \
+    --fetch-retries=5 \
+    --fetch-retry-factor=2 \
+    --fetch-retry-mintimeout=20000 \
+    --fetch-retry-maxtimeout=120000 \
+    && npm cache clean --force
 
 # Copy compiled workspace packages
 COPY --from=builder /app/packages/shared/dist ./packages/shared/dist

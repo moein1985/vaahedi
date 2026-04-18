@@ -271,6 +271,140 @@ const resources = {
       'membership.GUILD_MEMBER': 'Guild Member',
     },
   },
+  ar: {
+    translation: {
+      // Common
+      'app.name': 'واحدي',
+      'app.description': 'منصة التجارة الذكية المركزية',
+      'loading': 'جار التحميل...',
+      'error': 'خطأ',
+      'success': 'نجاح',
+      'cancel': 'إلغاء',
+      'confirm': 'تأكيد',
+      'save': 'حفظ',
+      'edit': 'تعديل',
+      'delete': 'حذف',
+      'search': 'بحث',
+      'filter': 'تصفية',
+      'sort': 'ترتيب',
+      'next': 'التالي',
+      'previous': 'السابق',
+      'page': 'صفحة',
+      'of': 'من',
+
+      // Auth
+      'auth.login': 'تسجيل الدخول',
+      'auth.register': 'إنشاء حساب',
+      'auth.logout': 'تسجيل الخروج',
+      'auth.userCode': 'رمز المستخدم',
+      'auth.password': 'كلمة المرور',
+      'auth.mobile': 'رقم الجوال',
+      'auth.otp': 'رمز التحقق',
+      'auth.sendOtp': 'إرسال الرمز',
+      'auth.loginWithPassword': 'الدخول بكلمة المرور',
+      'auth.loginWithOtp': 'الدخول عبر الرسائل',
+      'auth.forgotPassword': 'نسيت كلمة المرور؟',
+      'auth.noAccount': 'لا تملك حسابًا؟',
+
+      // Navigation
+      'nav.dashboard': 'لوحة التحكم',
+      'nav.products': 'المنتجات',
+      'nav.trade': 'التجارة',
+      'nav.support': 'الدعم',
+      'nav.chat': 'الدردشة',
+      'nav.notifications': 'الإشعارات',
+      'nav.profile': 'الملف الشخصي',
+      'nav.services': 'الخدمات',
+      'nav.admin': 'الإدارة',
+
+      // Dashboard
+      'dashboard.welcome': 'مرحبًا',
+      'dashboard.stats': 'الإحصائيات',
+      'dashboard.recentActivity': 'النشاط الأخير',
+
+      // Products
+      'products.title': 'المنتجات',
+      'products.add': 'إضافة منتج',
+      'products.edit': 'تعديل المنتج',
+      'products.delete': 'حذف المنتج',
+      'products.name': 'اسم المنتج',
+      'products.description': 'الوصف',
+      'products.price': 'السعر',
+      'products.category': 'الفئة',
+
+      // Trade
+      'trade.title': 'طلبات التجارة',
+      'trade.buy': 'شراء',
+      'trade.sell': 'بيع',
+      'trade.newRequest': 'طلب جديد',
+
+      // Notifications
+      'notifications.title': 'الإشعارات',
+      'notifications.markAsRead': 'تعيين كمقروء',
+      'notifications.markAllAsRead': 'تعيين الكل كمقروء',
+      'notifications.empty': 'لا توجد إشعارات',
+
+      // Admin
+      'admin.title': 'لوحة الإدارة',
+      'admin.users': 'إدارة المستخدمين',
+      'admin.products': 'اعتماد المنتجات',
+      'admin.documents': 'اعتماد المستندات',
+
+      // Status
+      'status.active': 'نشط',
+      'status.pending': 'قيد الانتظار',
+      'status.suspended': 'موقوف',
+      'status.rejected': 'مرفوض',
+      'status.approved': 'مقبول',
+
+      // Messages
+      'message.confirmDelete': 'هل أنت متأكد من حذف هذا العنصر؟',
+      'message.operationSuccess': 'تمت العملية بنجاح',
+      'message.operationFailed': 'فشلت العملية',
+
+      // Roles
+      'role.TRADER': 'تاجر',
+      'role.PRODUCER': 'منتج',
+      'role.KNOWLEDGE_BASED': 'شركة معرفية',
+      'role.WHOLESALER': 'تاجر جملة',
+      'role.BROKER': 'وسيط',
+      'role.INTERMEDIARY': 'شركة وسيطة',
+      'role.GUILD': 'نقابة',
+      'role.FARMER': 'مزارع (منتج)',
+      'role.INVESTOR': 'مستثمر',
+
+      // Document Types
+      'doc.ESTABLISHMENT_NOTICE': 'إشعار التأسيس',
+      'doc.BOARD_CHANGES': 'تغييرات مجلس الإدارة',
+      'doc.OPERATION_LICENSE': 'رخصة التشغيل',
+      'doc.PRODUCTION_LICENSE': 'رخصة الإنتاج',
+      'doc.GUILD_LICENSE': 'رخصة النقابة',
+      'doc.KNOWLEDGE_BASED_LICENSE': 'رخصة الشركة المعرفية',
+      'doc.OTHER_LICENSES': 'تراخيص أخرى',
+      'doc.ISO_CERTIFICATE': 'شهادة ISO',
+      'doc.BUSINESS_CARD': 'بطاقة الأعمال',
+      'doc.ID_DOCUMENT': 'وثيقة الهوية',
+
+      // Consultation Categories
+      'consultation.COMMERCIAL': 'تجاري',
+      'consultation.TECHNICAL': 'تقني',
+      'consultation.LEGAL': 'قانوني',
+      'consultation.FINANCIAL': 'مالي',
+
+      // News
+      'news.title': 'أخبار التجارة',
+      'news.latest': 'آخر الأخبار',
+      'news.readMore': 'اقرأ المزيد',
+      'newsletter.subscribe': 'الاشتراك في النشرة البريدية',
+      'newsletter.email': 'البريد الإلكتروني',
+      'newsletter.subscribed': 'تم تأكيد الاشتراك',
+
+      // Membership Type
+      'membership.INDIVIDUAL': 'فرد',
+      'membership.LEGAL': 'كيان قانوني',
+      'membership.GUILD_MEMBER': 'عضو نقابي',
+    },
+  },
 };
 
 i18n
@@ -279,6 +413,7 @@ i18n
   .init({
     resources,
     fallbackLng: 'fa',
+    supportedLngs: ['fa', 'en', 'ar'],
     debug: process.env.NODE_ENV === 'development',
 
     interpolation: {

@@ -3,32 +3,159 @@ import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { trpc } from '../trpc.js';
 import { CommodityGroup, ProductOrigin } from '@repo/shared';
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '../components/LanguageSwitcher.js';
 
 export const Route = createFileRoute('/catalog')({
   component: CatalogPage,
 });
 
-const COMMODITY_LABELS: Record<string, string> = {
-  INDUSTRIAL: 'صنعتی', CHEMICAL: 'شیمیایی', TELECOM: 'مخابراتی', METAL: 'فلزی',
-  FOOD: 'غذایی', TEXTILE: 'نساجی', AGRICULTURAL: 'کشاورزی',
-  CONSTRUCTION: 'ساختمانی', PETROCHEMICAL: 'پتروشیمی', OTHER: 'سایر',
-};
+const COMMODITY_LABELS = {
+  fa: {
+    INDUSTRIAL: 'صنعتی', CHEMICAL: 'شیمیایی', TELECOM: 'مخابراتی', METAL: 'فلزی',
+    FOOD: 'غذایی', TEXTILE: 'نساجی', AGRICULTURAL: 'کشاورزی',
+    CONSTRUCTION: 'ساختمانی', PETROCHEMICAL: 'پتروشیمی', OTHER: 'سایر',
+  },
+  en: {
+    INDUSTRIAL: 'Industrial', CHEMICAL: 'Chemical', TELECOM: 'Telecom', METAL: 'Metal',
+    FOOD: 'Food', TEXTILE: 'Textile', AGRICULTURAL: 'Agricultural',
+    CONSTRUCTION: 'Construction', PETROCHEMICAL: 'Petrochemical', OTHER: 'Other',
+  },
+  ar: {
+    INDUSTRIAL: 'صناعي', CHEMICAL: 'كيميائي', TELECOM: 'اتصالات', METAL: 'معدني',
+    FOOD: 'غذائي', TEXTILE: 'نسيج', AGRICULTURAL: 'زراعي',
+    CONSTRUCTION: 'إنشائي', PETROCHEMICAL: 'بتروكيماويات', OTHER: 'أخرى',
+  },
+} as const;
 
-const ORIGIN_LABELS: Record<string, string> = {
-  DOMESTIC_FACTORY: 'تولید داخلی',
-  KNOWLEDGE_BASED: 'دانش‌بنیان',
-  IMPORTED: 'وارداتی',
-};
-
-const SORT_OPTIONS = [
-  { value: 'createdAt', label: 'جدیدترین', order: 'desc' },
-  { value: 'createdAt', label: 'قدیمی‌ترین', order: 'asc' },
-  { value: 'nameFa', label: 'نام (الفبایی)', order: 'asc' },
-  { value: 'nameFa', label: 'نام (معکوس)', order: 'desc' },
-  { value: 'hsCode', label: 'کد HS', order: 'asc' },
-] as const;
+const ORIGIN_LABELS = {
+  fa: {
+    DOMESTIC_FACTORY: 'تولید داخلی',
+    KNOWLEDGE_BASED: 'دانش‌بنیان',
+    IMPORTED: 'وارداتی',
+  },
+  en: {
+    DOMESTIC_FACTORY: 'Domestic Production',
+    KNOWLEDGE_BASED: 'Knowledge-Based',
+    IMPORTED: 'Imported',
+  },
+  ar: {
+    DOMESTIC_FACTORY: 'إنتاج محلي',
+    KNOWLEDGE_BASED: 'قائم على المعرفة',
+    IMPORTED: 'مستورد',
+  },
+} as const;
 
 function CatalogPage() {
+  const { t, i18n } = useTranslation();
+  const normalizedLanguage = (i18n.resolvedLanguage ?? i18n.language ?? 'fa').split('-')[0];
+  const language = (normalizedLanguage === 'en' || normalizedLanguage === 'ar' ? normalizedLanguage : 'fa') as 'fa' | 'en' | 'ar';
+  const isRtl = language !== 'en';
+
+  const copy = {
+    fa: {
+      title: 'کاتالوگ محصولات',
+      titleSeo: 'کاتالوگ محصولات | پلتفرم تجارت متمرکز هوشمند ایرانیان',
+      descriptionSeo: 'جستجو و مشاهده محصولات صنعتی، شیمیایی و تجاری تولیدکنندگان و بازرگانان ایرانی',
+      heroTitle: 'کاتالوگ هوشمند محصولات صادراتی و وارداتی',
+      heroDesc: 'محصولات را بر اساس گروه کالایی، منشا، کد HS و نام جستجو کنید و برای هر مورد سریع به جزئیات کامل دسترسی داشته باشید.',
+      searchPlaceholder: 'جستجو محصول، کد HS، نام...',
+      searchBtn: 'جستجو',
+      catalogLabel: 'Catalog',
+      filtersTitle: 'فیلترهای پیشرفته',
+      commodityGroup: 'گروه کالایی',
+      origin: 'منشأ کالا',
+      all: 'همه',
+      clearFilters: 'پاک کردن فیلترها',
+      productsCount: 'محصول',
+      mobileFilters: 'فیلترها',
+      activeSearch: 'جستجو',
+      activeGroup: 'گروه',
+      activeOrigin: 'منشا',
+      loading: 'در حال بارگذاری...',
+      empty: 'محصولی یافت نشد',
+      details: 'مشاهده جزئیات',
+      previous: 'قبلی',
+      next: 'بعدی',
+      sortOptions: [
+        { value: 'createdAt', label: 'جدیدترین', order: 'desc' },
+        { value: 'createdAt', label: 'قدیمی‌ترین', order: 'asc' },
+        { value: 'nameFa', label: 'نام (الفبایی)', order: 'asc' },
+        { value: 'nameFa', label: 'نام (معکوس)', order: 'desc' },
+        { value: 'hsCode', label: 'کد HS', order: 'asc' },
+      ] as const,
+    },
+    en: {
+      title: 'Product Catalog',
+      titleSeo: 'Product Catalog | Vaahedi Trade Platform',
+      descriptionSeo: 'Search and explore industrial, chemical and commercial products from verified suppliers.',
+      heroTitle: 'Smart Catalog for Export & Import Products',
+      heroDesc: 'Filter products by commodity group, origin, HS code and name, then access details instantly.',
+      searchPlaceholder: 'Search products, HS code, names...',
+      searchBtn: 'Search',
+      catalogLabel: 'Catalog',
+      filtersTitle: 'Advanced Filters',
+      commodityGroup: 'Commodity Group',
+      origin: 'Origin',
+      all: 'All',
+      clearFilters: 'Clear Filters',
+      productsCount: 'products',
+      mobileFilters: 'Filters',
+      activeSearch: 'Search',
+      activeGroup: 'Group',
+      activeOrigin: 'Origin',
+      loading: 'Loading...',
+      empty: 'No products found',
+      details: 'View Details',
+      previous: 'Previous',
+      next: 'Next',
+      sortOptions: [
+        { value: 'createdAt', label: 'Newest', order: 'desc' },
+        { value: 'createdAt', label: 'Oldest', order: 'asc' },
+        { value: 'nameFa', label: 'Name (A-Z)', order: 'asc' },
+        { value: 'nameFa', label: 'Name (Z-A)', order: 'desc' },
+        { value: 'hsCode', label: 'HS Code', order: 'asc' },
+      ] as const,
+    },
+    ar: {
+      title: 'كتالوج المنتجات',
+      titleSeo: 'كتالوج المنتجات | منصة واحدي التجارية',
+      descriptionSeo: 'ابحث واستعرض المنتجات الصناعية والكيميائية والتجارية من الموردين المعتمدين.',
+      heroTitle: 'كتالوج ذكي لمنتجات الاستيراد والتصدير',
+      heroDesc: 'ابحث حسب الفئة التجارية والمنشأ ورمز HS واسم المنتج مع وصول سريع للتفاصيل.',
+      searchPlaceholder: 'ابحث عن منتج، رمز HS، اسم...',
+      searchBtn: 'بحث',
+      catalogLabel: 'Catalog',
+      filtersTitle: 'فلاتر متقدمة',
+      commodityGroup: 'الفئة التجارية',
+      origin: 'المنشأ',
+      all: 'الكل',
+      clearFilters: 'مسح الفلاتر',
+      productsCount: 'منتج',
+      mobileFilters: 'الفلاتر',
+      activeSearch: 'بحث',
+      activeGroup: 'الفئة',
+      activeOrigin: 'المنشأ',
+      loading: 'جار التحميل...',
+      empty: 'لم يتم العثور على منتجات',
+      details: 'عرض التفاصيل',
+      previous: 'السابق',
+      next: 'التالي',
+      sortOptions: [
+        { value: 'createdAt', label: 'الأحدث', order: 'desc' },
+        { value: 'createdAt', label: 'الأقدم', order: 'asc' },
+        { value: 'nameFa', label: 'الاسم (تصاعدي)', order: 'asc' },
+        { value: 'nameFa', label: 'الاسم (تنازلي)', order: 'desc' },
+        { value: 'hsCode', label: 'رمز HS', order: 'asc' },
+      ] as const,
+    },
+  } as const;
+
+  const content = copy[language];
+  const commodityLabels = COMMODITY_LABELS[language];
+  const originLabels = ORIGIN_LABELS[language];
+  const SORT_OPTIONS = content.sortOptions;
+
   const [q, setQ] = useState('');
   const [search, setSearch] = useState('');
   const [origin, setOrigin] = useState<string>('');
@@ -57,60 +184,83 @@ function CatalogPage() {
   return (
     <>
       <Helmet>
-        <title>کاتالوگ محصولات | پلتفرم تجارت متمرکز هوشمند ایرانیان</title>
-        <meta name="description" content="جستجو و مشاهده محصولات صنعتی، شیمیایی و تجاری تولیدکنندگان و بازرگانان ایرانی" />
-        <meta property="og:title" content="کاتالوگ محصولات" />
-        <meta property="og:description" content="پلتفرم B2B تجارت الکترونیک" />
+        <title>{content.titleSeo}</title>
+        <meta name="description" content={content.descriptionSeo} />
+        <meta property="og:title" content={content.title} />
+        <meta property="og:description" content={content.descriptionSeo} />
         <meta property="og:type" content="website" />
         <link rel="canonical" href="https://your-domain.ir/catalog" />
       </Helmet>
-      <div className="min-h-screen bg-gray-50" dir="rtl">
+      <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_35%)]" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-white/95 border-b border-gray-200 sticky top-0 z-10 backdrop-blur">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-          <Link to="/" className="text-xl font-bold text-blue-700 shrink-0">تجارت هوشمند</Link>
-          <form onSubmit={handleSearch} className="flex gap-2 flex-1 max-w-lg">
+          <Link to="/" className="flex items-center gap-2 shrink-0">
+            <div className="h-9 w-9 rounded-full bg-gradient-to-br from-slate-900 via-slate-700 to-cyan-700 text-white flex items-center justify-center text-xs font-black">VH</div>
+            <div>
+              <p className="text-[11px] text-gray-500 leading-none">VAAHEDI</p>
+              <p className="text-sm font-bold text-gray-900 leading-none mt-1">{content.catalogLabel}</p>
+            </div>
+          </Link>
+          <form onSubmit={handleSearch} className="flex gap-2 flex-1 max-w-xl">
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="جستجو محصول، کد HS، نام..."
+              placeholder={content.searchPlaceholder}
               className="input-field"
             />
-            <button type="submit" className="btn-primary shrink-0">جستجو</button>
+            <button type="submit" className="btn-primary shrink-0">{content.searchBtn}</button>
           </form>
-          <Link to="/auth/login" className="btn-secondary shrink-0 hidden sm:inline-block">ورود</Link>
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            <LanguageSwitcher />
+            <Link to="/auth/login" className="btn-secondary shrink-0 hidden sm:inline-block">{t('auth.login')}</Link>
+          </div>
         </div>
       </header>
+
+      {/* Hero */}
+      <section className="max-w-6xl mx-auto px-4 pt-8 pb-6">
+        <div className="rounded-2xl overflow-hidden border border-slate-200 bg-gradient-to-r from-slate-900 via-blue-900 to-slate-800 p-6 lg:p-8 text-white relative">
+          <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_15%_20%,rgba(255,255,255,0.35),transparent_40%),radial-gradient(circle_at_85%_75%,rgba(125,211,252,0.35),transparent_35%)]" />
+          <div className="relative z-10">
+            <p className="text-[11px] tracking-[0.16em] text-slate-200">GLOBAL TRADE PRODUCTS</p>
+            <h1 className="text-2xl lg:text-3xl font-black mt-2">{content.heroTitle}</h1>
+            <p className="text-sm text-slate-200 mt-3 max-w-3xl leading-7">
+              {content.heroDesc}
+            </p>
+          </div>
+        </div>
+      </section>
 
       <div className="max-w-6xl mx-auto px-4 py-6 flex gap-6">
         {/* Sidebar filters */}
         <aside className="hidden lg:block w-56 shrink-0">
-          <div className="bg-white rounded-xl border border-gray-100 p-4 sticky top-24">
-            <h3 className="font-semibold text-gray-800 mb-4">فیلترها</h3>
+          <div className="bg-white rounded-xl border border-gray-200 p-4 sticky top-24 shadow-sm">
+            <h3 className="font-semibold text-gray-800 mb-4">{content.filtersTitle}</h3>
 
             <div className="mb-4">
-              <label className="label-text">گروه کالایی</label>
+              <label className="label-text">{content.commodityGroup}</label>
               <select
                 value={commodityGroup}
                 onChange={(e) => { setCommodityGroup(e.target.value); setPage(1); }}
                 className="input-field text-xs"
               >
-                <option value="">همه</option>
-                {Object.entries(COMMODITY_LABELS).map(([v, l]) => (
+                <option value="">{content.all}</option>
+                {Object.entries(commodityLabels).map(([v, l]) => (
                   <option key={v} value={v}>{l}</option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label className="label-text">منشأ کالا</label>
+              <label className="label-text">{content.origin}</label>
               <select
                 value={origin}
                 onChange={(e) => { setOrigin(e.target.value); setPage(1); }}
                 className="input-field text-xs"
               >
-                <option value="">همه</option>
-                {Object.entries(ORIGIN_LABELS).map(([v, l]) => (
+                <option value="">{content.all}</option>
+                {Object.entries(originLabels).map(([v, l]) => (
                   <option key={v} value={v}>{l}</option>
                 ))}
               </select>
@@ -119,9 +269,9 @@ function CatalogPage() {
             {(commodityGroup || origin || search) && (
               <button
                 onClick={() => { setCommodityGroup(''); setOrigin(''); setSearch(''); setQ(''); setPage(1); }}
-                className="mt-4 text-xs text-red-500 hover:text-red-700"
+                className="mt-4 w-full btn-secondary text-red-600 border-red-200 hover:bg-red-50"
               >
-                پاک کردن فیلترها
+                {content.clearFilters}
               </button>
             )}
           </div>
@@ -130,9 +280,9 @@ function CatalogPage() {
         {/* Products grid */}
         <main className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-gray-900">
-              کاتالوگ محصولات
-              {data && <span className="text-sm font-normal text-gray-500 mr-2">({data.pagination.total} محصول)</span>}
+            <h2 className="font-black text-gray-900 text-xl">
+              {content.title}
+              {data && <span className={`text-sm font-normal text-gray-500 ${isRtl ? 'mr-2' : 'ml-2'}`}>({data.pagination.total} {content.productsCount})</span>}
             </h2>
             <div className="flex items-center gap-3">
               {/* Mobile filter button */}
@@ -140,7 +290,7 @@ function CatalogPage() {
                 onClick={() => setShowFilters(true)}
                 className="lg:hidden btn-secondary text-sm"
               >
-                فیلترها
+                {content.mobileFilters}
               </button>
               {/* Sort dropdown */}
               <select
@@ -151,7 +301,7 @@ function CatalogPage() {
                   setSortOrder(order);
                   setPage(1);
                 }}
-                className="input-field text-sm max-w-40"
+                className="input-field text-sm max-w-44"
               >
                 {SORT_OPTIONS.map((option) => (
                   <option key={`${option.value}-${option.order}`} value={`${option.value}-${option.order}`}>
@@ -162,20 +312,38 @@ function CatalogPage() {
             </div>
           </div>
 
+          {(commodityGroup || origin || search) && (
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              {search && (
+                <span className="px-3 py-1 rounded-full text-xs bg-blue-50 text-blue-700 border border-blue-100">{content.activeSearch}: {search}</span>
+              )}
+              {commodityGroup && (
+                <span className="px-3 py-1 rounded-full text-xs bg-slate-100 text-slate-700 border border-slate-200">
+                  {content.activeGroup}: {commodityLabels[commodityGroup as keyof typeof commodityLabels] ?? commodityGroup}
+                </span>
+              )}
+              {origin && (
+                <span className="px-3 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-100">
+                  {content.activeOrigin}: {originLabels[origin as keyof typeof originLabels] ?? origin}
+                </span>
+              )}
+            </div>
+          )}
+
           {isLoading ? (
-            <div className="text-center py-16 text-gray-400">در حال بارگذاری...</div>
+            <div className="text-center py-16 text-gray-400">{content.loading}</div>
           ) : !data?.data?.length ? (
-            <div className="text-center py-16 bg-white rounded-xl border border-gray-100">
+            <div className="text-center py-16 bg-white rounded-xl border border-gray-200 shadow-sm">
               <p className="text-4xl mb-3">📦</p>
-              <p className="text-gray-500">محصولی یافت نشد</p>
+              <p className="text-gray-500">{content.empty}</p>
             </div>
           ) : (
             <>
               <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
                 {data.data.map((product) => (
-                  <Link key={product.id} to="/catalog/$productId" params={{ productId: product.id }} className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-md transition-shadow block">
+                  <Link key={product.id} to="/catalog/$productId" params={{ productId: product.id }} className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 block">
                     {/* Image placeholder */}
-                    <div className="h-40 bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-4xl">
+                    <div className="h-40 bg-gradient-to-br from-blue-50 via-slate-100 to-cyan-50 flex items-center justify-center text-4xl">
                       📦
                     </div>
                     <div className="p-4">
@@ -184,22 +352,22 @@ function CatalogPage() {
                       <div className="flex items-center gap-2 flex-wrap">
                         {product.commodityGroup && (
                           <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">
-                            {COMMODITY_LABELS[product.commodityGroup] ?? product.commodityGroup}
+                            {commodityLabels[product.commodityGroup as keyof typeof commodityLabels] ?? product.commodityGroup}
                           </span>
                         )}
                         {product.origin && (
                           <span className="text-xs bg-green-50 text-green-600 px-2 py-0.5 rounded-full">
-                            {ORIGIN_LABELS[product.origin] ?? product.origin}
+                            {originLabels[product.origin as keyof typeof originLabels] ?? product.origin}
                           </span>
                         )}
                       </div>
                       {product.hsCode && (
                         <p className="text-xs text-gray-400 mt-2" dir="ltr">HS: {product.hsCode}</p>
                       )}
-                      <div className="mt-3 pt-3 border-t border-gray-50 flex items-center justify-between">
+                      <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
                         <span className="text-xs text-gray-400">{product.user?.userCode}</span>
                         <span className="text-xs text-blue-600 font-medium">
-                          مشاهده جزئیات ›
+                          {content.details} ›
                         </span>
                       </div>
                     </div>
@@ -210,9 +378,9 @@ function CatalogPage() {
               {/* Pagination */}
               {data.pagination.totalPages > 1 && (
                 <div className="flex items-center justify-center gap-2 mt-8">
-                  <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)} className="btn-secondary disabled:opacity-40">‹ قبلی</button>
-                  <span className="text-sm text-gray-600">{page} / {data.pagination.totalPages}</span>
-                  <button disabled={page >= data.pagination.totalPages} onClick={() => setPage((p) => p + 1)} className="btn-secondary disabled:opacity-40">بعدی ›</button>
+                  <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)} className="btn-secondary disabled:opacity-40 min-w-24">‹ {content.previous}</button>
+                  <span className="text-sm text-gray-600 px-3">{page} / {data.pagination.totalPages}</span>
+                  <button disabled={page >= data.pagination.totalPages} onClick={() => setPage((p) => p + 1)} className="btn-secondary disabled:opacity-40 min-w-24">{content.next} ›</button>
                 </div>
               )}
             </>
@@ -224,9 +392,9 @@ function CatalogPage() {
       {showFilters && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowFilters(false)} />
-          <div className="absolute left-0 top-0 h-full w-80 bg-white shadow-xl">
-            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-              <h3 className="font-semibold text-gray-800">فیلترها</h3>
+          <div className={`absolute top-0 h-full w-80 bg-white shadow-xl ${isRtl ? 'left-0' : 'right-0'}`}>
+            <div className="p-4 border-b border-gray-200 flex items-center justify-between bg-slate-50">
+              <h3 className="font-semibold text-gray-800">{content.filtersTitle}</h3>
               <button
                 onClick={() => setShowFilters(false)}
                 className="text-gray-400 hover:text-gray-600"
@@ -236,28 +404,28 @@ function CatalogPage() {
             </div>
             <div className="p-4 space-y-4">
               <div>
-                <label className="label-text">گروه کالایی</label>
+                <label className="label-text">{content.commodityGroup}</label>
                 <select
                   value={commodityGroup}
                   onChange={(e) => { setCommodityGroup(e.target.value); setPage(1); }}
                   className="input-field"
                 >
-                  <option value="">همه</option>
-                  {Object.entries(COMMODITY_LABELS).map(([v, l]) => (
+                  <option value="">{content.all}</option>
+                  {Object.entries(commodityLabels).map(([v, l]) => (
                     <option key={v} value={v}>{l}</option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="label-text">منشأ کالا</label>
+                <label className="label-text">{content.origin}</label>
                 <select
                   value={origin}
                   onChange={(e) => { setOrigin(e.target.value); setPage(1); }}
                   className="input-field"
                 >
-                  <option value="">همه</option>
-                  {Object.entries(ORIGIN_LABELS).map(([v, l]) => (
+                  <option value="">{content.all}</option>
+                  {Object.entries(originLabels).map(([v, l]) => (
                     <option key={v} value={v}>{l}</option>
                   ))}
                 </select>
@@ -268,7 +436,7 @@ function CatalogPage() {
                   onClick={() => { setCommodityGroup(''); setOrigin(''); setSearch(''); setQ(''); setPage(1); setShowFilters(false); }}
                   className="w-full btn-secondary text-red-600 border-red-200 hover:bg-red-50"
                 >
-                  پاک کردن فیلترها
+                  {content.clearFilters}
                 </button>
               )}
             </div>

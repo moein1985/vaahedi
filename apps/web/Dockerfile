@@ -11,7 +11,11 @@ COPY apps/web/package.json ./apps/web/
 COPY apps/server/package.json ./apps/server/
 
 # Install
-RUN npm ci
+RUN npm ci \
+	--fetch-retries=5 \
+	--fetch-retry-factor=2 \
+	--fetch-retry-mintimeout=20000 \
+	--fetch-retry-maxtimeout=120000
 
 # Copy source (server needed for type imports in trpc.ts)
 COPY packages/shared/ ./packages/shared/
