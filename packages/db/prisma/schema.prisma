@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -276,6 +277,10 @@ model UserProfile {
   experienceYears Int?
   description     String?
 
+  // اطلاعات پاسپورت
+  passportNumber     String?
+  passportExpiryDate DateTime?
+
   // وضعیت تأیید
   verificationStatus VerificationStatus @default(PENDING)
   verifiedAt         DateTime?
@@ -426,8 +431,11 @@ model TradeRequest {
   product       Product? @relation(fields: [productId], references: [id])
   productNameFa String?  // اگر محصول در سیستم ثبت نشده
   productNameEn String?
+  serviceCode   String?
   hsCode        String?
   commodityGroup CommodityGroup?
+  supplySourceType String?
+  supplySourceName String?
 
   // مشخصات درخواست
   quantity        String
@@ -452,6 +460,8 @@ model TradeRequest {
   @@index([requesterId])
   @@index([type, status])
   @@index([commodityGroup])
+  @@index([serviceCode])
+  @@index([supplySourceType])
   @@map("trade_requests")
 }
 

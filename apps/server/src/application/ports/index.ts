@@ -75,6 +75,14 @@ export interface IAIChatService {
     userContext?: {
       role?: string;
       commodityGroup?: string;
+      activityType?: string;
+      companyName?: string;
+      profileCompletionPercent?: number;
+      activeProductsCount?: number;
+      activeTradesCount?: number;
+      unreadNotificationsCount?: number;
+      offeredServices?: string[];
+      platformServices?: string[];
     };
   }): AsyncGenerator<string, void, unknown>;
 

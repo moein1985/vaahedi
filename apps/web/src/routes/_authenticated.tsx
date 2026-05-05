@@ -2,8 +2,8 @@ import { createFileRoute, Outlet, Link, useNavigate, useLocation } from '@tansta
 import { useEffect, useState } from 'react';
 import {
   LayoutDashboard, Package, ArrowLeftRight, Ticket, MessageSquare,
-  Bell, User, LogOut, ChevronLeft, ChevronRight, Globe, Shield,
-  Users, FileText, Megaphone, BookOpen, BarChart3, Settings, Hash,
+  Bell, User, LogOut, ChevronLeft, ChevronRight, Globe,
+  Users, FileText, Megaphone, BookOpen, BarChart3, Hash,
   Download,
 } from 'lucide-react';
 import { useAuthStore } from '../store/auth.store.js';
@@ -15,7 +15,9 @@ import { Progress } from '../components/ui/progress.js';
 import { Avatar, AvatarFallback } from '../components/ui/avatar.js';
 import { Separator } from '../components/ui/separator.js';
 import { ThemeToggle } from '../components/theme-toggle.js';
-import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '../components/LanguageSwitcher.js';
+import { AiFabChat } from '../components/ai-fab-chat.js';
+import { getFriendlyTrpcError } from '../lib/trpc-error.js';
 
 export const Route = createFileRoute('/_authenticated')({
   component: AuthenticatedLayout,
@@ -23,38 +25,51 @@ export const Route = createFileRoute('/_authenticated')({
 
 // ─── Navigation Config ────────────────────────────────────────────────────────
 
-const NAV_MAIN = [
+type AdminRoleName = 'SUPER_ADMIN' | 'EXPERT' | 'MEDIA_SUPERVISOR' | 'ANALYST';
+
+type NavConfigItem = {
+  href: string;
+  icon: React.ElementType;
+  label: string;
+  allowedAdminRoles?: readonly AdminRoleName[];
+};
+
+const NAV_MAIN: NavConfigItem[] = [
   { href: '/dashboard',           icon: LayoutDashboard,  label: 'داشبورد' },
-  { href: '/products',            icon: Package,          label: 'محصولات' },
-  { href: '/trade',               icon: ArrowLeftRight,   label: 'تجارت' },
-  { href: '/support',             icon: Ticket,           label: 'پشتیبانی' },
-  { href: '/chat',                icon: MessageSquare,    label: 'پیام‌رسان' },
-  { href: '/notifications',       icon: Bell,             label: 'اعلان‌ها' },
+  { href: '/products',            icon: Package,          label: 'کالاها' },
+  { href: '/rfq',                 icon: ArrowLeftRight,   label: 'درخواست ها (RFQ)' },
+  { href: '/marketplace',         icon: Globe,            label: 'بازار (Marketplace)' },
+  { href: '/messages',            icon: MessageSquare,    label: 'پیام ها' },
+  { href: '/ai-advisor',          icon: Bell,             label: 'AI مشاور' },
+  { href: '/documents',           icon: FileText,         label: 'اسناد' },
+  { href: '/finance',             icon: BarChart3,        label: 'مالی' },
 ];
 
-const NAV_SERVICES = [
+const NAV_SERVICES: NavConfigItem[] = [
+  { href: '/support',             icon: Ticket,    label: 'پشتیبانی' },
   { href: '/services/hs-codes',   icon: Hash,      label: 'کدهای گمرکی' },
   { href: '/services/circulars',  icon: BookOpen,  label: 'بخشنامه‌ها' },
   { href: '/downloads',           icon: Download,  label: 'دانلودها' },
   { href: '/ads-request',         icon: Megaphone, label: 'درخواست تبلیغ' },
 ];
 
-const NAV_ADMIN = [
+const NAV_ADMIN: NavConfigItem[] = [
   { href: '/admin',               icon: BarChart3,  label: 'پنل مدیریت' },
-  { href: '/admin/users',         icon: Users,      label: 'کاربران' },
-  { href: '/admin/documents',     icon: FileText,   label: 'مدارک' },
-  { href: '/admin/products',      icon: Package,    label: 'محصولات' },
-  { href: '/admin/ads',           icon: Megaphone,  label: 'تبلیغات' },
+  { href: '/admin/admins',        icon: Users,      label: 'مدیریت ادمین ها', allowedAdminRoles: ['SUPER_ADMIN'] },
+  { href: '/admin/users',         icon: Users,      label: 'کاربران', allowedAdminRoles: ['SUPER_ADMIN', 'EXPERT'] },
+  { href: '/admin/documents',     icon: FileText,   label: 'مدارک', allowedAdminRoles: ['SUPER_ADMIN', 'EXPERT'] },
+  { href: '/admin/products',      icon: Package,    label: 'محصولات', allowedAdminRoles: ['SUPER_ADMIN', 'MEDIA_SUPERVISOR'] },
+  { href: '/admin/ads',           icon: Megaphone,  label: 'تبلیغات', allowedAdminRoles: ['SUPER_ADMIN', 'MEDIA_SUPERVISOR'] },
   { href: '/admin/support',       icon: Ticket,     label: 'پشتیبانی' },
-  { href: '/admin/circulars',     icon: BookOpen,   label: 'بخشنامه‌ها' },
+  { href: '/admin/circulars',     icon: BookOpen,   label: 'بخشنامه‌ها', allowedAdminRoles: ['SUPER_ADMIN', 'MEDIA_SUPERVISOR'] },
 ];
 
-const MOBILE_NAV = [
+const MOBILE_NAV: NavConfigItem[] = [
   { href: '/dashboard',  icon: LayoutDashboard, label: 'خانه' },
-  { href: '/products',   icon: Package,         label: 'محصولات' },
-  { href: '/trade',      icon: ArrowLeftRight,  label: 'تجارت' },
-  { href: '/support',    icon: Ticket,          label: 'پشتیبانی' },
-  { href: '/profile',    icon: User,            label: 'پروفایل' },
+  { href: '/products',   icon: Package,         label: 'کالاها' },
+  { href: '/rfq',        icon: ArrowLeftRight,  label: 'RFQ' },
+  { href: '/messages',   icon: MessageSquare,   label: 'پیام ها' },
+  { href: '/finance',    icon: BarChart3,       label: 'مالی' },
 ];
 
 // ─── NavItem ─────────────────────────────────────────────────────────────────
@@ -112,7 +127,7 @@ function NavSection({
   titleColor,
 }: {
   title: string;
-  items: typeof NAV_MAIN;
+  items: NavConfigItem[];
   collapsed: boolean;
   titleColor?: string;
 }) {
@@ -133,20 +148,18 @@ function NavSection({
 
 // ─── Sidebar ─────────────────────────────────────────────────────────────────
 
-function Sidebar({ isAdmin }: { isAdmin: boolean }) {
+function Sidebar({ isAdmin, adminRole }: { isAdmin: boolean; adminRole?: string | null }) {
   const [collapsed, setCollapsed] = useState(false);
-  const user = useAuthStore((s) => s.user);
   const clearAuth = useAuthStore((s) => s.clearAuth);
   const navigate = useNavigate();
-  const { data: unreadNotif } = trpc.notification.unreadCount.useQuery();
   const { data: completion } = trpc.profile.completionStatus.useQuery();
   const logoutMutation = trpc.auth.logout.useMutation({
     onSettled: () => { clearAuth(); void navigate({ to: '/auth/login' }); },
   });
-
-  const navWithBadge = NAV_MAIN.map((item) =>
-    item.href === '/notifications' ? { ...item, badge: unreadNotif ?? 0 } : item
-  );
+  const adminItems = NAV_ADMIN.filter((item) => {
+    if (!item.allowedAdminRoles) return true;
+    return !!adminRole && item.allowedAdminRoles.includes(adminRole as AdminRoleName);
+  });
 
   return (
     <aside
@@ -170,10 +183,10 @@ function Sidebar({ isAdmin }: { isAdmin: boolean }) {
 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-5">
-        <NavSection title="منو اصلی" items={navWithBadge} collapsed={collapsed} />
+        <NavSection title="منو اصلی" items={NAV_MAIN} collapsed={collapsed} />
         <NavSection title="خدمات" items={NAV_SERVICES} collapsed={collapsed} />
         {isAdmin && (
-          <NavSection title="مدیریت" items={NAV_ADMIN} collapsed={collapsed} titleColor="text-red-400/70" />
+          <NavSection title="مدیریت" items={adminItems} collapsed={collapsed} titleColor="text-red-400/70" />
         )}
       </nav>
 
@@ -194,6 +207,7 @@ function Sidebar({ isAdmin }: { isAdmin: boolean }) {
       {/* Bottom */}
       <div className={cn('border-t border-border p-2 space-y-1', collapsed && 'flex flex-col items-center')}>
         <NavItem href="/profile" icon={User} label="پروفایل" collapsed={collapsed} />
+        {!collapsed && <LanguageSwitcher />}
         <ThemeToggle collapsed={collapsed} />
         <button
           onClick={() => logoutMutation.mutate()}
@@ -213,8 +227,7 @@ function Sidebar({ isAdmin }: { isAdmin: boolean }) {
       <button
         onClick={() => setCollapsed(!collapsed)}
         aria-label={collapsed ? 'باز کردن منو' : 'جمع کردن منو'}
-        className="absolute top-1/2 -translate-y-1/2 -left-3 h-6 w-6 rounded-full border border-border bg-card text-muted-foreground hover:text-foreground flex items-center justify-center shadow-sm transition-all hover:shadow-md z-10"
-        style={{ position: 'sticky', bottom: 80, alignSelf: 'flex-end', margin: '0 8px 8px' }}
+        className="sticky bottom-20 self-end m-2 absolute top-1/2 -translate-y-1/2 -left-3 h-6 w-6 rounded-full border border-border bg-card text-muted-foreground hover:text-foreground flex items-center justify-center shadow-sm transition-all hover:shadow-md z-10"
       >
         {collapsed ? <ChevronLeft className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
       </button>
@@ -246,6 +259,9 @@ function TopHeader() {
             <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
           )}
         </Link>
+        <div className="scale-75 -mx-1">
+          <LanguageSwitcher />
+        </div>
         <Avatar className="h-8 w-8">
           <AvatarFallback className="text-xs bg-[var(--brand-light)] text-[var(--brand)]">
             {String(user?.userCode ?? '').slice(0, 2)}
@@ -295,6 +311,7 @@ function MobileNav() {
 // ─── Auth Guard + Layout ──────────────────────────────────────────────────────
 
 function AuthenticatedLayout() {
+  const routeLocation = useLocation();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const accessToken = useAuthStore((s) => s.accessToken);
   const user = useAuthStore((s) => s.user);
@@ -305,7 +322,11 @@ function AuthenticatedLayout() {
 
   const refreshMutation = trpc.auth.refreshToken.useMutation({
     onSuccess: (data) => { setAuth(data.user, data.accessToken); setTokenReady(true); },
-    onError: () => { clearAuth(); void navigate({ to: '/auth/login' }); },
+    onError: (error) => {
+      console.warn('[Auth] refreshToken failed:', getFriendlyTrpcError(error));
+      clearAuth();
+      void navigate({ to: '/auth/login' });
+    },
   });
 
   useEffect(() => {
@@ -335,15 +356,16 @@ function AuthenticatedLayout() {
 
   return (
     <div className="flex min-h-screen bg-muted/30" dir="rtl">
-      <Sidebar isAdmin={user?.isAdmin ?? false} />
+      <Sidebar isAdmin={user?.isAdmin ?? false} adminRole={user?.adminRole} />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <TopHeader />
         <main className="flex-1 overflow-y-auto pb-20 lg:pb-6">
-          <div key={location.pathname} className="page-enter">
+          <div key={routeLocation.pathname} className="page-enter">
             <Outlet />
           </div>
         </main>
       </div>
+      <AiFabChat enabled={routeLocation.pathname.startsWith('/dashboard') || routeLocation.pathname === '/'} />
       <MobileNav />
     </div>
   );

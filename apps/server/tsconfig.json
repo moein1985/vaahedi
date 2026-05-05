@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "rootDir": "src",
     "outDir": "dist",
     "typeRoots": ["../../node_modules/@types", "node_modules/@types"],
     "types": ["node", "bcryptjs", "jsonwebtoken", "nodemailer"],

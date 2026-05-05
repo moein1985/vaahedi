@@ -78,6 +78,95 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
 
+  # ── E2E Alias Smoke ─────────────────────────────────────────────────────────
+  e2e-alias-smoke:
+    name: E2E Alias Smoke
+    runs-on: ubuntu-latest
+    needs: quality
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: vaahedi
+          POSTGRES_USER: vaahedi
+          POSTGRES_PASSWORD: vaahedi_pass
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U vaahedi -d vaahedi"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: cd packages/db && npx prisma generate
+
+      - name: Migrate and seed database
+        run: |
+          npm run db:migrate:prod --workspace @repo/db
+          npm run db:seed --workspace @repo/db
+        env:
+          DATABASE_URL: postgresql://vaahedi:vaahedi_pass@localhost:5433/vaahedi?schema=public
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run alias smoke tests
+        shell: bash
+        env:
+          DATABASE_URL: postgresql://vaahedi:vaahedi_pass@localhost:5433/vaahedi?schema=public
+          REDIS_URL: redis://localhost:6379
+          FRONTEND_URL: http://localhost:3002
+          VITE_API_URL: http://localhost:4000
+          PLAYWRIGHT_BASE_URL: http://localhost:3002
+        run: |
+          npm run dev --workspace @repo/server > server.log 2>&1 &
+          SERVER_PID=$!
+          npm run dev --workspace @repo/web -- --host 0.0.0.0 --port 3002 > web.log 2>&1 &
+          WEB_PID=$!
+
+          cleanup() {
+            kill $SERVER_PID $WEB_PID || true
+          }
+          trap cleanup EXIT
+
+          for i in {1..60}; do
+            if curl -fsS http://localhost:4000/health >/dev/null && curl -fsS http://localhost:3002/auth/login >/dev/null; then
+              break
+            fi
+            if [ "$i" -eq 60 ]; then
+              echo "App services did not become ready in time"
+              echo "---- server.log ----"
+              cat server.log || true
+              echo "---- web.log ----"
+              cat web.log || true
+              exit 1
+            fi
+            sleep 2
+          done
+
+          npx playwright test e2e/alias-routes.smoke.spec.ts e2e/alias-routes.mobile.smoke.spec.ts --project=chromium
+
   # ── Build ────────────────────────────────────────────────────────────────────
   build:
     name: Build

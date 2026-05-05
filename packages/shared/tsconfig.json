@@ -4,11 +4,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "types": [],
-    "baseUrl": ".",
-    "paths": {
-      "zod": ["../../node_modules/zod/index.d.ts"],
-      "zod/*": ["../../node_modules/zod/*"]
-    }
+    "ignoreDeprecations": "5.0"
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts"]

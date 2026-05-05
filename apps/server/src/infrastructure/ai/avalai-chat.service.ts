@@ -53,6 +53,14 @@ export class AvalaiChatService implements IAIChatService {
     userContext?: {
       role?: string;
       commodityGroup?: string;
+      activityType?: string;
+      companyName?: string;
+      profileCompletionPercent?: number;
+      activeProductsCount?: number;
+      activeTradesCount?: number;
+      unreadNotificationsCount?: number;
+      offeredServices?: string[];
+      platformServices?: string[];
     };
   }): AsyncGenerator<string, void, unknown> {
     if (!this.client) {
@@ -61,8 +69,23 @@ export class AvalaiChatService implements IAIChatService {
 
     // اضافه کردن System Prompt با context کاربر
     let systemContent = SYSTEM_PROMPT;
-    if (params.userContext?.role) {
-      systemContent += `\n\nاطلاعات کاربر جاری: نقش = ${params.userContext.role}`;
+    if (params.userContext) {
+      const ctx = params.userContext;
+      const offeredServices = (ctx.offeredServices ?? []).filter(Boolean).join('، ');
+      const platformServices = (ctx.platformServices ?? []).filter(Boolean).join('، ');
+
+      systemContent += `\n\n--- کانتکست ارکستریت شده کاربر ---`;
+      systemContent += `\nنقش کاربر: ${ctx.role ?? 'نامشخص'}`;
+      systemContent += `\nنام شرکت/واحد: ${ctx.companyName ?? 'نامشخص'}`;
+      systemContent += `\nحوزه فعالیت: ${ctx.activityType ?? 'نامشخص'}`;
+      systemContent += `\nگروه کالایی: ${ctx.commodityGroup ?? 'نامشخص'}`;
+      systemContent += `\nتکمیل پروفایل: ${ctx.profileCompletionPercent ?? 0}%`;
+      systemContent += `\nتعداد کالاهای کاربر: ${ctx.activeProductsCount ?? 0}`;
+      systemContent += `\nتعداد RFQ فعال: ${ctx.activeTradesCount ?? 0}`;
+      systemContent += `\nتعداد اعلان خوانده نشده: ${ctx.unreadNotificationsCount ?? 0}`;
+      systemContent += `\nخدمات/کدهای فعال کاربر: ${offeredServices || 'موردی ثبت نشده'}`;
+      systemContent += `\nخدمات قابل ارائه پلتفرم: ${platformServices || 'نامشخص'}`;
+      systemContent += `\nراهنما: پاسخ را متناسب با حوزه فعالیت و خدمات فعال کاربر شخصی سازی کن.`;
     }
 
     const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [

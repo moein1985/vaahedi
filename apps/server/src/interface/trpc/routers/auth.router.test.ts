@@ -31,8 +31,8 @@ if (!process.env.DATABASE_URL) {
         nationalCode: '0001000004',
         mobile: '09123456789',
         email: 'alice@example.com',
-        password: 'Password123',
-        confirmPassword: 'Password123',
+        password: 'Password123!',
+        confirmPassword: 'Password123!',
         role: 'TRADER',
         agreedToTerms: true,
         captchaToken: 'token',
@@ -54,8 +54,8 @@ if (!process.env.DATABASE_URL) {
         nationalCode: '0001000012',
         mobile: '09123456780',
         email: 'bob@example.com',
-        password: 'Password123',
-        confirmPassword: 'Password123',
+        password: 'Password123!',
+        confirmPassword: 'Password123!',
         role: 'TRADER',
         agreedToTerms: true,
         captchaToken: 'token',
@@ -72,8 +72,8 @@ if (!process.env.DATABASE_URL) {
         nationalCode: '0987654321',
         mobile: '09123456781',
         email: 'not-an-email',
-        password: 'Password123',
-        confirmPassword: 'Password123',
+        password: 'Password123!',
+        confirmPassword: 'Password123!',
         role: 'TRADER',
         agreedToTerms: true,
         captchaToken: 'token',
@@ -92,8 +92,8 @@ if (!process.env.DATABASE_URL) {
         nationalCode: '1111111111',
         mobile: '09123456782',
         email: 'testuser@example.com',
-        password: 'Secret123',
-        confirmPassword: 'Secret123',
+        password: 'Secret123!',
+        confirmPassword: 'Secret123!',
         role: 'TRADER',
         agreedToTerms: true,
         captchaToken: 'token',
@@ -103,7 +103,7 @@ if (!process.env.DATABASE_URL) {
     it('should successfully login with valid email and password', async () => {
       const res = await caller(ctx).loginWithEmail({
         email: 'testuser@example.com',
-        password: 'Secret123',
+        password: 'Secret123!',
         captchaToken: 'meh',
       });
       expect(res).toHaveProperty('accessToken');
@@ -134,7 +134,7 @@ if (!process.env.DATABASE_URL) {
     it('should return user object with accessToken', async () => {
       const res = await caller(ctx).loginWithEmail({
         email: 'testuser@example.com',
-        password: 'Secret123',
+        password: 'Secret123!',
         captchaToken: 'meh',
       });
       expect(res.accessToken).toBeDefined();
@@ -155,8 +155,8 @@ if (!process.env.DATABASE_URL) {
         nationalCode: '2222222222',
         mobile: '09123456783',
         email: 'refresh@example.com',
-        password: 'Rt123456',
-        confirmPassword: 'Rt123456',
+        password: 'Rt123456!',
+        confirmPassword: 'Rt123456!',
         role: 'TRADER',
         agreedToTerms: true,
         captchaToken: 'token',
@@ -166,7 +166,7 @@ if (!process.env.DATABASE_URL) {
       // simulate login to produce refreshToken
       const loginRes = await caller(ctx).loginWithEmail({
         email: 'refresh@example.com',
-        password: 'Rt123456',
+        password: 'Rt123456!',
         captchaToken: 'token',
       });
       // create refresh token manually since cookies not set via caller

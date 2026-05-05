@@ -1,6 +1,13 @@
 import { z } from 'zod';
 import { CommodityGroup, DeliveryTerms, PaymentMethod, ProductOrigin } from '../enums/index.js';
 
+const emptyToUndefined = (value: unknown) => {
+  if (value === '' || value === null || value === undefined) {
+    return undefined;
+  }
+  return value;
+};
+
 const dateTimeInputSchema = z
   .string()
   .refine(
@@ -12,6 +19,16 @@ const dateTimeInputSchema = z
     },
     'فرمت تاریخ معتبر نیست',
   );
+
+const optionalDateTimeInputSchema = z.preprocess(
+  emptyToUndefined,
+  dateTimeInputSchema.optional(),
+);
+
+const optionalPackagingTypeSchema = z.preprocess(
+  emptyToUndefined,
+  z.enum(['BULK', 'JUMBO_BAG', 'SACK', 'TANK', 'PALLET', 'CARTON', 'DRUM', 'OTHER']).optional(),
+);
 
 // ─── Dimensions ──────────────────────────────────────────────────────────────
 
@@ -35,7 +52,7 @@ export const saleConditionsSchema = z.object({
 
 // ─── Create Product ──────────────────────────────────────────────────────────
 
-export const createProductSchema = z.object({
+const createProductObjectSchema = z.object({
   nameFa: z.string().min(2, 'نام فارسی محصول الزامی است').max(200),
   nameEn: z.string().min(2, 'نام انگلیسی محصول الزامی است').max(200),
   grade: z.string().max(50).optional(),
@@ -49,9 +66,7 @@ export const createProductSchema = z.object({
   standardNumber: z.string().max(50).optional(),
   origin: z.nativeEnum(ProductOrigin),
   countryOfOrigin: z.string().max(100).optional(),
-  packagingType: z
-    .enum(['BULK', 'JUMBO_BAG', 'SACK', 'TANK', 'PALLET', 'CARTON', 'DRUM', 'OTHER'])
-    .optional(),
+  packagingType: optionalPackagingTypeSchema,
   dimensions: dimensionsSchema.optional(),
   deliveryTerms: z.nativeEnum(DeliveryTerms),
   deliveryLocation: z.string().max(200),
@@ -59,13 +74,29 @@ export const createProductSchema = z.object({
   preparationTimeDays: z.number().int().min(1).max(365),
   saleConditions: saleConditionsSchema.optional(),
   paymentMethod: z.nativeEnum(PaymentMethod),
-  productionDate: dateTimeInputSchema.optional(),
-  expiryDate: dateTimeInputSchema.optional(),
+  productionDate: optionalDateTimeInputSchema,
+  expiryDate: optionalDateTimeInputSchema,
   isAvailableInStock: z.boolean().default(false),
   description: z.string().max(3000).optional(),
 });
 
-export const updateProductSchema = createProductSchema.partial();
+export const createProductSchema = createProductObjectSchema.refine(
+  (data) => {
+    // If both dates are provided, expiry must be after production
+    if (data.productionDate && data.expiryDate) {
+      const prodDate = new Date(data.productionDate).getTime();
+      const expDate = new Date(data.expiryDate).getTime();
+      return expDate > prodDate;
+    }
+    return true;
+  },
+  {
+    message: 'تاریخ انقضا باید بعد از تاریخ تولید باشد',
+    path: ['expiryDate'], // Show error on expiryDate field
+  },
+);
+
+export const updateProductSchema = createProductObjectSchema.partial();
 
 // ─── Product Search / List ───────────────────────────────────────────────────
 

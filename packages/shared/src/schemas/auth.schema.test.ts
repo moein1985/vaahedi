@@ -8,17 +8,17 @@ import { z } from 'zod';
 describe('Auth Schemas', () => {
   describe('loginWithEmailSchema', () => {
     it('should parse valid input', () => {
-      const data = { email: 'test@example.com', password: 'Pass1234' };
+      const data = { email: 'test@example.com', password: 'Pass1234!' };
       expect(() => loginWithEmailSchema.parse(data)).not.toThrow();
     });
 
     it('should allow optional captchaToken', () => {
-      const data = { email: 'test@example.com', password: 'Pass1234', captchaToken: 'abc' };
+      const data = { email: 'test@example.com', password: 'Pass1234!', captchaToken: 'abc' };
       expect(() => loginWithEmailSchema.parse(data)).not.toThrow();
     });
 
     it('should reject invalid email format', () => {
-      const bad = { email: 'invalid', password: 'Pass1234' };
+      const bad = { email: 'invalid', password: 'Pass1234!' };
       expect(() => loginWithEmailSchema.parse(bad)).toThrow(z.ZodError);
     });
 
@@ -42,8 +42,8 @@ describe('Auth Schemas', () => {
         nationalCode: '0123456789',
         mobile: '09123456789',
         email: 'foo@example.com',
-        password: 'Pass1234',
-        confirmPassword: 'Pass1234',
+        password: 'Pass1234!',
+        confirmPassword: 'Pass1234!',
         role: 'TRADER',
         agreedToTerms: true,
         captchaToken: 'cap',
@@ -59,7 +59,7 @@ describe('Auth Schemas', () => {
         nationalCode: '0123456789',
         mobile: '09123456789',
         email: 'foo@example.com',
-        password: 'Pass1234',
+        password: 'Pass1234!',
         confirmPassword: 'Wrong',
         role: 'TRADER',
         agreedToTerms: true,
@@ -76,8 +76,8 @@ describe('Auth Schemas', () => {
         nationalCode: '0123456789',
         mobile: '09123456789',
         email: 'foo@example.com',
-        password: 'Pass1234',
-        confirmPassword: 'Pass1234',
+        password: 'Pass1234!',
+        confirmPassword: 'Pass1234!',
         role: 'TRADER',
         agreedToTerms: true,
         captchaToken: 'cap',
@@ -94,8 +94,8 @@ describe('Auth Schemas', () => {
         nationalCode: '0123456789',
         mobile: '09123456789',
         email: 'not-an-email',
-        password: 'Pass1234',
-        confirmPassword: 'Pass1234',
+        password: 'Pass1234!',
+        confirmPassword: 'Pass1234!',
         role: 'TRADER',
         agreedToTerms: true,
         captchaToken: 'cap',
@@ -114,13 +114,30 @@ describe('Auth Schemas', () => {
         ceoNationalCode: '0123456789',
         mobile: '09123456789',
         email: 'legal@example.com',
+        password: 'Pass1234!',
+        confirmPassword: 'Pass1234!',
+        role: 'TRADER',
+        agreedToTerms: true,
+        captchaToken: 'cap',
+      };
+      expect(() => registerSchema.parse(data)).not.toThrow();
+    });
+
+    it('should reject weak password without symbol', () => {
+      const data = {
+        membershipType: 'INDIVIDUAL',
+        firstName: 'Foo',
+        lastName: 'Bar',
+        nationalCode: '0123456789',
+        mobile: '09123456789',
+        email: 'foo@example.com',
         password: 'Pass1234',
         confirmPassword: 'Pass1234',
         role: 'TRADER',
         agreedToTerms: true,
         captchaToken: 'cap',
       };
-      expect(() => registerSchema.parse(data)).not.toThrow();
+      expect(() => registerSchema.parse(data)).toThrow();
     });
   });
 });

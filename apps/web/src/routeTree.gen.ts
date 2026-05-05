@@ -26,10 +26,16 @@ import { Route as AuthenticatedDownloadsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAdsRequestRouteImport } from './routes/_authenticated/ads-request'
 import { Route as AuthenticatedTradeIndexRouteImport } from './routes/_authenticated/trade/index'
 import { Route as AuthenticatedSupportIndexRouteImport } from './routes/_authenticated/support/index'
+import { Route as AuthenticatedRfqIndexRouteImport } from './routes/_authenticated/rfq/index'
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile/index'
 import { Route as AuthenticatedProductsIndexRouteImport } from './routes/_authenticated/products/index'
+import { Route as AuthenticatedMessagesIndexRouteImport } from './routes/_authenticated/messages/index'
+import { Route as AuthenticatedMarketplaceIndexRouteImport } from './routes/_authenticated/marketplace/index'
+import { Route as AuthenticatedFinanceIndexRouteImport } from './routes/_authenticated/finance/index'
+import { Route as AuthenticatedDocumentsIndexRouteImport } from './routes/_authenticated/documents/index'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 import { Route as AuthenticatedChatIndexRouteImport } from './routes/_authenticated/chat/index'
+import { Route as AuthenticatedAiAdvisorIndexRouteImport } from './routes/_authenticated/ai-advisor/index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedTradeIdRouteImport } from './routes/_authenticated/trade/$id'
 import { Route as AuthenticatedServicesHsCodesRouteImport } from './routes/_authenticated/services/hs-codes'
@@ -42,6 +48,7 @@ import { Route as AuthenticatedAdminNewsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAdminDocumentsRouteImport } from './routes/_authenticated/admin/documents'
 import { Route as AuthenticatedAdminCircularsRouteImport } from './routes/_authenticated/admin/circulars'
 import { Route as AuthenticatedAdminAdsRouteImport } from './routes/_authenticated/admin/ads'
+import { Route as AuthenticatedAdminAdminsRouteImport } from './routes/_authenticated/admin/admins'
 import { Route as AuthenticatedAdminUsersUserIdRouteImport } from './routes/_authenticated/admin/users.$userId'
 
 const NewsRoute = NewsRouteImport.update({
@@ -130,6 +137,11 @@ const AuthenticatedSupportIndexRoute =
     path: '/support/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedRfqIndexRoute = AuthenticatedRfqIndexRouteImport.update({
+  id: '/rfq/',
+  path: '/rfq/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedProfileIndexRoute =
   AuthenticatedProfileIndexRouteImport.update({
     id: '/profile/',
@@ -140,6 +152,30 @@ const AuthenticatedProductsIndexRoute =
   AuthenticatedProductsIndexRouteImport.update({
     id: '/products/',
     path: '/products/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedMessagesIndexRoute =
+  AuthenticatedMessagesIndexRouteImport.update({
+    id: '/messages/',
+    path: '/messages/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedMarketplaceIndexRoute =
+  AuthenticatedMarketplaceIndexRouteImport.update({
+    id: '/marketplace/',
+    path: '/marketplace/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedFinanceIndexRoute =
+  AuthenticatedFinanceIndexRouteImport.update({
+    id: '/finance/',
+    path: '/finance/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedDocumentsIndexRoute =
+  AuthenticatedDocumentsIndexRouteImport.update({
+    id: '/documents/',
+    path: '/documents/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedDashboardIndexRoute =
@@ -153,6 +189,12 @@ const AuthenticatedChatIndexRoute = AuthenticatedChatIndexRouteImport.update({
   path: '/chat/',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAiAdvisorIndexRoute =
+  AuthenticatedAiAdvisorIndexRouteImport.update({
+    id: '/ai-advisor/',
+    path: '/ai-advisor/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
@@ -220,6 +262,12 @@ const AuthenticatedAdminAdsRoute = AuthenticatedAdminAdsRouteImport.update({
   path: '/admin/ads',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdminAdminsRoute =
+  AuthenticatedAdminAdminsRouteImport.update({
+    id: '/admin/admins',
+    path: '/admin/admins',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminUsersUserIdRoute =
   AuthenticatedAdminUsersUserIdRouteImport.update({
     id: '/$userId',
@@ -242,6 +290,7 @@ export interface FileRoutesByFullPath {
   '/catalog/$productId': typeof CatalogProductIdRoute
   '/news/$newsId': typeof NewsNewsIdRoute
   '/u/$userCode': typeof UUserCodeRoute
+  '/admin/admins': typeof AuthenticatedAdminAdminsRoute
   '/admin/ads': typeof AuthenticatedAdminAdsRoute
   '/admin/circulars': typeof AuthenticatedAdminCircularsRoute
   '/admin/documents': typeof AuthenticatedAdminDocumentsRoute
@@ -254,10 +303,16 @@ export interface FileRoutesByFullPath {
   '/services/hs-codes': typeof AuthenticatedServicesHsCodesRoute
   '/trade/$id': typeof AuthenticatedTradeIdRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/ai-advisor/': typeof AuthenticatedAiAdvisorIndexRoute
   '/chat/': typeof AuthenticatedChatIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/documents/': typeof AuthenticatedDocumentsIndexRoute
+  '/finance/': typeof AuthenticatedFinanceIndexRoute
+  '/marketplace/': typeof AuthenticatedMarketplaceIndexRoute
+  '/messages/': typeof AuthenticatedMessagesIndexRoute
   '/products/': typeof AuthenticatedProductsIndexRoute
   '/profile/': typeof AuthenticatedProfileIndexRoute
+  '/rfq/': typeof AuthenticatedRfqIndexRoute
   '/support/': typeof AuthenticatedSupportIndexRoute
   '/trade/': typeof AuthenticatedTradeIndexRoute
   '/admin/users/$userId': typeof AuthenticatedAdminUsersUserIdRoute
@@ -277,6 +332,7 @@ export interface FileRoutesByTo {
   '/catalog/$productId': typeof CatalogProductIdRoute
   '/news/$newsId': typeof NewsNewsIdRoute
   '/u/$userCode': typeof UUserCodeRoute
+  '/admin/admins': typeof AuthenticatedAdminAdminsRoute
   '/admin/ads': typeof AuthenticatedAdminAdsRoute
   '/admin/circulars': typeof AuthenticatedAdminCircularsRoute
   '/admin/documents': typeof AuthenticatedAdminDocumentsRoute
@@ -289,10 +345,16 @@ export interface FileRoutesByTo {
   '/services/hs-codes': typeof AuthenticatedServicesHsCodesRoute
   '/trade/$id': typeof AuthenticatedTradeIdRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/ai-advisor': typeof AuthenticatedAiAdvisorIndexRoute
   '/chat': typeof AuthenticatedChatIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
+  '/documents': typeof AuthenticatedDocumentsIndexRoute
+  '/finance': typeof AuthenticatedFinanceIndexRoute
+  '/marketplace': typeof AuthenticatedMarketplaceIndexRoute
+  '/messages': typeof AuthenticatedMessagesIndexRoute
   '/products': typeof AuthenticatedProductsIndexRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
+  '/rfq': typeof AuthenticatedRfqIndexRoute
   '/support': typeof AuthenticatedSupportIndexRoute
   '/trade': typeof AuthenticatedTradeIndexRoute
   '/admin/users/$userId': typeof AuthenticatedAdminUsersUserIdRoute
@@ -314,6 +376,7 @@ export interface FileRoutesById {
   '/catalog/$productId': typeof CatalogProductIdRoute
   '/news/$newsId': typeof NewsNewsIdRoute
   '/u/$userCode': typeof UUserCodeRoute
+  '/_authenticated/admin/admins': typeof AuthenticatedAdminAdminsRoute
   '/_authenticated/admin/ads': typeof AuthenticatedAdminAdsRoute
   '/_authenticated/admin/circulars': typeof AuthenticatedAdminCircularsRoute
   '/_authenticated/admin/documents': typeof AuthenticatedAdminDocumentsRoute
@@ -326,10 +389,16 @@ export interface FileRoutesById {
   '/_authenticated/services/hs-codes': typeof AuthenticatedServicesHsCodesRoute
   '/_authenticated/trade/$id': typeof AuthenticatedTradeIdRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/ai-advisor/': typeof AuthenticatedAiAdvisorIndexRoute
   '/_authenticated/chat/': typeof AuthenticatedChatIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/_authenticated/documents/': typeof AuthenticatedDocumentsIndexRoute
+  '/_authenticated/finance/': typeof AuthenticatedFinanceIndexRoute
+  '/_authenticated/marketplace/': typeof AuthenticatedMarketplaceIndexRoute
+  '/_authenticated/messages/': typeof AuthenticatedMessagesIndexRoute
   '/_authenticated/products/': typeof AuthenticatedProductsIndexRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
+  '/_authenticated/rfq/': typeof AuthenticatedRfqIndexRoute
   '/_authenticated/support/': typeof AuthenticatedSupportIndexRoute
   '/_authenticated/trade/': typeof AuthenticatedTradeIndexRoute
   '/_authenticated/admin/users/$userId': typeof AuthenticatedAdminUsersUserIdRoute
@@ -351,6 +420,7 @@ export interface FileRouteTypes {
     | '/catalog/$productId'
     | '/news/$newsId'
     | '/u/$userCode'
+    | '/admin/admins'
     | '/admin/ads'
     | '/admin/circulars'
     | '/admin/documents'
@@ -363,10 +433,16 @@ export interface FileRouteTypes {
     | '/services/hs-codes'
     | '/trade/$id'
     | '/admin/'
+    | '/ai-advisor/'
     | '/chat/'
     | '/dashboard/'
+    | '/documents/'
+    | '/finance/'
+    | '/marketplace/'
+    | '/messages/'
     | '/products/'
     | '/profile/'
+    | '/rfq/'
     | '/support/'
     | '/trade/'
     | '/admin/users/$userId'
@@ -386,6 +462,7 @@ export interface FileRouteTypes {
     | '/catalog/$productId'
     | '/news/$newsId'
     | '/u/$userCode'
+    | '/admin/admins'
     | '/admin/ads'
     | '/admin/circulars'
     | '/admin/documents'
@@ -398,10 +475,16 @@ export interface FileRouteTypes {
     | '/services/hs-codes'
     | '/trade/$id'
     | '/admin'
+    | '/ai-advisor'
     | '/chat'
     | '/dashboard'
+    | '/documents'
+    | '/finance'
+    | '/marketplace'
+    | '/messages'
     | '/products'
     | '/profile'
+    | '/rfq'
     | '/support'
     | '/trade'
     | '/admin/users/$userId'
@@ -422,6 +505,7 @@ export interface FileRouteTypes {
     | '/catalog/$productId'
     | '/news/$newsId'
     | '/u/$userCode'
+    | '/_authenticated/admin/admins'
     | '/_authenticated/admin/ads'
     | '/_authenticated/admin/circulars'
     | '/_authenticated/admin/documents'
@@ -434,10 +518,16 @@ export interface FileRouteTypes {
     | '/_authenticated/services/hs-codes'
     | '/_authenticated/trade/$id'
     | '/_authenticated/admin/'
+    | '/_authenticated/ai-advisor/'
     | '/_authenticated/chat/'
     | '/_authenticated/dashboard/'
+    | '/_authenticated/documents/'
+    | '/_authenticated/finance/'
+    | '/_authenticated/marketplace/'
+    | '/_authenticated/messages/'
     | '/_authenticated/products/'
     | '/_authenticated/profile/'
+    | '/_authenticated/rfq/'
     | '/_authenticated/support/'
     | '/_authenticated/trade/'
     | '/_authenticated/admin/users/$userId'
@@ -577,6 +667,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSupportIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/rfq/': {
+      id: '/_authenticated/rfq/'
+      path: '/rfq'
+      fullPath: '/rfq/'
+      preLoaderRoute: typeof AuthenticatedRfqIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/profile/': {
       id: '/_authenticated/profile/'
       path: '/profile'
@@ -591,6 +688,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProductsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/messages/': {
+      id: '/_authenticated/messages/'
+      path: '/messages'
+      fullPath: '/messages/'
+      preLoaderRoute: typeof AuthenticatedMessagesIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/marketplace/': {
+      id: '/_authenticated/marketplace/'
+      path: '/marketplace'
+      fullPath: '/marketplace/'
+      preLoaderRoute: typeof AuthenticatedMarketplaceIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/finance/': {
+      id: '/_authenticated/finance/'
+      path: '/finance'
+      fullPath: '/finance/'
+      preLoaderRoute: typeof AuthenticatedFinanceIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/documents/': {
+      id: '/_authenticated/documents/'
+      path: '/documents'
+      fullPath: '/documents/'
+      preLoaderRoute: typeof AuthenticatedDocumentsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
       path: '/dashboard'
@@ -603,6 +728,13 @@ declare module '@tanstack/react-router' {
       path: '/chat'
       fullPath: '/chat/'
       preLoaderRoute: typeof AuthenticatedChatIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/ai-advisor/': {
+      id: '/_authenticated/ai-advisor/'
+      path: '/ai-advisor'
+      fullPath: '/ai-advisor/'
+      preLoaderRoute: typeof AuthenticatedAiAdvisorIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/admin/': {
@@ -689,6 +821,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAdsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/admins': {
+      id: '/_authenticated/admin/admins'
+      path: '/admin/admins'
+      fullPath: '/admin/admins'
+      preLoaderRoute: typeof AuthenticatedAdminAdminsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin/users/$userId': {
       id: '/_authenticated/admin/users/$userId'
       path: '/$userId'
@@ -717,6 +856,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdsRequestRoute: typeof AuthenticatedAdsRequestRoute
   AuthenticatedDownloadsRoute: typeof AuthenticatedDownloadsRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
+  AuthenticatedAdminAdminsRoute: typeof AuthenticatedAdminAdminsRoute
   AuthenticatedAdminAdsRoute: typeof AuthenticatedAdminAdsRoute
   AuthenticatedAdminCircularsRoute: typeof AuthenticatedAdminCircularsRoute
   AuthenticatedAdminDocumentsRoute: typeof AuthenticatedAdminDocumentsRoute
@@ -729,10 +869,16 @@ interface AuthenticatedRouteChildren {
   AuthenticatedServicesHsCodesRoute: typeof AuthenticatedServicesHsCodesRoute
   AuthenticatedTradeIdRoute: typeof AuthenticatedTradeIdRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAiAdvisorIndexRoute: typeof AuthenticatedAiAdvisorIndexRoute
   AuthenticatedChatIndexRoute: typeof AuthenticatedChatIndexRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
+  AuthenticatedDocumentsIndexRoute: typeof AuthenticatedDocumentsIndexRoute
+  AuthenticatedFinanceIndexRoute: typeof AuthenticatedFinanceIndexRoute
+  AuthenticatedMarketplaceIndexRoute: typeof AuthenticatedMarketplaceIndexRoute
+  AuthenticatedMessagesIndexRoute: typeof AuthenticatedMessagesIndexRoute
   AuthenticatedProductsIndexRoute: typeof AuthenticatedProductsIndexRoute
   AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
+  AuthenticatedRfqIndexRoute: typeof AuthenticatedRfqIndexRoute
   AuthenticatedSupportIndexRoute: typeof AuthenticatedSupportIndexRoute
   AuthenticatedTradeIndexRoute: typeof AuthenticatedTradeIndexRoute
 }
@@ -741,6 +887,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdsRequestRoute: AuthenticatedAdsRequestRoute,
   AuthenticatedDownloadsRoute: AuthenticatedDownloadsRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
+  AuthenticatedAdminAdminsRoute: AuthenticatedAdminAdminsRoute,
   AuthenticatedAdminAdsRoute: AuthenticatedAdminAdsRoute,
   AuthenticatedAdminCircularsRoute: AuthenticatedAdminCircularsRoute,
   AuthenticatedAdminDocumentsRoute: AuthenticatedAdminDocumentsRoute,
@@ -753,10 +900,16 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedServicesHsCodesRoute: AuthenticatedServicesHsCodesRoute,
   AuthenticatedTradeIdRoute: AuthenticatedTradeIdRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAiAdvisorIndexRoute: AuthenticatedAiAdvisorIndexRoute,
   AuthenticatedChatIndexRoute: AuthenticatedChatIndexRoute,
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
+  AuthenticatedDocumentsIndexRoute: AuthenticatedDocumentsIndexRoute,
+  AuthenticatedFinanceIndexRoute: AuthenticatedFinanceIndexRoute,
+  AuthenticatedMarketplaceIndexRoute: AuthenticatedMarketplaceIndexRoute,
+  AuthenticatedMessagesIndexRoute: AuthenticatedMessagesIndexRoute,
   AuthenticatedProductsIndexRoute: AuthenticatedProductsIndexRoute,
   AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
+  AuthenticatedRfqIndexRoute: AuthenticatedRfqIndexRoute,
   AuthenticatedSupportIndexRoute: AuthenticatedSupportIndexRoute,
   AuthenticatedTradeIndexRoute: AuthenticatedTradeIndexRoute,
 }

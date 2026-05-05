@@ -1,6 +1,19 @@
 import { z } from 'zod';
 import { CommodityGroup, DocumentType, UserRole } from '../enums/index.js';
 
+const websiteSchema = z.preprocess(
+  (value) => {
+    if (typeof value !== 'string') return value;
+
+    const normalized = value.trim();
+    if (!normalized) return undefined;
+
+    if (/^https?:\/\//i.test(normalized)) return normalized;
+    return `https://${normalized}`;
+  },
+  z.string().url('آدرس سایت معتبر نیست').optional(),
+);
+
 // ─── Address ─────────────────────────────────────────────────────────────────
 
 export const addressSchema = z.object({
@@ -35,10 +48,12 @@ export const createProfileSchema = z.object({
   commodityGroup: z.nativeEnum(CommodityGroup).optional(),
   position: z.string().max(100).optional(),             // سمت / مسئولیت
   experienceYears: z.number().int().min(0).max(99).optional(),
+  passportNumber: z.string().max(30).optional(),
+  passportExpiryDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'تاریخ اعتبار پاسپورت معتبر نیست').optional(),
   licenseTypes: z
     .array(z.nativeEnum(DocumentType))
     .min(1, 'حداقل یک نوع مجوز باید مشخص شود'),
-  website: z.string().url('آدرس سایت معتبر نیست').optional(),
+  website: websiteSchema,
   description: z.string().max(1000).optional(),
 });
 

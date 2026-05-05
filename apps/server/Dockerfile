@@ -1,5 +1,5 @@
 ## ─── Stage 1: Build ──────────────────────────────────────────────────────────
-FROM node:22-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -40,9 +40,7 @@ RUN cd apps/server && npm run build \
     && echo "server/dist:" && ls dist/
 
 ## ─── Stage 2: Production ──────────────────────────────────────────────────────
-FROM node:22-alpine AS runner
-
-RUN apk add --no-cache tini
+FROM node:20-alpine AS runner
 
 WORKDIR /app
 
@@ -54,12 +52,9 @@ COPY packages/shared/package.json ./packages/shared/
 COPY packages/db/package.json ./packages/db/
 COPY apps/server/package.json ./apps/server/
 
-# Install only production deps
-RUN npm ci --omit=dev \
-    --fetch-retries=5 \
-    --fetch-retry-factor=2 \
-    --fetch-retry-mintimeout=20000 \
-    --fetch-retry-maxtimeout=120000 \
+# Reuse builder dependencies and prune dev packages to avoid a second network install
+COPY --from=builder /app/node_modules ./node_modules
+RUN npm prune --omit=dev \
     && npm cache clean --force
 
 # Copy compiled workspace packages
@@ -81,5 +76,4 @@ COPY packages/db/prisma/ ./packages/db/prisma/
 
 EXPOSE 4000
 
-ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["node", "apps/server/dist/main.js"]

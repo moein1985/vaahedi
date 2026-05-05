@@ -115,7 +115,7 @@ const resources = {
       'doc.OTHER_LICENSES': 'سایر مجوزهای مرتبط',
       'doc.ISO_CERTIFICATE': 'گواهی ایزو / استاندارد',
       'doc.BUSINESS_CARD': 'کارت بازرگانی',
-      'doc.ID_DOCUMENT': 'تصویر مدرک شناسایی',
+      'doc.ID_DOCUMENT': 'تصویر مدرک هویتی (کارت ملی/پاسپورت)',
 
       // Consultation Categories
       'consultation.COMMERCIAL': 'بازرگانی',
@@ -249,7 +249,7 @@ const resources = {
       'doc.OTHER_LICENSES': 'Other Licenses',
       'doc.ISO_CERTIFICATE': 'ISO Certificate',
       'doc.BUSINESS_CARD': 'Business Card',
-      'doc.ID_DOCUMENT': 'ID Document',
+      'doc.ID_DOCUMENT': 'Identity/Passport Document',
 
       // Consultation Categories
       'consultation.COMMERCIAL': 'Commercial',
@@ -383,7 +383,7 @@ const resources = {
       'doc.OTHER_LICENSES': 'تراخيص أخرى',
       'doc.ISO_CERTIFICATE': 'شهادة ISO',
       'doc.BUSINESS_CARD': 'بطاقة الأعمال',
-      'doc.ID_DOCUMENT': 'وثيقة الهوية',
+      'doc.ID_DOCUMENT': 'وثيقة الهوية/جواز السفر',
 
       // Consultation Categories
       'consultation.COMMERCIAL': 'تجاري',

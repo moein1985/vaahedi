@@ -12,6 +12,7 @@ export interface AuthUser {
   mobile: string;
   email: string | null;
   isAdmin: boolean;
+  adminRole?: string | null;
 }
 
 interface AuthState {

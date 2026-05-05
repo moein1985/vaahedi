@@ -1,0 +1,38 @@
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+ENV NODE_ENV=production
+
+# Use an Iran-accessible npm registry by default; can be overridden at build time.
+ARG NPM_REGISTRY=https://registry.npm.ir/
+ENV npm_config_registry=$NPM_REGISTRY
+
+# Copy workspace manifests for npm prune workspace resolution
+COPY package.json package-lock.json ./
+COPY apps/server/package.json ./apps/server/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/db/package.json ./packages/db/
+
+# Install production dependencies directly in Linux container (prevents host OS mismatch)
+RUN npm ci --omit=dev --include=optional \
+	--fetch-retries=5 \
+	--fetch-retry-factor=2 \
+	--fetch-retry-mintimeout=20000 \
+	--fetch-retry-maxtimeout=120000 \
+	&& npm cache clean --force
+
+# Copy Prisma schema and pre-generated Linux Prisma client artifacts.
+# This avoids runtime init failures and removes dependency on binaries.prisma.sh during deploy.
+COPY packages/db/prisma ./packages/db/prisma
+COPY packages/db/prisma-client ./node_modules/.prisma/client
+
+# Copy prebuilt artifacts and runtime Prisma schema
+COPY apps/server/dist ./apps/server/dist
+COPY packages/shared/dist ./packages/shared/dist
+COPY packages/db/dist ./packages/db/dist
+
+# Point workspace package exports to compiled outputs
+RUN sed -i 's|"./src/index.ts"|"./dist/index.js"|g' packages/shared/package.json packages/db/package.json
+
+EXPOSE 4000
+CMD ["node", "apps/server/dist/main.js"]

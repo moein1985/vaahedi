@@ -39,6 +39,7 @@ function LoginOTPPage() {
         mobile: data.user.mobile,
         email: null,
         isAdmin: false,
+        adminRole: null,
       }, ''); // accessToken از cookie
       void navigate({ to: '/dashboard' });
     },

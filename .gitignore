@@ -59,3 +59,12 @@ packages/db/node_modules/
 
 # ─── Uploads (dev) ───────────────────────────────────
 uploads/
+
+# ─── Docker artifacts ────────────────────────────────
+*.tar
+*.zip
+dist.zip
+
+# ─── Temp / one-off SQL scripts ──────────────────────
+reset_pw.sql
+check_*.sql

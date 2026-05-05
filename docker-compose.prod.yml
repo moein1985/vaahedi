@@ -29,7 +29,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: apps/web/Dockerfile
+      dockerfile: apps/web/Dockerfile.prebuilt
     restart: always
     expose:
       - "80"
@@ -43,7 +43,9 @@ services:
   api:
     build:
       context: .
-      dockerfile: apps/server/Dockerfile
+      dockerfile: apps/server/Dockerfile.prebuilt
+      args:
+        NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npm.ir/}
     restart: always
     expose:
       - "4000"
@@ -73,7 +75,9 @@ services:
   worker:
     build:
       context: .
-      dockerfile: apps/server/Dockerfile
+      dockerfile: apps/server/Dockerfile.prebuilt
+      args:
+        NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npm.ir/}
     restart: always
     command: ["node", "apps/server/dist/worker.js"]
     env_file:

@@ -1,11 +1,55 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useForm } from 'react-hook-form';
+import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { trpc } from '../../../trpc.js';
 import { createProductSchema, CommodityGroup, ProductOrigin, DeliveryTerms, PaymentMethod } from '@repo/shared';
 import type { z } from 'zod';
 import { toast } from 'sonner';
+import { getFriendlyTrpcError } from '../../../lib/trpc-error.js';
+import { FORM_LABELS, FORM_PLACEHOLDERS, FORM_HINTS, FORM_ERRORS } from '../../../lib/form-constants.js';
+
+const CREATED_ID_STORAGE_KEY = 'vaahedi:new-product-created-id';
+const CREATED_ID_TS_STORAGE_KEY = 'vaahedi:new-product-created-at';
+const CREATED_ID_TTL_MS = 5 * 60 * 1000;
+
+function loadRecentCreatedProductId(): string | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const createdId = window.sessionStorage.getItem(CREATED_ID_STORAGE_KEY);
+  const createdAtRaw = window.sessionStorage.getItem(CREATED_ID_TS_STORAGE_KEY);
+  const createdAt = createdAtRaw ? Number(createdAtRaw) : 0;
+
+  if (!createdId || !createdAt || Number.isNaN(createdAt)) {
+    return null;
+  }
+
+  const isFresh = Date.now() - createdAt <= CREATED_ID_TTL_MS;
+  if (!isFresh) {
+    window.sessionStorage.removeItem(CREATED_ID_STORAGE_KEY);
+    window.sessionStorage.removeItem(CREATED_ID_TS_STORAGE_KEY);
+    return null;
+  }
+
+  return createdId;
+}
+
+function persistCreatedProductId(createdId: string | null) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  if (!createdId) {
+    window.sessionStorage.removeItem(CREATED_ID_STORAGE_KEY);
+    window.sessionStorage.removeItem(CREATED_ID_TS_STORAGE_KEY);
+    return;
+  }
+
+  window.sessionStorage.setItem(CREATED_ID_STORAGE_KEY, createdId);
+  window.sessionStorage.setItem(CREATED_ID_TS_STORAGE_KEY, String(Date.now()));
+}
 
 export const Route = createFileRoute('/_authenticated/products/new')({
   component: NewProductPage,
@@ -48,15 +92,44 @@ const PACKAGING_OPTIONS = [
   { value: 'OTHER', label: 'سایر' },
 ];
 
+const STEP_ONE_FIELDS = ['nameFa', 'nameEn', 'commodityGroup', 'origin', 'hsCode', 'technicalSpecs'] as const;
+const STEP_TWO_FIELDS = ['minOrderQuantity', 'preparationTimeDays', 'deliveryTerms', 'deliveryLocation', 'paymentMethod'] as const;
+
 function NewProductPage() {
   const navigate = useNavigate();
-  const [createdId, setCreatedId] = useState<string | null>(null);
+  const [createdId, setCreatedId] = useState<string | null>(() => loadRecentCreatedProductId());
   const [step, setStep] = useState(1);
-  const [mediaFiles, setMediaFiles] = useState<{ name: string; status: 'pending' | 'uploading' | 'done' | 'error' }[]>([]);
+  const [submitReady, setSubmitReady] = useState(false);
+  const [mediaFiles, setMediaFiles] = useState<{ name: string; status: 'pending' | 'uploading' | 'done' | 'error'; preview?: string; file?: File; errorMsg?: string }[]>([]);
   const [uploadingMedia, setUploadingMedia] = useState(false);
+  const [mediaError, setMediaError] = useState<string | null>(null);
   const mediaInputRef = useRef<HTMLInputElement>(null);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<NewProductForm>({
+  const setCreatedProductId = (id: string | null) => {
+    setCreatedId(id);
+    persistCreatedProductId(id);
+  };
+
+  const MAX_MEDIA_SIZE_BYTES = 25 * 1024 * 1024;
+  const allowedMimePrefixes = ['image/', 'video/'];
+  const allowedMimeExact = ['application/pdf'];
+
+  useEffect(() => {
+    if (step !== 3) {
+      setSubmitReady(false);
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setSubmitReady(true);
+    }, 400);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [step]);
+
+  const { register, handleSubmit, trigger, formState: { errors } } = useForm<NewProductForm>({
     resolver: zodResolver(createProductSchema) as any,
     defaultValues: {
       isAvailableInStock: false,
@@ -65,21 +138,54 @@ function NewProductPage() {
     },
   });
 
-  const createMutation = trpc.product.create.useMutation({
-    onSuccess: (data) => {
-      setCreatedId(data.id);
-      toast.success('محصول با موفقیت ثبت شد');
-    },
-    onError: (err) => toast.error(err.message),
-  });
+  const createMutation = trpc.product.create.useMutation();
 
   const uploadMedia = trpc.product.uploadMedia.useMutation();
+
+  const getFilePreview = (file: File): Promise<string | undefined> => {
+    return new Promise((resolve) => {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => resolve(undefined);
+        reader.readAsDataURL(file);
+      } else {
+        resolve(undefined);
+      }
+    });
+  };
 
   const handleMediaFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (!files.length || !createdId) return;
+    setMediaError(null);
+
+    const invalidFile = files.find((file) => {
+      const hasAllowedMime = allowedMimePrefixes.some((prefix) => file.type.startsWith(prefix))
+        || allowedMimeExact.includes(file.type);
+      return !hasAllowedMime;
+    });
+
+    if (invalidFile) {
+      setMediaError(`فرمت فایل ${invalidFile.name} مجاز نیست. فقط تصویر، ویدیو یا PDF قابل آپلود است.`);
+      if (mediaInputRef.current) mediaInputRef.current.value = '';
+      return;
+    }
+
+    const oversizedFile = files.find((file) => file.size > MAX_MEDIA_SIZE_BYTES);
+    if (oversizedFile) {
+      setMediaError(`حجم فایل ${oversizedFile.name} بیشتر از ۲۵ مگابایت است.`);
+      if (mediaInputRef.current) mediaInputRef.current.value = '';
+      return;
+    }
+
     setUploadingMedia(true);
-    const newEntries = files.map((f) => ({ name: f.name, status: 'pending' as const }));
+    const newEntries = await Promise.all(
+      files.map(async (f) => {
+        const preview = await getFilePreview(f);
+        return { name: f.name, status: 'pending' as const, preview, file: f };
+      })
+    );
     setMediaFiles((prev) => [...prev, ...newEntries]);
     const startIdx = mediaFiles.length;
 
@@ -107,16 +213,116 @@ function NewProductPage() {
           isMain: i === 0 && mediaFiles.length === 0,
         });
         setMediaFiles((prev) => prev.map((m, j) => j === idx ? { ...m, status: 'done' } : m));
-      } catch {
-        setMediaFiles((prev) => prev.map((m, j) => j === idx ? { ...m, status: 'error' } : m));
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : 'خطای نامشخص در آپلود';
+        setMediaFiles((prev) => prev.map((m, j) => j === idx ? { ...m, status: 'error', errorMsg } : m));
       }
     }
     setUploadingMedia(false);
     if (mediaInputRef.current) mediaInputRef.current.value = '';
   };
 
-  const onSubmit = (data: NewProductForm) => {
-    createMutation.mutate(data);
+  const resolveCreatedProductId = (payload: unknown): string | null => {
+    const data = payload as any;
+    const batchedItem = Array.isArray(data) ? data[0] : null;
+
+    return (
+      (typeof data?.id === 'string' && data.id)
+      || (typeof data?.json?.id === 'string' && data.json.id)
+      || (typeof data?.result?.data?.json?.id === 'string' && data.result.data.json.id)
+      || (typeof batchedItem?.id === 'string' && batchedItem.id)
+      || (typeof batchedItem?.json?.id === 'string' && batchedItem.json.id)
+      || (typeof batchedItem?.result?.data?.json?.id === 'string' && batchedItem.result.data.json.id)
+      || null
+    );
+  };
+
+  const onSubmit = async (data: NewProductForm) => {
+    try {
+      const result = await createMutation.mutateAsync(data);
+      const createdProductId = resolveCreatedProductId(result);
+
+      if (!createdProductId) {
+        console.error('[product.create] missing id in response', result);
+        toast.error('ثبت محصول انجام شد اما شناسه محصول دریافت نشد');
+        return;
+      }
+
+      setCreatedProductId(createdProductId);
+      toast.success('محصول با موفقیت ثبت شد');
+    } catch (error) {
+      toast.error(getFriendlyTrpcError(error, 'ثبت محصول انجام نشد'));
+    }
+  };
+
+  const onInvalidSubmit = (formErrors: FieldErrors<NewProductForm>) => {
+    const hasStepOneError = Boolean(
+      formErrors.nameFa
+      || formErrors.nameEn
+      || formErrors.commodityGroup
+      || formErrors.origin
+      || formErrors.hsCode
+      || formErrors.technicalSpecs,
+    );
+
+    const hasStepTwoError = Boolean(
+      formErrors.minOrderQuantity
+      || formErrors.preparationTimeDays
+      || formErrors.deliveryTerms
+      || formErrors.deliveryLocation
+      || formErrors.paymentMethod
+      || formErrors.saleConditions,
+    );
+
+    if (hasStepOneError) {
+      setStep(1);
+    } else if (hasStepTwoError) {
+      setStep(2);
+    } else {
+      setStep(3);
+    }
+
+    toast.error('لطفا خطاهای فرم را اصلاح کنید');
+  };
+
+  const handleNextStep = async () => {
+    const fieldsToValidate = step === 1 ? STEP_ONE_FIELDS : STEP_TWO_FIELDS;
+    const isValid = await trigger(fieldsToValidate as any, { shouldFocus: true });
+
+    if (!isValid) {
+      toast.error('لطفا فیلدهای الزامی این مرحله را تکمیل کنید');
+      return;
+    }
+
+    setStep((s) => Math.min(3, s + 1));
+  };
+
+  const handleRetryMedia = async (idx: number) => {
+    const file = mediaFiles[idx]?.file;
+    if (!file || !createdId) return;
+
+    setMediaFiles((prev) => prev.map((m, j) => j === idx ? { ...m, status: 'uploading', errorMsg: undefined } : m));
+    try {
+      const base64Data = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const base64 = base64Data.split(',')[1] ?? base64Data;
+
+      await uploadMedia.mutateAsync({
+        productId: createdId,
+        fileName: file.name,
+        mimeType: file.type || 'image/jpeg',
+        base64Data: base64,
+        isMain: false,
+      });
+      setMediaFiles((prev) => prev.map((m, j) => j === idx ? { ...m, status: 'done' } : m));
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'خطای نامشخص در آپلود';
+      setMediaFiles((prev) => prev.map((m, j) => j === idx ? { ...m, status: 'error', errorMsg } : m));
+    }
   };
 
   // ── Image upload step ─────────────────────────────────────────────────────
@@ -133,12 +339,14 @@ function NewProductPage() {
 
         <div className="bg-white border border-gray-100 rounded-xl p-5 mb-6">
           <h2 className="font-semibold text-gray-900 mb-1">آپلود تصاویر محصول</h2>
-          <p className="text-sm text-gray-500 mb-4">تصاویر یا ویدیوی کوتاه محصول را آپلود کنید (اختیاری)</p>
+          <p className="text-sm text-gray-500 mb-1">تصاویر، ویدیوی کوتاه یا فایل PDF محصول را آپلود کنید (اختیاری)</p>
+          <p className="text-xs text-gray-500 mb-4">حداکثر حجم هر فایل: ۲۵ مگابایت</p>
 
           <input
             ref={mediaInputRef}
             type="file"
-            accept="image/*,video/*"
+            title="انتخاب فایل رسانه محصول"
+            accept="image/*,video/*,.pdf,application/pdf"
             multiple
             onChange={handleMediaFiles}
             className="hidden"
@@ -152,35 +360,74 @@ function NewProductPage() {
             {uploadingMedia ? 'در حال آپلود...' : '🖼️ انتخاب تصاویر / ویدیو'}
           </button>
 
+          {mediaError && (
+            <p className="text-sm text-red-600 mb-3">{mediaError}</p>
+          )}
+
           {mediaFiles.length > 0 && (
-            <div className="space-y-2">
-              {mediaFiles.map((f, i) => (
-                <div key={i} className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
-                  <span className="text-lg">{f.status === 'done' ? '✅' : f.status === 'error' ? '❌' : f.status === 'uploading' ? '⏳' : '📎'}</span>
-                  <span className="text-sm text-gray-700 flex-1 truncate">{f.name}</span>
-                  <span className="text-xs text-gray-400">
-                    {f.status === 'done' ? 'آپلود شد' : f.status === 'error' ? 'خطا' : f.status === 'uploading' ? 'در حال آپلود' : 'آماده'}
-                  </span>
-                </div>
-              ))}
+            <div className="space-y-3">
+              {mediaFiles.map((f, i) => {
+                const isPdf = f.file?.type === 'application/pdf';
+                const isVideo = f.file?.type?.startsWith('video/');
+                return (
+                  <div key={i} className="flex items-start gap-3 p-3 border border-gray-100 rounded-lg bg-white hover:bg-gray-50 transition-colors">
+                    {/* Preview/Icon */}
+                    <div className="shrink-0 w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden">
+                      {f.preview ? (
+                        <img src={f.preview} alt={f.name} className="w-full h-full object-cover" />
+                      ) : isPdf ? (
+                        <span className="text-xl">📄</span>
+                      ) : isVideo ? (
+                        <span className="text-xl">🎬</span>
+                      ) : (
+                        <span className="text-xl">📎</span>
+                      )}
+                    </div>
+
+                    {/* File info */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">{f.name}</p>
+                      {f.errorMsg && (
+                        <p className="text-xs text-red-600 mt-0.5 line-clamp-2">{f.errorMsg}</p>
+                      )}
+                      {f.status === 'uploading' && (
+                        <p className="text-xs text-blue-600 mt-0.5">⏳ در حال آپلود...</p>
+                      )}
+                    </div>
+
+                    {/* Status & Action */}
+                    <div className="shrink-0 flex flex-col items-end gap-1">
+                      <span className={`text-lg ${
+                        f.status === 'done' ? '✅' : f.status === 'error' ? '❌' : f.status === 'uploading' ? '⏳' : '📎'
+                      }`} />
+                      {f.status === 'error' && (
+                        <button
+                          type="button"
+                          onClick={() => handleRetryMedia(i)}
+                          disabled={uploadingMedia}
+                          className="text-xs px-2 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100 disabled:opacity-50"
+                        >
+                          تلاش مجدد
+                        </button>
+                      )}
+                      {f.status === 'done' && (
+                        <button
+                          type="button"
+                          onClick={() => setMediaFiles((prev) => prev.filter((_, j) => j !== i))}
+                          className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded hover:bg-gray-200"
+                        >
+                          حذف
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
 
-        <div className="flex gap-3">
-          <button
-            onClick={() => navigate({ to: '/products' })}
-            className="btn-primary"
-          >
-            رفتن به محصولات ›
-          </button>
-          <button
-            onClick={() => { setCreatedId(null); setMediaFiles([]); }}
-            className="btn-secondary"
-          >
-            ثبت محصول دیگر
-          </button>
-        </div>
+        <p className="text-xs text-gray-500">پس از تکمیل آپلود، می توانید از منوی محصولات به لیست کالاهای خود بازگردید.</p>
       </div>
     );
   }
@@ -195,9 +442,9 @@ function NewProductPage() {
       {/* Stepper */}
       <div className="flex items-center gap-2 mb-6">
         {[
-          { n: 1, label: 'اطلاعات پایه' },
-          { n: 2, label: 'اطلاعات تجاری' },
-          { n: 3, label: 'مشخصات فنی' },
+          { n: 1, label: 'تعریف محصول' },
+          { n: 2, label: 'تحویل و پرداخت' },
+          { n: 3, label: 'جزئیات اضافی' },
         ].map(({ n, label }, i) => (
           <div key={n} className="flex items-center gap-2 flex-1">
             <button
@@ -213,12 +460,16 @@ function NewProductPage() {
         ))}
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        {/* Step 1: Basic info */}
+      <form onSubmit={handleSubmit(onSubmit, onInvalidSubmit)} className="space-y-5">
+        {/* Step 1: Product Definition & Classification */}
         <div className={step !== 1 ? 'hidden' : ''}>
         <div className="bg-white border border-gray-100 rounded-xl p-5">
-          <h2 className="font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-50">اطلاعات پایه</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <h2 className="font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-50">تعریف محصول</h2>
+          
+          <div className="space-y-1 mb-4 pb-3 border-b border-gray-50">
+            <h3 className="text-xs font-semibold text-gray-600 uppercase">شناسایی محصول</h3>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mb-5">
             <div>
               <label className="label-text">نام فارسی محصول *</label>
               <input {...register('nameFa')} className="input-field" placeholder="مثال: پلیمر اکریلیک" />
@@ -228,25 +479,6 @@ function NewProductPage() {
               <label className="label-text">نام انگلیسی محصول *</label>
               <input {...register('nameEn')} dir="ltr" className="input-field" placeholder="Acrylic Polymer" />
               {errors.nameEn && <p className="field-error">{errors.nameEn.message}</p>}
-            </div>
-            <div>
-              <label className="label-text">کد HS (تعرفه گمرکی) *</label>
-              <input {...register('hsCode')} dir="ltr" className="input-field" placeholder="3906100000" />
-              <p className="text-[11px] text-gray-400 mt-0.5">کد ۸ تا ۱۰ رقمی تعرفه گمرکی</p>
-              {errors.hsCode && <p className="field-error">{errors.hsCode.message}</p>}
-            </div>
-            <div>
-              <label className="label-text">گرید محصول</label>
-              <input {...register('grade')} className="input-field" placeholder="A / Premium / ..." />
-            </div>
-            <div>
-              <label className="label-text">کد ISIC</label>
-              <input {...register('isicCode')} dir="ltr" className="input-field" placeholder="2411" />
-              <p className="text-[11px] text-gray-400 mt-0.5">طبقه‌بندی بین‌المللی فعالیت اقتصادی</p>
-            </div>
-            <div>
-              <label className="label-text">شناسه کالا/خدمت</label>
-              <input {...register('serviceCode')} dir="ltr" className="input-field" placeholder="SRV-001" />
             </div>
             <div>
               <label className="label-text">گروه کالایی *</label>
@@ -272,19 +504,66 @@ function NewProductPage() {
               <label className="label-text">کشور مبدأ</label>
               <input {...register('countryOfOrigin')} className="input-field" placeholder="ایران / ترکیه / ..." />
             </div>
+          </div>
+
+          <div className="space-y-1 mb-4 pb-3 border-b border-gray-50 mt-6">
+            <h3 className="text-xs font-semibold text-gray-600 uppercase">کدهای دسته‌بندی</h3>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mb-5">
+            <div>
+              <label className="label-text">کد HS (تعرفه گمرکی) *</label>
+              <input {...register('hsCode')} dir="ltr" className="input-field" placeholder="3906100000" />
+              <p className="text-[11px] text-gray-400 mt-0.5">کد ۸ تا ۱۰ رقمی تعرفه گمرکی</p>
+              {errors.hsCode && <p className="field-error">{errors.hsCode.message}</p>}
+            </div>
+            <div>
+              <label className="label-text">کد ISIC</label>
+              <input {...register('isicCode')} dir="ltr" className="input-field" placeholder="2411" />
+              <p className="text-[11px] text-gray-400 mt-0.5">طبقه‌بندی بین‌المللی فعالیت اقتصادی</p>
+            </div>
+            <div>
+              <label className="label-text">شناسه کالا/خدمت</label>
+              <input {...register('serviceCode')} dir="ltr" className="input-field" placeholder="SRV-001" />
+            </div>
             <div>
               <label className="label-text">شماره استاندارد</label>
               <input {...register('standardNumber')} className="input-field" placeholder="ISIRI / ISO / ..." />
             </div>
           </div>
+
+          <div className="space-y-1 mb-4 pb-3 border-b border-gray-50 mt-6">
+            <h3 className="text-xs font-semibold text-gray-600 uppercase">مشخصات تکنیکی</h3>
+          </div>
+          <div className="space-y-4 mb-5">
+            <div>
+              <label className="label-text">مشخصات فنی *</label>
+              <textarea
+                {...register('technicalSpecs')}
+                rows={3}
+                className="input-field resize-none"
+                placeholder="ابعاد، استاندارد، گواهینامه‌ها ..."
+              />
+              {errors.technicalSpecs && <p className="field-error">{errors.technicalSpecs.message}</p>}
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="label-text">گرید محصول</label>
+                <input {...register('grade')} className="input-field" placeholder="A / Premium / ..." />
+              </div>
+            </div>
+          </div>
         </div>
         </div>
 
-        {/* Step 2: Trade info */}
+        {/* Step 2: Delivery & Payment Terms */}
         <div className={step !== 2 ? 'hidden' : ''}>
         <div className="bg-white border border-gray-100 rounded-xl p-5">
-          <h2 className="font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-50">اطلاعات تجاری</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <h2 className="font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-50">شرایط تحویل و پرداخت</h2>
+
+          <div className="space-y-1 mb-4 pb-3 border-b border-gray-50">
+            <h3 className="text-xs font-semibold text-gray-600 uppercase">شرایط سفارش</h3>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mb-5">
             <div>
               <label className="label-text">حداقل مقدار سفارش *</label>
               <input {...register('minOrderQuantity')} className="input-field" placeholder="۱۰۰ کیلوگرم" />
@@ -296,6 +575,12 @@ function NewProductPage() {
               <input {...register('preparationTimeDays', { valueAsNumber: true })} type="number" min={1} max={365} className="input-field" />
               {errors.preparationTimeDays && <p className="field-error">{errors.preparationTimeDays.message}</p>}
             </div>
+          </div>
+
+          <div className="space-y-1 mb-4 pb-3 border-b border-gray-50 mt-6">
+            <h3 className="text-xs font-semibold text-gray-600 uppercase">تحویل</h3>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mb-5">
             <div>
               <label className="label-text">شرایط تحویل *</label>
               <select {...register('deliveryTerms')} className="input-field">
@@ -307,20 +592,17 @@ function NewProductPage() {
               {errors.deliveryTerms && <p className="field-error">{errors.deliveryTerms.message}</p>}
             </div>
             <div>
-              <label className="label-text">نوع بسته‌بندی</label>
-              <select {...register('packagingType')} className="input-field">
-                <option value="">انتخاب کنید...</option>
-                {PACKAGING_OPTIONS.map((o) => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
-            </div>
-            <div>
               <label className="label-text">محل تحویل *</label>
               <input {...register('deliveryLocation')} className="input-field" placeholder="بندر شهید رجایی" />
               {errors.deliveryLocation && <p className="field-error">{errors.deliveryLocation.message}</p>}
             </div>
-            <div className="col-span-2">
+          </div>
+
+          <div className="space-y-1 mb-4 pb-3 border-b border-gray-50 mt-6">
+            <h3 className="text-xs font-semibold text-gray-600 uppercase">پرداخت</h3>
+          </div>
+          <div className="space-y-4 mb-5">
+            <div>
               <label className="label-text">روش پرداخت *</label>
               <select {...register('paymentMethod')} className="input-field">
                 <option value="">انتخاب کنید...</option>
@@ -330,7 +612,70 @@ function NewProductPage() {
               </select>
               {errors.paymentMethod && <p className="field-error">{errors.paymentMethod.message}</p>}
             </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="label-text">درصد پیش‌پرداخت</label>
+                <input
+                  {...register('saleConditions.advancePercent', { setValueAs: (v) => (v === '' ? undefined : Number(v)) })}
+                  type="number"
+                  min={0}
+                  max={100}
+                  className="input-field"
+                  placeholder="مثال: 30"
+                />
+              </div>
+              <div>
+                <label className="label-text">درصد هنگام تحویل</label>
+                <input
+                  {...register('saleConditions.onDeliveryPercent', { setValueAs: (v) => (v === '' ? undefined : Number(v)) })}
+                  type="number"
+                  min={0}
+                  max={100}
+                  className="input-field"
+                  placeholder="مثال: 70"
+                />
+              </div>
+              {(errors as any).saleConditions?.message && (
+                <p className="field-error col-span-2">{(errors as any).saleConditions.message}</p>
+              )}
+            </div>
+          </div>
+        </div>
+        </div>
 
+        {/* Step 3: Physical Specs & Packaging */}
+        <div className={step !== 3 ? 'hidden' : ''}>
+        <div className="bg-white border border-gray-100 rounded-xl p-5">
+          <h2 className="font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-50">مشخصات فیزیکی و جزئیات</h2>
+
+          <div className="space-y-1 mb-4 pb-3 border-b border-gray-50">
+            <h3 className="text-xs font-semibold text-gray-600 uppercase">توضیحات و بسته‌بندی</h3>
+          </div>
+          <div className="space-y-4 mb-5">
+            <div>
+              <label className="label-text">توضیحات</label>
+              <textarea
+                {...register('description')}
+                rows={3}
+                className="input-field resize-none"
+                placeholder="توضیحات بیشتر در مورد محصول ..."
+              />
+            </div>
+            <div>
+              <label className="label-text">نوع بسته‌بندی</label>
+              <select {...register('packagingType')} className="input-field">
+                <option value="">انتخاب کنید...</option>
+                {PACKAGING_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-1 mb-4 pb-3 border-b border-gray-50 mt-6">
+            <h3 className="text-xs font-semibold text-gray-600 uppercase">ابعاد و وزن</h3>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mb-5">
             <div>
               <label className="label-text">وزن</label>
               <input
@@ -343,7 +688,7 @@ function NewProductPage() {
               />
             </div>
             <div>
-              <label className="label-text">واحد وزن</label>
+              <label className="label-text">واحد</label>
               <select {...register('dimensions.unit')} className="input-field">
                 <option value="kg">کیلوگرم</option>
                 <option value="ton">تن</option>
@@ -383,74 +728,31 @@ function NewProductPage() {
                 className="input-field"
               />
             </div>
-            <div className="flex items-center gap-2 mt-7">
-              <input id="inStock" type="checkbox" {...register('isAvailableInStock')} className="h-4 w-4" />
-              <label htmlFor="inStock" className="text-sm text-gray-700">موجود در انبار</label>
+          </div>
+
+          <div className="space-y-1 mb-4 pb-3 border-b border-gray-50 mt-6">
+            <h3 className="text-xs font-semibold text-gray-600 uppercase">دوره اعتبار</h3>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mb-5">
+            <div>
+              <label className="label-text">تاریخ تولید</label>
+              <input {...register('productionDate')} type="datetime-local" className="input-field" />
+              {(errors as any).productionDate && (
+                <p className="field-error">{(errors as any).productionDate.message}</p>
+              )}
+            </div>
+            <div>
+              <label className="label-text">تاریخ انقضا</label>
+              <input {...register('expiryDate')} type="datetime-local" className="input-field" />
+              {(errors as any).expiryDate && (
+                <p className="field-error">{(errors as any).expiryDate.message}</p>
+              )}
             </div>
           </div>
-        </div>
-        </div>
 
-        {/* Step 3: Details */}
-        <div className={step !== 3 ? 'hidden' : ''}>
-        <div className="bg-white border border-gray-100 rounded-xl p-5">
-          <h2 className="font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-50">مشخصات تکنیکی</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="label-text">مشخصات فنی *</label>
-              <textarea
-                {...register('technicalSpecs')}
-                rows={3}
-                className="input-field resize-none"
-                placeholder="ابعاد، استاندارد، گواهینامه‌ها ..."
-              />
-              {errors.technicalSpecs && <p className="field-error">{errors.technicalSpecs.message}</p>}
-            </div>
-            <div>
-              <label className="label-text">توضیحات</label>
-              <textarea
-                {...register('description')}
-                rows={3}
-                className="input-field resize-none"
-                placeholder="توضیحات بیشتر در مورد محصول ..."
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="label-text">درصد پیش‌پرداخت</label>
-                <input
-                  {...register('saleConditions.advancePercent', { setValueAs: (v) => (v === '' ? undefined : Number(v)) })}
-                  type="number"
-                  min={0}
-                  max={100}
-                  className="input-field"
-                  placeholder="مثال: 30"
-                />
-              </div>
-              <div>
-                <label className="label-text">درصد هنگام تحویل</label>
-                <input
-                  {...register('saleConditions.onDeliveryPercent', { setValueAs: (v) => (v === '' ? undefined : Number(v)) })}
-                  type="number"
-                  min={0}
-                  max={100}
-                  className="input-field"
-                  placeholder="مثال: 70"
-                />
-              </div>
-              {(errors as any).saleConditions?.message && (
-                <p className="field-error col-span-2">{(errors as any).saleConditions.message}</p>
-              )}
-              <div>
-                <label className="label-text">تاریخ تولید</label>
-                <input {...register('productionDate')} type="datetime-local" className="input-field" />
-              </div>
-              <div>
-                <label className="label-text">تاریخ انقضا</label>
-                <input {...register('expiryDate')} type="datetime-local" className="input-field" />
-              </div>
-            </div>
+          <div className="flex items-center gap-2 mt-6">
+            <input id="inStock" type="checkbox" {...register('isAvailableInStock')} className="h-4 w-4" />
+            <label htmlFor="inStock" className="text-sm text-gray-700">موجود در انبار</label>
           </div>
         </div>
 
@@ -475,19 +777,23 @@ function NewProductPage() {
           {step < 3 ? (
             <button
               type="button"
-              onClick={() => setStep((s) => s + 1)}
+              onClick={handleNextStep}
               className="btn-primary"
             >
               مرحله بعد
             </button>
           ) : (
-            <button
-              type="submit"
-              disabled={createMutation.isPending}
-              className="btn-primary disabled:opacity-50"
-            >
-              {createMutation.isPending ? 'در حال ثبت...' : 'ثبت محصول'}
-            </button>
+            submitReady ? (
+              <button
+                type="submit"
+                disabled={createMutation.isPending}
+                className="btn-primary disabled:opacity-50"
+              >
+                {createMutation.isPending ? 'در حال ثبت...' : 'ثبت محصول'}
+              </button>
+            ) : (
+              <div className="h-10 w-24" />
+            )
           )}
           <button
             type="button"

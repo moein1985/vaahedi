@@ -38,6 +38,38 @@ export class RegisterUseCase {
       });
     }
 
+    // ۲-۱. بررسی تکراری نبودن ایمیل
+    if ('email' in input && input.email) {
+      const existingByEmail = await this.userRepository.findByEmail(input.email);
+      if (existingByEmail) {
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'این ایمیل قبلاً ثبت شده است',
+        });
+      }
+    }
+
+    // ۲-۲. بررسی تکراری نبودن کد ملی/شناسه ملی
+    if (input.membershipType === MembershipType.INDIVIDUAL) {
+      const existingByNationalCode = await this.userRepository.findByNationalCode(input.nationalCode);
+      if (existingByNationalCode) {
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'این کد ملی قبلاً ثبت شده است',
+        });
+      }
+    }
+
+    if (input.membershipType === MembershipType.LEGAL) {
+      const existingByNationalId = await this.userRepository.findByNationalId(input.nationalId);
+      if (existingByNationalId) {
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'این شناسه ملی قبلاً ثبت شده است',
+        });
+      }
+    }
+
     // ۳. تولید کد کاربری
     const activityCode = this.getActivityCode(input.role);
     const commodityCode = this.getCommodityCode(input);
@@ -49,19 +81,40 @@ export class RegisterUseCase {
     const passwordHash = await bcrypt.hash(input.password, 12);
 
     // ۵. ایجاد کاربر
-    const user = await this.userRepository.create({
-      userCode,
-      membershipType: input.membershipType,
-      role: input.role,
-      mobile: input.mobile,
-      email: 'email' in input ? input.email : undefined,
-      nationalCode:
-        input.membershipType === MembershipType.INDIVIDUAL ? input.nationalCode : undefined,
-      nationalId:
-        input.membershipType === MembershipType.LEGAL ? input.nationalId : undefined,
-      passwordHash,
-      agreedToTerms: input.agreedToTerms,
-    });
+    let user;
+    try {
+      user = await this.userRepository.create({
+        userCode,
+        membershipType: input.membershipType,
+        role: input.role,
+        mobile: input.mobile,
+        email: 'email' in input ? input.email : undefined,
+        nationalCode:
+          input.membershipType === MembershipType.INDIVIDUAL ? input.nationalCode : undefined,
+        nationalId:
+          input.membershipType === MembershipType.LEGAL ? input.nationalId : undefined,
+        passwordHash,
+        agreedToTerms: input.agreedToTerms,
+      });
+    } catch (error: unknown) {
+      const err = error as { code?: string; meta?: { target?: string[] } };
+      if (err.code === 'P2002') {
+        const target = err.meta?.target ?? [];
+        if (target.includes('mobile')) {
+          throw new TRPCError({ code: 'CONFLICT', message: 'این شماره همراه قبلاً ثبت شده است' });
+        }
+        if (target.includes('email')) {
+          throw new TRPCError({ code: 'CONFLICT', message: 'این ایمیل قبلاً ثبت شده است' });
+        }
+        if (target.includes('nationalCode')) {
+          throw new TRPCError({ code: 'CONFLICT', message: 'این کد ملی قبلاً ثبت شده است' });
+        }
+        if (target.includes('nationalId')) {
+          throw new TRPCError({ code: 'CONFLICT', message: 'این شناسه ملی قبلاً ثبت شده است' });
+        }
+      }
+      throw error;
+    }
 
     // ۶. ارسال خوشامدگویی
     await this.smsService.sendTemplate(input.mobile, 'welcome', {

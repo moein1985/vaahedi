@@ -22,8 +22,8 @@ describe('Auth Router', () => {
         nationalCode: '0491570007',
         mobile: '09123456789',
         email: 'john@example.com',
-        password: 'password123',
-        confirmPassword: 'password123',
+        password: 'Password123!',
+        confirmPassword: 'Password123!',
         role: 'TRADER',
         agreedToTerms: true,
         captchaToken: 'test-token',
@@ -43,8 +43,8 @@ describe('Auth Router', () => {
         nationalCode: '0491570007',
         mobile: '09123456789',
         email: 'john@example.com',
-        password: 'password123',
-        confirmPassword: 'password123',
+        password: 'Password123!',
+        confirmPassword: 'Password123!',
         role: 'TRADER',
         agreedToTerms: true,
         captchaToken: 'test-token',
@@ -58,8 +58,8 @@ describe('Auth Router', () => {
           nationalCode: '1111111111',
           mobile: '09123456789',
           email: 'jane@smith.com',
-          password: 'password456',
-          confirmPassword: 'password456',
+          password: 'Password456!',
+          confirmPassword: 'Password456!',
           role: 'TRADER',
           agreedToTerms: true,
           captchaToken: 'test-token',
@@ -71,7 +71,7 @@ describe('Auth Router', () => {
       await expect(
         caller(ctx).register({
           mobile: '123456789',
-          password: 'password123',
+          password: 'Password123!',
         } as any)
       ).rejects.toThrow();
     });
@@ -86,8 +86,8 @@ describe('Auth Router', () => {
         firstName: 'John',
         lastName: 'Doe',
         nationalCode: '0491570007',
-        mobile: '09123456789',        email: 'john@example.com',        password: 'password123',
-        confirmPassword: 'password123',
+        mobile: '09123456789',        email: 'john@example.com',        password: 'Password123!',
+        confirmPassword: 'Password123!',
         role: 'TRADER',
         agreedToTerms: true,
         captchaToken: 'test-token',
@@ -98,7 +98,7 @@ describe('Auth Router', () => {
     it('should login with correct credentials', async () => {
       const result = await caller(ctx).login({
         userCode,
-        password: 'password123',
+        password: 'Password123!',
         captchaToken: 'test-captcha',
       });
 
@@ -122,7 +122,7 @@ describe('Auth Router', () => {
       await expect(
         caller(ctx).login({
           userCode: 'NONEXISTENT',
-          password: 'password123',
+          password: 'Password123!',
           captchaToken: 'test-captcha',
         })
       ).rejects.toThrow('کد کاربری یا رمز عبور اشتباه است');
@@ -141,8 +141,8 @@ describe('Auth Router', () => {
         nationalCode: '0491570007',
         mobile: '09123456789',
         email: 'john@example.com',
-        password: 'password123',
-        confirmPassword: 'password123',
+        password: 'Password123!',
+        confirmPassword: 'Password123!',
         role: 'TRADER',
         agreedToTerms: true,
         captchaToken: 'test-token',
@@ -151,7 +151,7 @@ describe('Auth Router', () => {
 
       const loginResult = await caller(ctx).login({
         userCode,
-        password: 'password123',
+        password: 'Password123!',
         captchaToken: 'test-captcha',
       });
 

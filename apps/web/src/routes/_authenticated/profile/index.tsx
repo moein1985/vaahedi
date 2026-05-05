@@ -6,10 +6,11 @@ import { useRef, useState } from 'react';
 import { trpc } from '../../../trpc.js';
 import { UserRole, CommodityGroup, DocumentType } from '@repo/shared';
 import { Input } from '../../../components/ui/input.js';
-import { Button } from '../../../components/ui/button.js';
-import { Badge } from '../../../components/ui/badge.js';
-import { cn } from '../../../lib/utils.js';
+import { getFriendlyTrpcError } from '../../../lib/trpc-error.js';
 import { toast } from 'sonner';
+import { FORM_LABELS, FORM_PLACEHOLDERS, FORM_HINTS } from '../../../lib/form-constants.js';
+import { CheckCircle2, Circle, User, Building2, Phone, FileText } from 'lucide-react';
+import { Progress } from '../../../components/ui/progress.js';
 
 export const Route = createFileRoute('/_authenticated/profile/')({
   component: ProfilePage,
@@ -27,7 +28,16 @@ const formSchema = z.object({
   singleProduct: z.boolean().optional(),
   phone: z.string().regex(/^0\d{10}$/, 'شماره تلفن معتبر نیست').optional().or(z.literal('')),
   fax: z.string().regex(/^0\d{10}$/, 'شماره فکس معتبر نیست').optional().or(z.literal('')),
-  website: z.string().url('آدرس سایت معتبر نیست').optional().or(z.literal('')),
+  website: z.preprocess(
+    (value) => {
+      if (typeof value !== 'string') return value;
+      const normalized = value.trim();
+      if (!normalized) return '';
+      if (/^https?:\/\//i.test(normalized)) return normalized;
+      return `https://${normalized}`;
+    },
+    z.string().url('آدرس سایت معتبر نیست').optional().or(z.literal('')),
+  ),
   address: z.object({
     province: z.string().min(1, 'استان الزامی است'),
     city: z.string().min(1, 'شهر الزامی است'),
@@ -38,6 +48,8 @@ const formSchema = z.object({
   commodityGroup: z.nativeEnum(CommodityGroup).optional().or(z.literal('')),
   position: z.string().max(100).optional().or(z.literal('')),
   experienceYears: z.coerce.number().int().min(0).max(99).optional(),
+  passportNumber: z.string().max(30).optional().or(z.literal('')),
+  passportExpiryDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'تاریخ اعتبار پاسپورت معتبر نیست').optional().or(z.literal('')),
   licenseTypes: z.array(z.nativeEnum(DocumentType)).min(1, 'حداقل یک نوع مجوز انتخاب کنید'),
   description: z.string().max(1000).optional().or(z.literal('')),
 });
@@ -79,11 +91,50 @@ const DOC_TYPE_LABELS: Record<string, string> = {
   OTHER_LICENSES: 'سایر مجوزها',
   ISO_CERTIFICATE: 'گواهی ایزو',
   BUSINESS_CARD: 'کارت بازرگانی',
-  ID_DOCUMENT: 'مدرک شناسایی',
+  ID_DOCUMENT: 'مدرک هویتی (کارت ملی/پاسپورت)',
 };
+
+const MAX_DOC_SIZE_BYTES = 20 * 1024 * 1024;
+const ALLOWED_DOC_MIME_TYPES = new Set([
+  'application/pdf',
+  'image/png',
+  'image/jpeg',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+]);
+
+function sanitizeOptionalText(value: string | undefined): string | undefined {
+  if (typeof value !== 'string') return value;
+  const normalized = value.trim();
+  return normalized.length ? normalized : undefined;
+}
+
+function toProfilePayload(data: FormData) {
+  return {
+    ...data,
+    companyName: sanitizeOptionalText(data.companyName),
+    unitName: sanitizeOptionalText(data.unitName),
+    unitType: sanitizeOptionalText(data.unitType) as FormData['unitType'],
+    guildCode: sanitizeOptionalText(data.guildCode),
+    businessId: sanitizeOptionalText(data.businessId),
+    producedGoods: sanitizeOptionalText(data.producedGoods),
+    productIdNumber: sanitizeOptionalText(data.productIdNumber),
+    phone: sanitizeOptionalText(data.phone),
+    fax: sanitizeOptionalText(data.fax),
+    website: sanitizeOptionalText(data.website),
+    activityType: sanitizeOptionalText(data.activityType),
+    commodityGroup: sanitizeOptionalText(data.commodityGroup) as FormData['commodityGroup'],
+    position: sanitizeOptionalText(data.position),
+    passportNumber: sanitizeOptionalText(data.passportNumber),
+    passportExpiryDate: sanitizeOptionalText(data.passportExpiryDate),
+    description: sanitizeOptionalText(data.description),
+  };
+}
 
 function ProfilePage() {
   const { data, isLoading } = trpc.profile.me.useQuery();
+  const { data: completion } = trpc.profile.completionStatus.useQuery();
+  const profileWithPassport = data?.profile as (typeof data extends undefined ? never : any) | undefined;
   const utils = trpc.useUtils();
 
   const upsert = trpc.profile.upsert.useMutation({
@@ -91,7 +142,7 @@ function ProfilePage() {
       void utils.profile.me.invalidate();
       toast.success('پروفایل با موفقیت ذخیره شد');
     },
-    onError: (err) => toast.error(err.message),
+    onError: (err) => toast.error(getFriendlyTrpcError(err, 'ذخیره پروفایل انجام نشد')),
   });
 
   // ── Document upload ────────────────────────────────────────────────────────
@@ -113,6 +164,19 @@ function ProfilePage() {
   const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (!ALLOWED_DOC_MIME_TYPES.has(file.type)) {
+      setUploadMsg('فرمت فایل مجاز نیست. فقط PDF, PNG, JPG, DOC, DOCX');
+      if (docFileRef.current) docFileRef.current.value = '';
+      return;
+    }
+
+    if (file.size > MAX_DOC_SIZE_BYTES) {
+      setUploadMsg('حجم فایل بیشتر از حد مجاز است (حداکثر ۲۰ مگابایت)');
+      if (docFileRef.current) docFileRef.current.value = '';
+      return;
+    }
+
     setUploading(true);
     setUploadMsg('');
     try {
@@ -120,9 +184,25 @@ function ProfilePage() {
         documentType: docType,
         fileName: file.name,
         mimeType: file.type || 'application/octet-stream',
+        fileSize: file.size,
       });
-      await fetch(uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } });
-      await saveDoc.mutateAsync({ documentType: docType, fileKey: key, fileName: file.name });
+      const response = await fetch(uploadUrl, {
+        method: 'PUT',
+        body: file,
+        headers: { 'Content-Type': file.type || 'application/octet-stream' },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed with status ${response.status}`);
+      }
+
+      await saveDoc.mutateAsync({
+        documentType: docType,
+        fileKey: key,
+        fileName: file.name,
+        fileSize: file.size,
+        mimeType: file.type || 'application/octet-stream',
+      });
     } catch {
       setUploadMsg('خطا در آپلود مدرک');
     } finally {
@@ -138,7 +218,7 @@ function ProfilePage() {
     watch,
     formState: { errors, isDirty },
   } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       role: UserRole.TRADER,
       address: { province: '', city: '', addressLine: '', postalCode: '' },
@@ -168,6 +248,10 @@ function ProfilePage() {
           commodityGroup: (data.profile.commodityGroup as CommodityGroup) ?? '',
           position: data.profile.position ?? '',
           experienceYears: data.profile.experienceYears ?? undefined,
+          passportNumber: profileWithPassport?.passportNumber ?? '',
+          passportExpiryDate: profileWithPassport?.passportExpiryDate
+            ? new Date(profileWithPassport.passportExpiryDate).toISOString().slice(0, 10)
+            : '',
           licenseTypes: [],
           description: data.profile.description ?? '',
         }
@@ -175,6 +259,21 @@ function ProfilePage() {
   });
 
   const selectedDocs = watch('licenseTypes') ?? [];
+
+  const onSubmitProfile = (data: FormData) => {
+    const uploadedDocTypes = new Set((myDocs ?? []).map((doc) => String(doc.type)));
+    const missingDocType = data.licenseTypes.find((type) => !uploadedDocTypes.has(String(type)));
+
+    if (missingDocType) {
+      const docLabel = DOC_TYPE_LABELS[String(missingDocType)] ?? 'مدرک انتخاب‌شده';
+      const message = `ابتدا فایل مربوط به «${docLabel}» را آپلود کنید`;
+      setUploadMsg(message);
+      toast.error(message);
+      return;
+    }
+
+    upsert.mutate(toProfilePayload(data) as any);
+  };
 
   const toggleDoc = (type: DocumentType) => {
     const current = selectedDocs;
@@ -188,32 +287,97 @@ function ProfilePage() {
     return <div className="flex items-center justify-center h-64 text-gray-400">در حال بارگذاری...</div>;
   }
 
+  const STATUS_LABELS: Record<string, string> = {
+    ACTIVE: 'فعال',
+    PENDING: 'در انتظار تأیید',
+    SUSPENDED: 'معلق',
+    REJECTED: 'رد شده',
+  };
+  const STATUS_COLORS: Record<string, string> = {
+    ACTIVE: 'bg-green-100 text-green-700 border-green-200',
+    PENDING: 'bg-amber-100 text-amber-700 border-amber-200',
+    SUSPENDED: 'bg-red-100 text-red-700 border-red-200',
+    REJECTED: 'bg-gray-100 text-gray-600 border-gray-200',
+  };
+  const userStatus = data?.user.status ?? 'PENDING';
+
+  const completionSteps = [
+    { key: 'basicInfo',    icon: Building2,  label: 'اطلاعات پایه' },
+    { key: 'contactInfo',  icon: Phone,       label: 'اطلاعات تماس' },
+    { key: 'businessInfo', icon: User,        label: 'حوزه فعالیت' },
+    { key: 'documents',    icon: FileText,    label: 'مدارک' },
+  ] as const;
+
+  const completionPercent = completionSteps.filter(
+    (s) => !!(completion?.steps as Record<string, boolean> | undefined)?.[s.key]
+  ).length * 25;
+
   return (
     <div className="p-6 max-w-3xl" dir="rtl">
+      {/* Profile Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">پروفایل کاربری</h1>
-        <div className="flex items-center gap-3 mt-2">
-          <span className="text-sm text-gray-500 font-mono" dir="ltr">
-            {data?.user.mobile}
-          </span>
-          {data?.user.userCode && (
-            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-              {data.user.userCode}
-            </span>
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">پروفایل کاربری</h1>
+            <div className="flex items-center gap-3 mt-2 flex-wrap">
+              <span className="text-sm text-gray-500 font-mono" dir="ltr">
+                {data?.user.mobile}
+              </span>
+              {data?.user.userCode && (
+                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full border border-blue-200">
+                  کد: {data.user.userCode}
+                </span>
+              )}
+              <span className={`text-xs px-2 py-0.5 rounded-full border ${STATUS_COLORS[userStatus] ?? STATUS_COLORS['PENDING']}`}>
+                {STATUS_LABELS[userStatus] ?? userStatus}
+              </span>
+            </div>
+          </div>
+          {data?.profile?.companyName && (
+            <div className="flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-xl px-4 py-2">
+              <Building2 className="h-4 w-4 text-blue-500" />
+              <span className="text-sm font-medium text-blue-800">{data.profile.companyName}</span>
+            </div>
           )}
-          <span
-            className={`text-xs px-2 py-0.5 rounded-full ${
-              data?.user.status === 'ACTIVE'
-                ? 'bg-green-100 text-green-700'
-                : 'bg-yellow-100 text-yellow-700'
-            }`}
-          >
-            {data?.user.status}
-          </span>
+        </div>
+
+        {/* Completion Progress */}
+        <div className="mt-5 bg-white rounded-xl border border-gray-100 p-4">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-semibold text-gray-700">تکمیل پروفایل</p>
+            <span className={`text-sm font-bold ${completionPercent === 100 ? 'text-green-600' : 'text-amber-600'}`}>
+              {completionPercent}%
+            </span>
+          </div>
+          <Progress value={completionPercent} className="h-2 mb-4" />
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {completionSteps.map((step) => {
+              const done = !!(completion?.steps as Record<string, boolean> | undefined)?.[step.key];
+              return (
+                <div
+                  key={step.key}
+                  className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs ${
+                    done ? 'bg-green-50 text-green-700' : 'bg-gray-50 text-gray-500'
+                  }`}
+                >
+                  {done
+                    ? <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+                    : <Circle className="h-3.5 w-3.5 shrink-0" />
+                  }
+                  {step.label}
+                </div>
+              );
+            })}
+          </div>
+          {completionPercent < 100 && (
+            <p className="text-xs text-amber-600 mt-3">
+              پروفایل ناقص شانس پذیرش درخواست‌های تجاری شما را کاهش می‌دهد.
+            </p>
+          )}
         </div>
       </div>
 
-      <form onSubmit={handleSubmit((d) => upsert.mutate(d as any))} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmitProfile)} className="space-y-6">
         {/* نوع فعالیت */}
         <div className="bg-white rounded-xl border border-gray-100 p-5">
           <h2 className="font-semibold text-gray-800 mb-4 text-sm uppercase tracking-wide text-gray-500">
@@ -221,7 +385,7 @@ function ProfilePage() {
           </h2>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              نقش در پلتفرم <span className="text-red-500">*</span>
+              {FORM_LABELS.profile.role} <span className="text-red-500">*</span>
             </label>
             <select
               {...register('role')}
@@ -237,28 +401,30 @@ function ProfilePage() {
         {/* اطلاعات شرکت */}
         <div className="bg-white rounded-xl border border-gray-100 p-5">
           <h2 className="font-semibold text-gray-800 mb-4">اطلاعات شرکت / واحد</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">نام شرکت</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.companyName}</label>
               <input
                 {...register('companyName')}
+                placeholder={FORM_PLACEHOLDERS.profile.companyName}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">نام واحد</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.unitName}</label>
               <input
                 {...register('unitName')}
+                placeholder={FORM_PLACEHOLDERS.profile.unitName}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">نوع واحد</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.unitType}</label>
               <select
                 {...register('unitType')}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">انتخاب کنید</option>
+                <option value="">{FORM_LABELS.selectPlaceholder}</option>
                 <option value="COMPANY">شرکتی</option>
                 <option value="GUILD">صنفی</option>
                 <option value="PRODUCER">تولیدکننده</option>
@@ -268,31 +434,34 @@ function ProfilePage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">شناسه صنفی</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.guildCode}</label>
               <input
                 {...register('guildCode')}
+                placeholder={FORM_PLACEHOLDERS.profile.guildCode}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">شناسه تجاری</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.businessId}</label>
               <input
                 {...register('businessId')}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">نام کالاهای تولید شده</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.producedGoods}</label>
               <input
                 {...register('producedGoods')}
-                placeholder="با کاما جدا کنید: فولاد، مس، آلومینیوم"
+                placeholder={FORM_PLACEHOLDERS.profile.producedGoods}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+              <p className="text-[11px] text-gray-400 mt-0.5">{FORM_HINTS.profile.producedGoods}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">شماره شناسایی کالای تولیدی</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.productIdNumber}</label>
               <input
                 {...register('productIdNumber')}
+                placeholder={FORM_PLACEHOLDERS.profile.productIdNumber}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 dir="ltr"
               />
@@ -303,7 +472,7 @@ function ProfilePage() {
                 {...register('singleProduct')}
                 className="rounded text-blue-600"
               />
-              <label className="text-sm text-gray-700">تک‌محصول</label>
+              <label className="text-sm text-gray-700">{FORM_LABELS.profile.singleProduct}</label>
             </div>
           </div>
         </div>
@@ -311,34 +480,38 @@ function ProfilePage() {
         {/* اطلاعات تماس */}
         <div className="bg-white rounded-xl border border-gray-100 p-5">
           <h2 className="font-semibold text-gray-800 mb-4">اطلاعات تماس</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">تلفن ثابت</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.phone}</label>
               <Input
                 {...register('phone')}
                 className="w-full"
-                placeholder="مثال: 02112345678"
+                placeholder={FORM_PLACEHOLDERS.profile.phone}
                 dir="ltr"
               />
+              <p className="text-[11px] text-gray-400 mt-0.5">{FORM_HINTS.profile.phone}</p>
               {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">فکس</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.fax}</label>
               <Input
                 {...register('fax')}
                 className="w-full"
+                placeholder={FORM_PLACEHOLDERS.profile.fax}
                 dir="ltr"
               />
+              <p className="text-[11px] text-gray-400 mt-0.5">{FORM_HINTS.profile.fax}</p>
               {errors.fax && <p className="text-red-500 text-xs mt-1">{errors.fax.message}</p>}
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">وب‌سایت</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.website}</label>
               <Input
                 {...register('website')}
                 className="w-full"
-                placeholder="https://example.com"
+                placeholder={FORM_PLACEHOLDERS.profile.website}
                 dir="ltr"
               />
+              <p className="text-[11px] text-gray-400 mt-0.5">{FORM_HINTS.profile.website}</p>
               {errors.website && <p className="text-red-500 text-xs mt-1">{errors.website.message}</p>}
             </div>
           </div>
@@ -347,41 +520,45 @@ function ProfilePage() {
         {/* آدرس */}
         <div className="bg-white rounded-xl border border-gray-100 p-5">
           <h2 className="font-semibold text-gray-800 mb-4">آدرس <span className="text-red-500">*</span></h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">استان <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.province} <span className="text-red-500">*</span></label>
               <Input
                 {...register('address.province')}
+                placeholder={FORM_PLACEHOLDERS.profile.province}
                 className="w-full"
               />
               {errors.address?.province && <p className="text-red-500 text-xs mt-1">{errors.address.province.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">شهر <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.city} <span className="text-red-500">*</span></label>
               <Input
                 {...register('address.city')}
+                placeholder={FORM_PLACEHOLDERS.profile.city}
                 className="w-full"
               />
               {errors.address?.city && <p className="text-red-500 text-xs mt-1">{errors.address.city.message}</p>}
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">آدرس کامل <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.addressLine} <span className="text-red-500">*</span></label>
               <textarea
                 {...register('address.addressLine')}
                 rows={2}
+                placeholder={FORM_PLACEHOLDERS.profile.addressLine}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.address?.addressLine && <p className="text-red-500 text-xs mt-1">{errors.address.addressLine.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">کد پستی <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.postalCode} <span className="text-red-500">*</span></label>
               <Input
                 {...register('address.postalCode')}
                 maxLength={10}
+                placeholder={FORM_PLACEHOLDERS.profile.postalCode}
                 className="w-full"
                 dir="ltr"
               />
-              <p className="text-[11px] text-gray-400 mt-0.5">۱۰ رقم بدون خط تیره</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">{FORM_HINTS.profile.postalCode}</p>
               {errors.address?.postalCode && <p className="text-red-500 text-xs mt-1">{errors.address.postalCode.message}</p>}
             </div>
           </div>
@@ -392,41 +569,66 @@ function ProfilePage() {
           <h2 className="font-semibold text-gray-800 mb-4">اطلاعات تجاری</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">نوع فعالیت</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.activityType}</label>
               <Input
                 {...register('activityType')}
+                placeholder={FORM_PLACEHOLDERS.profile.activityType}
                 className="w-full"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">گروه کالایی</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.commodityGroup}</label>
               <select
                 {...register('commodityGroup')}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">انتخاب کنید</option>
+                <option value="">{FORM_LABELS.selectPlaceholder}</option>
                 {Object.entries(COMMODITY_LABELS).map(([val, label]) => (
                   <option key={val} value={val}>{label}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">سمت</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.position}</label>
               <Input
                 {...register('position')}
+                placeholder={FORM_PLACEHOLDERS.profile.position}
                 className="w-full"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">سابقه کار (سال)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.experienceYears}</label>
               <Input
                 type="number"
                 {...register('experienceYears')}
                 min={0}
                 max={99}
+                placeholder={FORM_PLACEHOLDERS.profile.experienceYears}
                 className="w-full"
                 dir="ltr"
               />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.passportNumber}</label>
+              <Input
+                {...register('passportNumber')}
+                placeholder={FORM_PLACEHOLDERS.profile.passportNumber}
+                className="w-full"
+                dir="ltr"
+              />
+              <p className="text-[11px] text-gray-400 mt-0.5">{FORM_HINTS.profile.passportNumber}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.passportExpiryDate}</label>
+              <Input
+                type="date"
+                {...register('passportExpiryDate')}
+                placeholder={FORM_PLACEHOLDERS.profile.passportExpiryDate}
+                className="w-full"
+                dir="ltr"
+              />
+              <p className="text-[11px] text-gray-400 mt-0.5">{FORM_HINTS.profile.passportExpiryDate}</p>
+              {errors.passportExpiryDate && <p className="text-red-500 text-xs mt-1">{errors.passportExpiryDate.message}</p>}
             </div>
           </div>
         </div>
@@ -434,7 +636,7 @@ function ProfilePage() {
         {/* مجوزها */}
         <div className="bg-white rounded-xl border border-gray-100 p-5">
           <h2 className="font-semibold text-gray-800 mb-4">
-            مجوزها و مدارک <span className="text-red-500">*</span>
+            {FORM_LABELS.profile.licenseTypes} <span className="text-red-500">*</span>
           </h2>
           <p className="text-xs text-gray-500 mb-3">حداقل یک مورد انتخاب کنید</p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -457,11 +659,11 @@ function ProfilePage() {
 
         {/* معرفی */}
         <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <h2 className="font-semibold text-gray-800 mb-4">معرفی</h2>
+          <h2 className="font-semibold text-gray-800 mb-4">{FORM_LABELS.profile.description}</h2>
           <textarea
             {...register('description')}
             rows={4}
-            placeholder="خلاصه‌ای از فعالیت و تخصص خود..."
+            placeholder={FORM_PLACEHOLDERS.profile.description}
             className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -483,11 +685,13 @@ function ProfilePage() {
       <div className="mt-8 bg-white rounded-xl border border-gray-100 p-5">
         <h2 className="font-semibold text-gray-800 mb-1">آپلود مدارک</h2>
         <p className="text-xs text-gray-500 mb-4">فایل‌های PDF، تصویر یا اسناد مجوزها را آپلود کنید</p>
+        <p className="text-xs text-gray-500 mb-4">حداکثر حجم فایل: ۲۰ مگابایت</p>
 
         <div className="flex gap-3 items-end flex-wrap mb-4">
           <div className="flex-1 min-w-48">
             <label className="label-text">نوع مدرک</label>
             <select
+              title="نوع مدرک"
               value={docType}
               onChange={(e) => setDocType(e.target.value as DocumentType)}
               className="input-field"
@@ -501,6 +705,7 @@ function ProfilePage() {
             <input
               ref={docFileRef}
               type="file"
+              title="انتخاب فایل مدرک"
               accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
               onChange={handleDocUpload}
               className="hidden"

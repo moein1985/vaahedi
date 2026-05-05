@@ -8,14 +8,26 @@ export const createTradeRequestSchema = z.object({
   productId: z.string().optional(),          // اگر نه، مشخصات دستی
   productNameFa: z.string().min(2).max(200).optional(),
   productNameEn: z.string().min(2).max(200).optional(),
+  serviceCode: z.string().min(2).max(50).optional(),
   hsCode: z.string().regex(/^\d{6,10}$/).optional(),
   commodityGroup: z.nativeEnum(CommodityGroup).optional(),
+  supplySourceType: z.enum(['COMPANY', 'FACTORY']).optional(),
+  supplySourceName: z.string().min(2).max(150).optional(),
   quantity: z.string().min(1, 'مقدار مورد نیاز الزامی است').max(100),
+  quantityUnit: z.enum(['KG', 'TON', 'PIECE', 'LITER', 'METER']).default('KG'),
   targetPrice: z.string().max(100).optional(),
   currency: z.enum(['IRR', 'USD', 'EUR', 'AED']).default('USD'),
   deliveryLocation: z.string().max(200).optional(),
   notes: z.string().max(2000).optional(),
   expiresAt: z.string().datetime().optional(),
+}).superRefine((input, ctx) => {
+  if ((input.supplySourceType && !input.supplySourceName) || (!input.supplySourceType && input.supplySourceName)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'نوع مبدا تامین و نام مبدا باید با هم تکمیل شوند',
+      path: ['supplySourceName'],
+    });
+  }
 });
 
 // ─── Update Trade Status ──────────────────────────────────────────────────────

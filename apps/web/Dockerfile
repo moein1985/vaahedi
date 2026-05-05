@@ -1,5 +1,5 @@
 ## ─── Stage 1: Build ──────────────────────────────────────────────────────────
-FROM node:22-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -24,8 +24,8 @@ COPY apps/server/ ./apps/server/
 COPY apps/web/ ./apps/web/
 COPY tsconfig.base.json ./
 
-# Generate Prisma client (needed by server types)
-RUN cd packages/db && npx prisma generate
+# Generate Prisma client types without engine download (web build needs types only)
+RUN cd packages/db && npx prisma generate --no-engine
 
 # Build
 RUN cd apps/web && npm run build

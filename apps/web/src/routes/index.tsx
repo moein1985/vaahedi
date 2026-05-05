@@ -23,6 +23,8 @@ import { Button } from '../components/ui/button.js';
 import { trpc } from '../trpc.js';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '../components/LanguageSwitcher.js';
+import { AiFabChat } from '../components/ai-fab-chat.js';
+import { useAuthStore } from '../store/auth.store.js';
 
 export const Route = createFileRoute('/')({
   component: HomePage,
@@ -47,6 +49,7 @@ type NewsCard = {
 
 export function HomePage() {
   const { t, i18n } = useTranslation();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const normalizedLanguage = (i18n.resolvedLanguage ?? i18n.language ?? 'fa').split('-')[0];
   const language = (normalizedLanguage === 'en' || normalizedLanguage === 'ar' ? normalizedLanguage : 'fa') as Language;
   const isRtl = language !== 'en';
@@ -320,6 +323,12 @@ export function HomePage() {
 
   const heroSlides = content.heroSlides;
   const currentSlide = heroSlides[heroIndex] ?? heroSlides[0];
+  const heroSlideBackgroundClasses = [
+    'bg-[radial-gradient(circle_at_52%_56%,rgba(255,217,99,0.88),rgba(245,132,31,0.54)_30%,rgba(19,19,19,0.9)_72%),linear-gradient(180deg,rgba(197,99,10,0.68),rgba(9,18,33,0.85))]',
+    'bg-[radial-gradient(circle_at_50%_42%,rgba(250,181,60,0.88),rgba(199,82,19,0.48)_31%,rgba(20,20,20,0.88)_72%),linear-gradient(180deg,rgba(161,81,12,0.75),rgba(15,23,42,0.85))]',
+    'bg-[radial-gradient(circle_at_54%_58%,rgba(239,202,112,0.85),rgba(193,91,27,0.46)_28%,rgba(17,17,17,0.9)_70%),linear-gradient(180deg,rgba(185,98,22,0.72),rgba(18,24,38,0.85))]',
+  ] as const;
+  const currentSlideBackgroundClass = heroSlideBackgroundClasses[heroIndex] ?? heroSlideBackgroundClasses[0];
 
   const prevArrow = <ChevronLeft className="h-5 w-5" />;
   const nextArrow = <ChevronRight className="h-5 w-5" />;
@@ -376,6 +385,9 @@ export function HomePage() {
 
           <div className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
             <LanguageSwitcher />
+            <Button size="sm" asChild>
+              <Link to="/auth/register" aria-label="register-cta">{t('auth.register')}</Link>
+            </Button>
             <Button variant="ghost" size="sm" asChild>
               <Link to="/auth/login">{t('auth.login')}</Link>
             </Button>
@@ -414,7 +426,7 @@ export function HomePage() {
         onMouseEnter={() => setIsHeroPaused(true)}
         onMouseLeave={() => setIsHeroPaused(false)}
       >
-        <div className="absolute inset-0" style={{ backgroundImage: currentSlide.bgImage }} />
+        <div className={`absolute inset-0 ${currentSlideBackgroundClass}`} />
         <div className="absolute inset-0 bg-black/20" />
 
         <div className="relative z-10 max-w-[1020px] mx-auto px-4 min-h-[430px] sm:min-h-[500px] flex items-center justify-center text-center text-white">
@@ -648,6 +660,7 @@ export function HomePage() {
           © {new Date().getFullYear()} {officialBrandNameFa}
         </div>
       </footer>
+      <AiFabChat enabled={isAuthenticated} />
     </div>
   );
 }

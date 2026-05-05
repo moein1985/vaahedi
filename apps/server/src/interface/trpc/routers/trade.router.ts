@@ -7,6 +7,14 @@ import {
 } from '@repo/shared';
 import { TRPCError } from '@trpc/server';
 
+const QUANTITY_UNIT_SUFFIX: Record<string, string> = {
+  KG: 'kg',
+  TON: 'ton',
+  PIECE: 'pcs',
+  LITER: 'l',
+  METER: 'm',
+};
+
 export const tradeRouter = router({
   // ── Create Request ────────────────────────────────────────────────────────
   createRequest: activeProcedure
@@ -31,6 +39,11 @@ export const tradeRouter = router({
         }
       }
 
+      const unitSuffix = QUANTITY_UNIT_SUFFIX[input.quantityUnit] ?? input.quantityUnit;
+      const normalizedQuantity = input.quantity.trim().endsWith(unitSuffix)
+        ? input.quantity.trim()
+        : `${input.quantity.trim()} ${unitSuffix}`;
+
       const request = await ctx.db.tradeRequest.create({
         data: {
           requesterId: ctx.user.id,
@@ -38,13 +51,16 @@ export const tradeRouter = router({
           productId: input.productId,
           productNameFa: input.productNameFa,
           productNameEn: input.productNameEn,
+          serviceCode: input.serviceCode?.trim() || null,
           hsCode: input.hsCode,
           commodityGroup: input.commodityGroup,
-          quantity: input.quantity,
+          supplySourceType: input.supplySourceType ?? null,
+          supplySourceName: input.supplySourceName?.trim() || null,
+          quantity: normalizedQuantity,
           targetPrice: input.targetPrice,
           currency: input.currency,
           deliveryLocation: input.deliveryLocation,
-          notes: input.notes,
+          notes: input.notes?.trim() || null,
           expiresAt: input.expiresAt ? new Date(input.expiresAt) : null,
         },
       });
@@ -98,8 +114,11 @@ export const tradeRouter = router({
         status: request.status,
         productNameFa: request.productNameFa,
         productNameEn: request.productNameEn,
+        serviceCode: request.serviceCode,
         hsCode: request.hsCode,
         commodityGroup: request.commodityGroup,
+        supplySourceType: request.supplySourceType,
+        supplySourceName: request.supplySourceName,
         quantity: request.quantity,
         targetPrice: request.targetPrice,
         currency: request.currency,

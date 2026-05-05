@@ -1,7 +1,7 @@
-@import "tailwindcss";
-
 /* ─── فونت فارسی ─────────────────────────────────────────────────────────────── */
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap');
+
+@import "tailwindcss";
 
 /* ─── Tailwind v4: map CSS variables to utility classes ─────────────────────── */
 @theme inline {
@@ -60,6 +60,7 @@
     --border:                  hsl(220 13% 91%);
     --input:                   hsl(220 13% 91%);
     --ring:                    hsl(224 71.4% 4.1%);
+    --ring-shadow:             hsl(224 71.4% 4.1% / 0.2);
 
     --radius: 0.5rem;
 
@@ -91,6 +92,7 @@
     --border:                  hsl(215 27.9% 16.9%);
     --input:                   hsl(215 27.9% 16.9%);
     --ring:                    hsl(216 12.2% 83.9%);
+    --ring-shadow:             hsl(216 12.2% 83.9% / 0.2);
     --brand:                   hsl(217 91% 60%);
     --brand-foreground:        hsl(224 71.4% 4.1%);
     --brand-light:             hsl(217 30% 15%);
@@ -118,7 +120,7 @@
 @layer components {
   .label-text {
     @apply block text-sm font-medium mb-1;
-    color: color-mix(in srgb, var(--foreground) 80%, transparent);
+    color: var(--muted-foreground);
   }
 
   .input-field {
@@ -132,7 +134,7 @@
   }
   .input-field:focus {
     border-color: var(--ring);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 20%, transparent);
+    box-shadow: 0 0 0 2px var(--ring-shadow);
   }
 
   .field-error {

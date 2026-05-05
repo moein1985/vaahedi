@@ -2,6 +2,18 @@ import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { router, activeProcedure } from '../trpc.js';
 
+const PLATFORM_SERVICES = [
+  'درخواست ها (RFQ)',
+  'بازار (Marketplace)',
+  'پیام ها',
+  'AI مشاور',
+  'اسناد',
+  'مالی',
+  'پشتیبانی',
+  'کدهای گمرکی (HS Codes)',
+  'بخشنامه ها',
+];
+
 export const chatRouter = router({
   // ── New Conversation ──────────────────────────────────────────────────────
   newConversation: activeProcedure
@@ -82,11 +94,80 @@ export const chatRouter = router({
         },
       });
 
-      // دریافت context کاربر
-      const user = await ctx.db.user.findUnique({
-        where: { id: ctx.user.id },
-        include: { profile: { select: { commodityGroup: true } } },
-      });
+      // دریافت context کاربر (Orchestrator Context)
+      const [user, profile, productCount, activeTradeCount, unreadNotifications, productServices, tradeServices] = await Promise.all([
+        ctx.db.user.findUnique({
+          where: { id: ctx.user.id },
+          include: {
+            profile: {
+              select: {
+                companyName: true,
+                unitName: true,
+                activityType: true,
+                commodityGroup: true,
+                phone: true,
+                province: true,
+                documents: { select: { id: true } },
+              },
+            },
+          },
+        }),
+        ctx.db.userProfile.findUnique({
+          where: { userId: ctx.user.id },
+          select: {
+            companyName: true,
+            unitName: true,
+            activityType: true,
+            commodityGroup: true,
+            phone: true,
+            province: true,
+            documents: { select: { id: true } },
+          },
+        }),
+        ctx.db.product.count({ where: { userId: ctx.user.id } }),
+        ctx.db.tradeRequest.count({
+          where: {
+            requesterId: ctx.user.id,
+            status: { in: ['PENDING', 'IN_NEGOTIATION'] },
+          },
+        }),
+        ctx.db.notification.count({
+          where: {
+            userId: ctx.user.id,
+            isRead: false,
+          },
+        }),
+        ctx.db.product.findMany({
+          where: { userId: ctx.user.id, serviceCode: { not: null } },
+          select: { serviceCode: true },
+          distinct: ['serviceCode'],
+          take: 20,
+        }),
+        ctx.db.tradeRequest.findMany({
+          where: { requesterId: ctx.user.id, serviceCode: { not: null } },
+          select: { serviceCode: true },
+          distinct: ['serviceCode'],
+          take: 20,
+        }),
+      ]);
+
+      const profileRef = profile ?? user?.profile;
+      const completionSteps = {
+        basicInfo: !!(profileRef?.companyName || profileRef?.unitName),
+        contactInfo: !!(profileRef?.phone || profileRef?.province),
+        businessInfo: !!(profileRef?.activityType || profileRef?.commodityGroup),
+        documents: (profileRef?.documents?.length ?? 0) > 0,
+      };
+      const completionDone = Object.values(completionSteps).filter(Boolean).length;
+      const completionPercent = Math.round((completionDone / Object.keys(completionSteps).length) * 100);
+
+      const offeredServices = [
+        ...productServices.map((p) => p.serviceCode).filter(Boolean),
+        ...tradeServices.map((t) => t.serviceCode).filter(Boolean),
+      ];
+      const uniqueOfferedServices = Array.from(new Set(offeredServices)).filter(
+        (code): code is string => typeof code === 'string' && code.trim().length > 0,
+      );
 
       // جمع‌آوری پیام‌ها برای AI
       const messages = [
@@ -104,7 +185,15 @@ export const chatRouter = router({
         messages,
         userContext: {
           role: ctx.user.role,
-          commodityGroup: user?.profile?.commodityGroup ?? undefined,
+          commodityGroup: profileRef?.commodityGroup ?? undefined,
+          activityType: profileRef?.activityType ?? undefined,
+          companyName: profileRef?.companyName ?? profileRef?.unitName ?? undefined,
+          profileCompletionPercent: completionPercent,
+          activeProductsCount: productCount,
+          activeTradesCount: activeTradeCount,
+          unreadNotificationsCount: unreadNotifications,
+          offeredServices: uniqueOfferedServices,
+          platformServices: PLATFORM_SERVICES,
         },
       })) {
         fullResponse += chunk;

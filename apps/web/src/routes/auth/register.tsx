@@ -37,6 +37,7 @@ function RegisterPage() {
           mobile: data.user.mobile,
           email: data.user.email,
           isAdmin: false,
+          adminRole: null,
         },
         data.accessToken,
       );
@@ -268,6 +269,9 @@ function RegisterPage() {
           <div>
             <p className="label-text">رمز عبور</p>
             <Input type="password" {...register('password')} dir="ltr" />
+            <p className="text-[11px] text-muted-foreground mt-1">
+              رمز عبور باید حداقل ۸ کاراکتر و شامل حرف بزرگ، حرف کوچک، عدد و نماد باشد.
+            </p>
             {errors.password && <p className="field-error">{errors.password.message}</p>}
           </div>
 

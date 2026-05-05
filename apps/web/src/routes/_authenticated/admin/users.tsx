@@ -54,6 +54,8 @@ function AdminUsersPage() {
         </div>
         <div className="flex flex-wrap gap-2 sm:gap-3">
           <select
+            aria-label="فیلتر وضعیت کاربران"
+            title="فیلتر وضعیت کاربران"
             value={statusFilter}
             onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
             className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -112,6 +114,8 @@ function AdminUsersPage() {
                   </td>
                   <td className="px-4 py-3">
                     <select
+                      aria-label={`تغییر وضعیت ${user.mobile}`}
+                      title="تغییر وضعیت کاربر"
                       value={user.status}
                       disabled={updateStatus.isPending}
                       onChange={async (e) => {

@@ -9,6 +9,7 @@ export interface IUserRepository {
   findByUserCode(userCode: string): Promise<UserEntity | null>;
   findByEmail(email: string): Promise<UserEntity | null>;
   findByNationalCode(nationalCode: string): Promise<UserEntity | null>;
+  findByNationalId(nationalId: string): Promise<UserEntity | null>;
   create(data: CreateUserDto & { userCode: string }): Promise<UserEntity>;
   updateStatus(id: string, status: UserEntity['status']): Promise<void>;
   countByPrefix(prefix: string): Promise<number>;

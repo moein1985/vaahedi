@@ -48,8 +48,8 @@ const storage = new MinioStorageService({
 const ai = process.env['AVALAI_API_KEY']
   ? new AvalaiChatService({
       apiKey: process.env['AVALAI_API_KEY'],
-      baseUrl: process.env['AVALAI_BASE_URL'] ?? 'https://api.avalai.ir/v1',
-      model: process.env['AVALAI_MODEL'] ?? 'google/gemini-2.0-flash-exp',
+      baseUrl: process.env['AVALAI_BASE_URL'] ?? 'https://api.avalapis.ir/v1',
+      model: process.env['AVALAI_MODEL'] ?? 'gemini-3.1-flash-lite-preview',
     })
   : null;
 

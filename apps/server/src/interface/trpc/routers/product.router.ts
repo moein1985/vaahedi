@@ -8,6 +8,17 @@ import {
 import { compressImage, createThumbnail } from '../../../infrastructure/storage/image-processor.js';
 import { router, activeProcedure, publicProcedure, adminProcedure } from '../trpc.js';
 
+const PRODUCT_UPLOAD_MAX_BYTES = 25 * 1024 * 1024;
+const PRODUCT_UPLOAD_ALLOWED_PREFIXES = ['image/', 'video/'] as const;
+const PRODUCT_UPLOAD_ALLOWED_EXACT = ['application/pdf'] as const;
+
+function isAllowedProductMediaMimeType(mimeType: string): boolean {
+  return (
+    PRODUCT_UPLOAD_ALLOWED_PREFIXES.some((prefix) => mimeType.startsWith(prefix))
+    || PRODUCT_UPLOAD_ALLOWED_EXACT.includes(mimeType as (typeof PRODUCT_UPLOAD_ALLOWED_EXACT)[number])
+  );
+}
+
 export const productRouter = router({
   // ── List / Search ─────────────────────────────────────────────────────────
   list: publicProcedure.input(productSearchSchema).query(async ({ input, ctx }) => {
@@ -217,6 +228,34 @@ export const productRouter = router({
 
       // Decode base64
       const buffer = Buffer.from(input.base64Data, 'base64');
+      const fileSize = buffer.length;
+
+      if (!isAllowedProductMediaMimeType(input.mimeType)) {
+        console.error('[upload.product.invalid_mime]', {
+          userId: ctx.user.id,
+          productId: input.productId,
+          fileName: input.fileName,
+          mimeType: input.mimeType,
+        });
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'فرمت فایل مجاز نیست. فقط تصویر، ویدیو یا PDF قابل آپلود است',
+        });
+      }
+
+      if (fileSize > PRODUCT_UPLOAD_MAX_BYTES) {
+        console.error('[upload.product.file_too_large]', {
+          userId: ctx.user.id,
+          productId: input.productId,
+          fileName: input.fileName,
+          fileSize,
+          maxBytes: PRODUCT_UPLOAD_MAX_BYTES,
+        });
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'حجم فایل بیشتر از حد مجاز است (حداکثر ۲۵ مگابایت)',
+        });
+      }
 
       // Compress image if it's an image
       let processedBuffer: Buffer = buffer;
@@ -233,12 +272,27 @@ export const productRouter = router({
       const thumbnailKey = thumbnailBuffer ? `products/${input.productId}/${timestamp}-thumb-${input.fileName}` : null;
 
       // Upload to storage
-      await ctx.storage.uploadFile({
-        key,
-        buffer: processedBuffer,
-        mimeType: input.mimeType.startsWith('image/') ? 'image/webp' : input.mimeType,
-        size: processedBuffer.length,
-      });
+      try {
+        await ctx.storage.uploadFile({
+          key,
+          buffer: processedBuffer,
+          mimeType: input.mimeType.startsWith('image/') ? 'image/webp' : input.mimeType,
+          size: processedBuffer.length,
+        });
+      } catch (error) {
+        console.error('[upload.product.storage_failed]', {
+          userId: ctx.user.id,
+          productId: input.productId,
+          fileName: input.fileName,
+          mimeType: input.mimeType,
+          fileSize,
+          error: error instanceof Error ? error.message : String(error),
+        });
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'آپلود فایل با خطا مواجه شد. لطفاً دوباره تلاش کنید',
+        });
+      }
       if (thumbnailBuffer && thumbnailKey) {
         await ctx.storage.uploadFile({
           key: thumbnailKey,

@@ -89,12 +89,12 @@ function AdminDashboardPage() {
               <span className="text-sm text-gray-600">در انتظار تایید</span>
               <span className="text-lg font-semibold text-orange-600">{data?.users.pending}</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2 mt-4">
-              <div
-                className="bg-blue-600 h-2 rounded-full"
-                style={{ width: `${data?.users.total ? (data.users.active / data.users.total) * 100 : 0}%` }}
-              ></div>
-            </div>
+            <progress
+              className="w-full h-2 mt-4 overflow-hidden rounded-full [&::-webkit-progress-bar]:bg-gray-200 [&::-webkit-progress-value]:bg-blue-600 [&::-moz-progress-bar]:bg-blue-600"
+              value={data?.users.active ?? 0}
+              max={data?.users.total || 1}
+              aria-label="نسبت کاربران فعال"
+            />
           </div>
         </div>
 
@@ -113,12 +113,12 @@ function AdminDashboardPage() {
               <span className="text-sm text-gray-600">تایید شده</span>
               <span className="text-lg font-semibold text-green-600">{(data?.products.total ?? 0) - (data?.products.pending ?? 0)}</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2 mt-4">
-              <div
-                className="bg-green-600 h-2 rounded-full"
-                style={{ width: `${data?.products.total ? (((data.products.total - data.products.pending) / data.products.total) * 100) : 0}%` }}
-              ></div>
-            </div>
+            <progress
+              className="w-full h-2 mt-4 overflow-hidden rounded-full [&::-webkit-progress-bar]:bg-gray-200 [&::-webkit-progress-value]:bg-green-600 [&::-moz-progress-bar]:bg-green-600"
+              value={(data?.products.total ?? 0) - (data?.products.pending ?? 0)}
+              max={data?.products.total || 1}
+              aria-label="نسبت محصولات تایید شده"
+            />
           </div>
         </div>
       </div>

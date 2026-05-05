@@ -26,6 +26,29 @@ function generateOtp(): string {
 
 const smsService = new MockSMSService();
 
+type AuthUserPayload = {
+  id: string;
+  userCode: string;
+  role: string;
+  status: string;
+  mobile: string;
+  email: string | null;
+  adminProfile?: { adminRole: string } | null;
+};
+
+function toAuthUser(user: AuthUserPayload) {
+  return {
+    id: user.id,
+    userCode: user.userCode,
+    role: user.role,
+    status: user.status,
+    mobile: user.mobile,
+    email: user.email,
+    isAdmin: !!user.adminProfile,
+    adminRole: user.adminProfile?.adminRole ?? null,
+  };
+}
+
 // ─── Auth Router ─────────────────────────────────────────────────────────────
 
 export const authRouter = router({
@@ -48,7 +71,7 @@ export const authRouter = router({
     ctx.res.setCookie('accessToken', accessToken, { httpOnly: true, secure: process.env['NODE_ENV'] === 'production', sameSite: 'strict', maxAge: 900 });
     ctx.res.setCookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env['NODE_ENV'] === 'production', sameSite: 'strict', maxAge: 604800 });
 
-    return { user: result, accessToken };
+    return { user: { ...result, isAdmin: false, adminRole: null }, accessToken };
   }),
 
   sendOTP: publicProcedure
@@ -89,13 +112,14 @@ export const authRouter = router({
       ctx.res.setCookie('accessToken', accessToken, { httpOnly: true, secure: process.env['NODE_ENV'] === 'production', sameSite: 'strict', maxAge: 900 });
       ctx.res.setCookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env['NODE_ENV'] === 'production', sameSite: 'strict', maxAge: 604800 });
 
-      return { ok: true, user: { id: user.id, mobile: user.mobile, userCode: user.userCode } };
+      return { ok: true, user: { id: user.id, mobile: user.mobile, userCode: user.userCode, isAdmin: false, adminRole: null } };
     }),
 
   // ── Login ─────────────────────────────────────────────────────────────────
   login: publicProcedure.input(loginSchema).mutation(async ({ input, ctx }) => {
     const user = await ctx.db.user.findUnique({
       where: { userCode: input.userCode },
+      include: { adminProfile: true },
     });
 
     if (!user) {
@@ -175,14 +199,7 @@ export const authRouter = router({
 
     return {
       accessToken,
-      user: {
-        id: user.id,
-        userCode: user.userCode,
-        role: user.role,
-        status: user.status,
-        mobile: user.mobile,
-        email: user.email,
-      },
+      user: toAuthUser(user),
     };
   }),
 
@@ -190,6 +207,7 @@ export const authRouter = router({
   loginWithEmail: publicProcedure.input(loginWithEmailSchema).mutation(async ({ input, ctx }) => {
     const user = await ctx.db.user.findUnique({
       where: { email: input.email },
+      include: { adminProfile: true },
     });
 
     if (!user) {
@@ -269,14 +287,7 @@ export const authRouter = router({
 
     return {
       accessToken,
-      user: {
-        id: user.id,
-        userCode: user.userCode,
-        role: user.role,
-        status: user.status,
-        mobile: user.mobile,
-        email: user.email,
-      },
+      user: toAuthUser(user),
     };
   }),
 
@@ -336,6 +347,7 @@ export const authRouter = router({
         mobile: user.mobile,
         email: user.email,
         isAdmin: !!user.adminProfile,
+        adminRole: user.adminProfile?.adminRole ?? null,
       },
     };
   }),
@@ -359,7 +371,7 @@ export const authRouter = router({
   me: protectedProcedure.query(async ({ ctx }) => {
     const user = await ctx.db.user.findUnique({
       where: { id: ctx.user.id },
-      include: { profile: true },
+      include: { profile: true, adminProfile: true },
     });
 
     if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'کاربر یافت نشد' });
@@ -372,6 +384,8 @@ export const authRouter = router({
       membershipType: user.membershipType,
       mobile: user.mobile,
       email: user.email,
+      isAdmin: !!user.adminProfile,
+      adminRole: user.adminProfile?.adminRole ?? null,
       hasProfile: !!user.profile,
       profileStatus: user.profile?.verificationStatus ?? null,
     };
@@ -398,6 +412,7 @@ export const authRouter = router({
     // کاربر را پیدا کن
     const user = await ctx.db.user.findUnique({
       where: { mobile: input.mobile },
+      include: { adminProfile: true },
     });
 
     if (!user) {
@@ -458,14 +473,7 @@ export const authRouter = router({
 
     return {
       accessToken,
-      user: {
-        id: user.id,
-        userCode: user.userCode,
-        role: user.role,
-        status: user.status,
-        mobile: user.mobile,
-        email: user.email,
-      },
+      user: toAuthUser(user),
     };
   }),
 

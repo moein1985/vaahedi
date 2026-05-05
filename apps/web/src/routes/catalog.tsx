@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { trpc } from '../trpc.js';
 import { CommodityGroup, ProductOrigin } from '@repo/shared';
@@ -54,15 +54,15 @@ function CatalogPage() {
 
   const copy = {
     fa: {
-      title: 'کاتالوگ محصولات',
+      title: 'Marketplace کالاها',
       titleSeo: 'کاتالوگ محصولات | پلتفرم تجارت متمرکز هوشمند ایرانیان',
       descriptionSeo: 'جستجو و مشاهده محصولات صنعتی، شیمیایی و تجاری تولیدکنندگان و بازرگانان ایرانی',
-      heroTitle: 'کاتالوگ هوشمند محصولات صادراتی و وارداتی',
-      heroDesc: 'محصولات را بر اساس گروه کالایی، منشا، کد HS و نام جستجو کنید و برای هر مورد سریع به جزئیات کامل دسترسی داشته باشید.',
+      heroTitle: 'Marketplace هوشمند برای کالاهای صادراتی و وارداتی',
+      heroDesc: 'کالاها را بر اساس گروه کالایی، منشا، کد HS و نام جستجو کنید و سریع به جزئیات کامل هر مورد برسید.',
       searchPlaceholder: 'جستجو محصول، کد HS، نام...',
       searchBtn: 'جستجو',
       catalogLabel: 'Catalog',
-      filtersTitle: 'فیلترهای پیشرفته',
+      filtersTitle: 'فیلترهای کلیدی Marketplace',
       commodityGroup: 'گروه کالایی',
       origin: 'منشأ کالا',
       all: 'همه',
@@ -173,6 +173,24 @@ function CatalogPage() {
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
 
+  useEffect(() => {
+    if (!showFilters) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setShowFilters(false);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [showFilters]);
+
   const { data, isLoading } = trpc.product.list.useQuery({
     q: search || undefined,
     origin: (origin as ProductOrigin) || undefined,
@@ -199,10 +217,10 @@ function CatalogPage() {
         <meta property="og:type" content="website" />
         <link rel="canonical" href="https://your-domain.ir/catalog" />
       </Helmet>
-      <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_35%)]" dir={isRtl ? 'rtl' : 'ltr'}>
+      <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_35%)] overflow-x-hidden" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Header */}
       <header className="bg-white/95 border-b border-gray-200 sticky top-0 z-10 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex flex-wrap lg:flex-nowrap items-center justify-between gap-3">
           <Link to="/" className="flex items-center gap-3 shrink-0 min-w-0">
             <img
               src="/brand/logo_without_persian_words.png"
@@ -214,7 +232,7 @@ function CatalogPage() {
               <p className="text-[11px] text-gray-500 leading-none mt-1 line-clamp-1">{officialBrandNameByLanguage[language]}</p>
             </div>
           </Link>
-          <form onSubmit={handleSearch} className="flex gap-2 flex-1 max-w-xl">
+          <form onSubmit={handleSearch} className="order-3 lg:order-none flex gap-2 w-full lg:flex-1 lg:max-w-xl">
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
@@ -244,7 +262,7 @@ function CatalogPage() {
         </div>
       </section>
 
-      <div className="max-w-6xl mx-auto px-4 py-6 flex gap-6">
+      <div className="max-w-6xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6">
         {/* Sidebar filters */}
         <aside className="hidden lg:block w-56 shrink-0">
           <div className="bg-white rounded-xl border border-gray-200 p-4 sticky top-24 shadow-sm">
@@ -253,6 +271,7 @@ function CatalogPage() {
             <div className="mb-4">
               <label className="label-text">{content.commodityGroup}</label>
               <select
+                title={content.commodityGroup}
                 value={commodityGroup}
                 onChange={(e) => { setCommodityGroup(e.target.value); setPage(1); }}
                 className="input-field text-xs"
@@ -267,6 +286,7 @@ function CatalogPage() {
             <div>
               <label className="label-text">{content.origin}</label>
               <select
+                title={content.origin}
                 value={origin}
                 onChange={(e) => { setOrigin(e.target.value); setPage(1); }}
                 className="input-field text-xs"
@@ -291,12 +311,12 @@ function CatalogPage() {
 
         {/* Products grid */}
         <main className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <h2 className="font-black text-gray-900 text-xl">
               {content.title}
               {data && <span className={`text-sm font-normal text-gray-500 ${isRtl ? 'mr-2' : 'ml-2'}`}>({data.pagination.total} {content.productsCount})</span>}
             </h2>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
               {/* Mobile filter button */}
               <button
                 onClick={() => setShowFilters(true)}
@@ -306,6 +326,7 @@ function CatalogPage() {
               </button>
               {/* Sort dropdown */}
               <select
+                title="مرتب‌سازی نتایج"
                 value={`${sortBy}-${sortOrder}`}
                 onChange={(e) => {
                   const [by, order] = e.target.value.split('-') as ['createdAt' | 'nameFa' | 'hsCode', 'asc' | 'desc'];
@@ -313,7 +334,7 @@ function CatalogPage() {
                   setSortOrder(order);
                   setPage(1);
                 }}
-                className="input-field text-sm max-w-44"
+                className="input-field text-sm flex-1 sm:flex-none sm:max-w-44"
               >
                 {SORT_OPTIONS.map((option) => (
                   <option key={`${option.value}-${option.order}`} value={`${option.value}-${option.order}`}>
@@ -402,9 +423,14 @@ function CatalogPage() {
 
       {/* Mobile filters drawer */}
       {showFilters && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowFilters(false)} />
-          <div className={`absolute top-0 h-full w-80 bg-white shadow-xl ${isRtl ? 'left-0' : 'right-0'}`}>
+        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label={content.filtersTitle}>
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/45 backdrop-blur-[1px]"
+            onClick={() => setShowFilters(false)}
+            aria-label="بستن پنل فیلتر"
+          />
+          <div className={`absolute top-0 h-full w-[88vw] max-w-sm bg-white shadow-xl overflow-y-auto ${isRtl ? 'left-0' : 'right-0'}`}>
             <div className="p-4 border-b border-gray-200 flex items-center justify-between bg-slate-50">
               <h3 className="font-semibold text-gray-800">{content.filtersTitle}</h3>
               <button
@@ -418,6 +444,7 @@ function CatalogPage() {
               <div>
                 <label className="label-text">{content.commodityGroup}</label>
                 <select
+                  title={content.commodityGroup}
                   value={commodityGroup}
                   onChange={(e) => { setCommodityGroup(e.target.value); setPage(1); }}
                   className="input-field"
@@ -432,6 +459,7 @@ function CatalogPage() {
               <div>
                 <label className="label-text">{content.origin}</label>
                 <select
+                  title={content.origin}
                   value={origin}
                   onChange={(e) => { setOrigin(e.target.value); setPage(1); }}
                   className="input-field"

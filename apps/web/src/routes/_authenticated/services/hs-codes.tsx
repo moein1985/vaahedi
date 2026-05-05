@@ -29,7 +29,7 @@ function HsCodesPage() {
     <div className="p-6" dir="rtl">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">کدهای تعرفه گمرکی</h1>
-        <p className="text-gray-500 text-sm mt-1">جستجو در کدهای HS</p>
+        <p className="text-gray-500 text-sm mt-1">مرجع کدهای HS برای ثبت کالا و ایجاد RFQ دقیق</p>
       </div>
 
       <div className="mb-4">

@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/ca
 import { Input } from '../../components/ui/input.js';
 import { Button } from '../../components/ui/button.js';
 import { cn } from '../../lib/utils.js';
+import { getFriendlyTrpcError } from '../../lib/trpc-error.js';
 import { toast } from 'sonner';
 
 const otpLoginSchema = z.object({
@@ -29,6 +30,7 @@ export const Route = createFileRoute('/auth/login')({
 function LoginPage() {
   const navigate = useNavigate();
   const setAuth = useAuthStore((s) => s.setAuth);
+  const [userRole, setUserRole] = useState<'seller' | 'buyer' | null>(null);
   const [loginMethod, setLoginMethod] = useState<'userCode' | 'email' | 'otp'>('userCode');
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const captchaRef = useRef<HCaptcha>(null);
@@ -53,7 +55,8 @@ function LoginPage() {
           status: data.user.status,
           mobile: data.user.mobile,
           email: data.user.email,
-          isAdmin: false,
+          isAdmin: data.user.isAdmin,
+          adminRole: data.user.adminRole,
         },
         data.accessToken,
       );
@@ -61,7 +64,7 @@ function LoginPage() {
     },
     onError: (error) => {
       // Error is automatically displayed in the form
-      console.error('Login error:', error.message);
+      console.error('Login error:', getFriendlyTrpcError(error));
     },
   });
 
@@ -75,14 +78,15 @@ function LoginPage() {
           status: data.user.status,
           mobile: data.user.mobile,
           email: data.user.email,
-          isAdmin: false,
+          isAdmin: data.user.isAdmin,
+          adminRole: data.user.adminRole,
         },
         data.accessToken,
       );
       void navigate({ to: '/dashboard' });
     },
     onError: (error) => {
-      console.error('Email login error:', error.message);
+      console.error('Email login error:', getFriendlyTrpcError(error));
     },
   });
 
@@ -96,14 +100,15 @@ function LoginPage() {
           status: data.user.status,
           mobile: data.user.mobile,
           email: data.user.email,
-          isAdmin: false,
+          isAdmin: data.user.isAdmin,
+          adminRole: data.user.adminRole,
         },
         data.accessToken,
       );
       void navigate({ to: '/dashboard' });
     },
     onError: (error) => {
-      console.error('OTP login error:', error.message);
+      console.error('OTP login error:', getFriendlyTrpcError(error));
     },
   });
 
@@ -112,7 +117,7 @@ function LoginPage() {
       toast.success('کد OTP به شماره موبایل شما ارسال شد');
     },
     onError: (error) => {
-      toast.error(`خطا: ${error.message}`);
+      toast.error(getFriendlyTrpcError(error, 'ارسال کد تایید انجام نشد'));
     },
   });
 
@@ -202,7 +207,44 @@ function LoginPage() {
         <Card>
           <CardHeader><CardTitle>ورود به حساب</CardTitle></CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            {!userRole ? (
+              // Role Selection Screen
+              <div className="space-y-4">
+                <p className="text-center text-muted-foreground mb-6">لطفاً نقش خود را انتخاب کنید</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setUserRole('seller')}
+                    className="border-2 border-gray-200 hover:border-[var(--brand)] rounded-lg p-6 text-center transition-all hover:bg-muted/50"
+                  >
+                    <div className="text-4xl mb-2">🏪</div>
+                    <h3 className="font-semibold text-foreground">فروشنده</h3>
+                    <p className="text-xs text-muted-foreground mt-2">ارائه‌دهنده محصول یا خدمات</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setUserRole('buyer')}
+                    className="border-2 border-gray-200 hover:border-[var(--brand)] rounded-lg p-6 text-center transition-all hover:bg-muted/50"
+                  >
+                    <div className="text-4xl mb-2">🛒</div>
+                    <h3 className="font-semibold text-foreground">خریدار</h3>
+                    <p className="text-xs text-muted-foreground mt-2">جستجو و خریداری محصول</p>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              // Login Forms
+              <div className="space-y-4">
+                <button
+                  type="button"
+                  onClick={() => setUserRole(null)}
+                  className="text-xs text-muted-foreground hover:text-foreground mb-3"
+                >
+                  ← تغییر نقش
+                </button>
+                <p className="text-sm text-muted-foreground mb-4">
+                  ورود به عنوان <span className="font-semibold text-foreground">{userRole === 'seller' ? 'فروشنده' : 'خریدار'}</span>
+                </p>
               {/* Tab selector */}
               <div className="grid grid-cols-3 gap-2 mb-6 bg-muted rounded-lg p-1">
                 <button
@@ -292,7 +334,7 @@ function LoginPage() {
 
                   {loginMutation.error && (
                     <div className="bg-destructive/20 border border-destructive rounded-lg p-3 text-destructive text-sm">
-                      {loginMutation.error.message}
+                      {getFriendlyTrpcError(loginMutation.error, 'ورود انجام نشد')}
                     </div>
                   )}
 
@@ -356,7 +398,7 @@ function LoginPage() {
 
                   {loginWithEmailMutation.error && (
                     <div className="bg-destructive/20 border border-destructive rounded-lg p-3 text-destructive text-sm">
-                      {loginWithEmailMutation.error.message}
+                      {getFriendlyTrpcError(loginWithEmailMutation.error, 'ورود انجام نشد')}
                     </div>
                   )}
 
@@ -403,7 +445,7 @@ function LoginPage() {
 
                   {otpLoginMutation.error && (
                     <div className="bg-destructive/20 border border-destructive rounded-lg p-3 text-destructive text-sm">
-                      {otpLoginMutation.error.message}
+                      {getFriendlyTrpcError(otpLoginMutation.error, 'ورود با کد پیامکی انجام نشد')}
                     </div>
                   )}
 
@@ -412,7 +454,8 @@ function LoginPage() {
                   </Button>
                 </form>
               )}
-            </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

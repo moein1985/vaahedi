@@ -8,7 +8,11 @@ export default defineConfig({
   plugins: [
     tailwindcss(),
     // باید قبل از react باشد
-    TanStackRouterVite({ target: 'react', autoCodeSplitting: true }),
+    TanStackRouterVite({
+      target: 'react',
+      autoCodeSplitting: true,
+      routeFileIgnorePattern: '\\.test\\.(ts|tsx)$',
+    }),
     react(),
   ],
   resolve: {

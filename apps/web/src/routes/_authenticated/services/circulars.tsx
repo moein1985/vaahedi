@@ -24,10 +24,10 @@ function CircularsPage() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6" dir="rtl">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">بخشنامه‌ها و دستورالعمل‌ها</h1>
-        <p className="text-gray-500 text-sm mt-1">آخرین بخشنامه‌های تجاری و گمرکی</p>
+        <p className="text-gray-500 text-sm mt-1">مرجع بخشنامه های تجاری و گمرکی برای تصمیم گیری در RFQ و Marketplace</p>
       </div>
 
       <div className="relative mb-6">

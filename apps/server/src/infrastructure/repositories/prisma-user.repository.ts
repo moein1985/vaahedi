@@ -30,6 +30,11 @@ export class PrismaUserRepository implements IUserRepository {
     return user ? this.toEntity(user) : null;
   }
 
+  async findByNationalId(nationalId: string): Promise<UserEntity | null> {
+    const user = await this.db.user.findFirst({ where: { nationalId } });
+    return user ? this.toEntity(user) : null;
+  }
+
   async create(data: CreateUserDto & { userCode: string }): Promise<UserEntity> {
     const user = await this.db.user.create({
       data: {
