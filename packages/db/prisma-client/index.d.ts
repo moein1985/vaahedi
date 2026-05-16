@@ -11410,7 +11410,7 @@ export namespace Prisma {
     widthCm: Decimal | null
     heightCm: Decimal | null
     weightUnit: string | null
-    deliveryTerms: $Enums.DeliveryTerms | null
+    deliveryTerms: string | null
     deliveryLocation: string | null
     minOrderQuantity: string | null
     preparationTimeDays: number | null
@@ -11449,7 +11449,7 @@ export namespace Prisma {
     widthCm: Decimal | null
     heightCm: Decimal | null
     weightUnit: string | null
-    deliveryTerms: $Enums.DeliveryTerms | null
+    deliveryTerms: string | null
     deliveryLocation: string | null
     minOrderQuantity: string | null
     preparationTimeDays: number | null
@@ -11753,7 +11753,7 @@ export namespace Prisma {
     widthCm: Decimal | null
     heightCm: Decimal | null
     weightUnit: string | null
-    deliveryTerms: $Enums.DeliveryTerms
+    deliveryTerms: string
     deliveryLocation: string
     minOrderQuantity: string
     preparationTimeDays: number
@@ -11994,7 +11994,7 @@ export namespace Prisma {
       widthCm: Prisma.Decimal | null
       heightCm: Prisma.Decimal | null
       weightUnit: string | null
-      deliveryTerms: $Enums.DeliveryTerms
+      deliveryTerms: string
       deliveryLocation: string
       minOrderQuantity: string
       preparationTimeDays: number
@@ -12456,7 +12456,7 @@ export namespace Prisma {
     readonly widthCm: FieldRef<"Product", 'Decimal'>
     readonly heightCm: FieldRef<"Product", 'Decimal'>
     readonly weightUnit: FieldRef<"Product", 'String'>
-    readonly deliveryTerms: FieldRef<"Product", 'DeliveryTerms'>
+    readonly deliveryTerms: FieldRef<"Product", 'String'>
     readonly deliveryLocation: FieldRef<"Product", 'String'>
     readonly minOrderQuantity: FieldRef<"Product", 'String'>
     readonly preparationTimeDays: FieldRef<"Product", 'Int'>
@@ -38101,20 +38101,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'DeliveryTerms'
-   */
-  export type EnumDeliveryTermsFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DeliveryTerms'>
-    
-
-
-  /**
-   * Reference to a field of type 'DeliveryTerms[]'
-   */
-  export type ListEnumDeliveryTermsFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DeliveryTerms[]'>
-    
-
-
-  /**
    * Reference to a field of type 'PaymentMethod'
    */
   export type EnumPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentMethod'>
@@ -38913,7 +38899,7 @@ export namespace Prisma {
     widthCm?: DecimalNullableFilter<"Product"> | Decimal | DecimalJsLike | number | string | null
     heightCm?: DecimalNullableFilter<"Product"> | Decimal | DecimalJsLike | number | string | null
     weightUnit?: StringNullableFilter<"Product"> | string | null
-    deliveryTerms?: EnumDeliveryTermsFilter<"Product"> | $Enums.DeliveryTerms
+    deliveryTerms?: StringFilter<"Product"> | string
     deliveryLocation?: StringFilter<"Product"> | string
     minOrderQuantity?: StringFilter<"Product"> | string
     preparationTimeDays?: IntFilter<"Product"> | number
@@ -39000,7 +38986,7 @@ export namespace Prisma {
     widthCm?: DecimalNullableFilter<"Product"> | Decimal | DecimalJsLike | number | string | null
     heightCm?: DecimalNullableFilter<"Product"> | Decimal | DecimalJsLike | number | string | null
     weightUnit?: StringNullableFilter<"Product"> | string | null
-    deliveryTerms?: EnumDeliveryTermsFilter<"Product"> | $Enums.DeliveryTerms
+    deliveryTerms?: StringFilter<"Product"> | string
     deliveryLocation?: StringFilter<"Product"> | string
     minOrderQuantity?: StringFilter<"Product"> | string
     preparationTimeDays?: IntFilter<"Product"> | number
@@ -39089,7 +39075,7 @@ export namespace Prisma {
     widthCm?: DecimalNullableWithAggregatesFilter<"Product"> | Decimal | DecimalJsLike | number | string | null
     heightCm?: DecimalNullableWithAggregatesFilter<"Product"> | Decimal | DecimalJsLike | number | string | null
     weightUnit?: StringNullableWithAggregatesFilter<"Product"> | string | null
-    deliveryTerms?: EnumDeliveryTermsWithAggregatesFilter<"Product"> | $Enums.DeliveryTerms
+    deliveryTerms?: StringWithAggregatesFilter<"Product"> | string
     deliveryLocation?: StringWithAggregatesFilter<"Product"> | string
     minOrderQuantity?: StringWithAggregatesFilter<"Product"> | string
     preparationTimeDays?: IntWithAggregatesFilter<"Product"> | number
@@ -41547,7 +41533,7 @@ export namespace Prisma {
     widthCm?: Decimal | DecimalJsLike | number | string | null
     heightCm?: Decimal | DecimalJsLike | number | string | null
     weightUnit?: string | null
-    deliveryTerms: $Enums.DeliveryTerms
+    deliveryTerms: string
     deliveryLocation: string
     minOrderQuantity: string
     preparationTimeDays: number
@@ -41589,7 +41575,7 @@ export namespace Prisma {
     widthCm?: Decimal | DecimalJsLike | number | string | null
     heightCm?: Decimal | DecimalJsLike | number | string | null
     weightUnit?: string | null
-    deliveryTerms: $Enums.DeliveryTerms
+    deliveryTerms: string
     deliveryLocation: string
     minOrderQuantity: string
     preparationTimeDays: number
@@ -41629,7 +41615,7 @@ export namespace Prisma {
     widthCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     heightCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     weightUnit?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveryTerms?: EnumDeliveryTermsFieldUpdateOperationsInput | $Enums.DeliveryTerms
+    deliveryTerms?: StringFieldUpdateOperationsInput | string
     deliveryLocation?: StringFieldUpdateOperationsInput | string
     minOrderQuantity?: StringFieldUpdateOperationsInput | string
     preparationTimeDays?: IntFieldUpdateOperationsInput | number
@@ -41671,7 +41657,7 @@ export namespace Prisma {
     widthCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     heightCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     weightUnit?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveryTerms?: EnumDeliveryTermsFieldUpdateOperationsInput | $Enums.DeliveryTerms
+    deliveryTerms?: StringFieldUpdateOperationsInput | string
     deliveryLocation?: StringFieldUpdateOperationsInput | string
     minOrderQuantity?: StringFieldUpdateOperationsInput | string
     preparationTimeDays?: IntFieldUpdateOperationsInput | number
@@ -41712,7 +41698,7 @@ export namespace Prisma {
     widthCm?: Decimal | DecimalJsLike | number | string | null
     heightCm?: Decimal | DecimalJsLike | number | string | null
     weightUnit?: string | null
-    deliveryTerms: $Enums.DeliveryTerms
+    deliveryTerms: string
     deliveryLocation: string
     minOrderQuantity: string
     preparationTimeDays: number
@@ -41750,7 +41736,7 @@ export namespace Prisma {
     widthCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     heightCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     weightUnit?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveryTerms?: EnumDeliveryTermsFieldUpdateOperationsInput | $Enums.DeliveryTerms
+    deliveryTerms?: StringFieldUpdateOperationsInput | string
     deliveryLocation?: StringFieldUpdateOperationsInput | string
     minOrderQuantity?: StringFieldUpdateOperationsInput | string
     preparationTimeDays?: IntFieldUpdateOperationsInput | number
@@ -41789,7 +41775,7 @@ export namespace Prisma {
     widthCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     heightCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     weightUnit?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveryTerms?: EnumDeliveryTermsFieldUpdateOperationsInput | $Enums.DeliveryTerms
+    deliveryTerms?: StringFieldUpdateOperationsInput | string
     deliveryLocation?: StringFieldUpdateOperationsInput | string
     minOrderQuantity?: StringFieldUpdateOperationsInput | string
     preparationTimeDays?: IntFieldUpdateOperationsInput | number
@@ -44462,13 +44448,6 @@ export namespace Prisma {
     not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
   }
 
-  export type EnumDeliveryTermsFilter<$PrismaModel = never> = {
-    equals?: $Enums.DeliveryTerms | EnumDeliveryTermsFieldRefInput<$PrismaModel>
-    in?: $Enums.DeliveryTerms[] | ListEnumDeliveryTermsFieldRefInput<$PrismaModel>
-    notIn?: $Enums.DeliveryTerms[] | ListEnumDeliveryTermsFieldRefInput<$PrismaModel>
-    not?: NestedEnumDeliveryTermsFilter<$PrismaModel> | $Enums.DeliveryTerms
-  }
-
   export type EnumPaymentMethodFilter<$PrismaModel = never> = {
     equals?: $Enums.PaymentMethod | EnumPaymentMethodFieldRefInput<$PrismaModel>
     in?: $Enums.PaymentMethod[] | ListEnumPaymentMethodFieldRefInput<$PrismaModel>
@@ -44657,16 +44636,6 @@ export namespace Prisma {
     _sum?: NestedDecimalNullableFilter<$PrismaModel>
     _min?: NestedDecimalNullableFilter<$PrismaModel>
     _max?: NestedDecimalNullableFilter<$PrismaModel>
-  }
-
-  export type EnumDeliveryTermsWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.DeliveryTerms | EnumDeliveryTermsFieldRefInput<$PrismaModel>
-    in?: $Enums.DeliveryTerms[] | ListEnumDeliveryTermsFieldRefInput<$PrismaModel>
-    notIn?: $Enums.DeliveryTerms[] | ListEnumDeliveryTermsFieldRefInput<$PrismaModel>
-    not?: NestedEnumDeliveryTermsWithAggregatesFilter<$PrismaModel> | $Enums.DeliveryTerms
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumDeliveryTermsFilter<$PrismaModel>
-    _max?: NestedEnumDeliveryTermsFilter<$PrismaModel>
   }
 
   export type EnumPaymentMethodWithAggregatesFilter<$PrismaModel = never> = {
@@ -46493,10 +46462,6 @@ export namespace Prisma {
     divide?: Decimal | DecimalJsLike | number | string
   }
 
-  export type EnumDeliveryTermsFieldUpdateOperationsInput = {
-    set?: $Enums.DeliveryTerms
-  }
-
   export type EnumPaymentMethodFieldUpdateOperationsInput = {
     set?: $Enums.PaymentMethod
   }
@@ -47496,13 +47461,6 @@ export namespace Prisma {
     not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
   }
 
-  export type NestedEnumDeliveryTermsFilter<$PrismaModel = never> = {
-    equals?: $Enums.DeliveryTerms | EnumDeliveryTermsFieldRefInput<$PrismaModel>
-    in?: $Enums.DeliveryTerms[] | ListEnumDeliveryTermsFieldRefInput<$PrismaModel>
-    notIn?: $Enums.DeliveryTerms[] | ListEnumDeliveryTermsFieldRefInput<$PrismaModel>
-    not?: NestedEnumDeliveryTermsFilter<$PrismaModel> | $Enums.DeliveryTerms
-  }
-
   export type NestedEnumPaymentMethodFilter<$PrismaModel = never> = {
     equals?: $Enums.PaymentMethod | EnumPaymentMethodFieldRefInput<$PrismaModel>
     in?: $Enums.PaymentMethod[] | ListEnumPaymentMethodFieldRefInput<$PrismaModel>
@@ -47544,16 +47502,6 @@ export namespace Prisma {
     _sum?: NestedDecimalNullableFilter<$PrismaModel>
     _min?: NestedDecimalNullableFilter<$PrismaModel>
     _max?: NestedDecimalNullableFilter<$PrismaModel>
-  }
-
-  export type NestedEnumDeliveryTermsWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.DeliveryTerms | EnumDeliveryTermsFieldRefInput<$PrismaModel>
-    in?: $Enums.DeliveryTerms[] | ListEnumDeliveryTermsFieldRefInput<$PrismaModel>
-    notIn?: $Enums.DeliveryTerms[] | ListEnumDeliveryTermsFieldRefInput<$PrismaModel>
-    not?: NestedEnumDeliveryTermsWithAggregatesFilter<$PrismaModel> | $Enums.DeliveryTerms
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumDeliveryTermsFilter<$PrismaModel>
-    _max?: NestedEnumDeliveryTermsFilter<$PrismaModel>
   }
 
   export type NestedEnumPaymentMethodWithAggregatesFilter<$PrismaModel = never> = {
@@ -47860,7 +47808,7 @@ export namespace Prisma {
     widthCm?: Decimal | DecimalJsLike | number | string | null
     heightCm?: Decimal | DecimalJsLike | number | string | null
     weightUnit?: string | null
-    deliveryTerms: $Enums.DeliveryTerms
+    deliveryTerms: string
     deliveryLocation: string
     minOrderQuantity: string
     preparationTimeDays: number
@@ -47900,7 +47848,7 @@ export namespace Prisma {
     widthCm?: Decimal | DecimalJsLike | number | string | null
     heightCm?: Decimal | DecimalJsLike | number | string | null
     weightUnit?: string | null
-    deliveryTerms: $Enums.DeliveryTerms
+    deliveryTerms: string
     deliveryLocation: string
     minOrderQuantity: string
     preparationTimeDays: number
@@ -48372,7 +48320,7 @@ export namespace Prisma {
     widthCm?: DecimalNullableFilter<"Product"> | Decimal | DecimalJsLike | number | string | null
     heightCm?: DecimalNullableFilter<"Product"> | Decimal | DecimalJsLike | number | string | null
     weightUnit?: StringNullableFilter<"Product"> | string | null
-    deliveryTerms?: EnumDeliveryTermsFilter<"Product"> | $Enums.DeliveryTerms
+    deliveryTerms?: StringFilter<"Product"> | string
     deliveryLocation?: StringFilter<"Product"> | string
     minOrderQuantity?: StringFilter<"Product"> | string
     preparationTimeDays?: IntFilter<"Product"> | number
@@ -49457,7 +49405,7 @@ export namespace Prisma {
     widthCm?: Decimal | DecimalJsLike | number | string | null
     heightCm?: Decimal | DecimalJsLike | number | string | null
     weightUnit?: string | null
-    deliveryTerms: $Enums.DeliveryTerms
+    deliveryTerms: string
     deliveryLocation: string
     minOrderQuantity: string
     preparationTimeDays: number
@@ -49498,7 +49446,7 @@ export namespace Prisma {
     widthCm?: Decimal | DecimalJsLike | number | string | null
     heightCm?: Decimal | DecimalJsLike | number | string | null
     weightUnit?: string | null
-    deliveryTerms: $Enums.DeliveryTerms
+    deliveryTerms: string
     deliveryLocation: string
     minOrderQuantity: string
     preparationTimeDays: number
@@ -49553,7 +49501,7 @@ export namespace Prisma {
     widthCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     heightCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     weightUnit?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveryTerms?: EnumDeliveryTermsFieldUpdateOperationsInput | $Enums.DeliveryTerms
+    deliveryTerms?: StringFieldUpdateOperationsInput | string
     deliveryLocation?: StringFieldUpdateOperationsInput | string
     minOrderQuantity?: StringFieldUpdateOperationsInput | string
     preparationTimeDays?: IntFieldUpdateOperationsInput | number
@@ -49594,7 +49542,7 @@ export namespace Prisma {
     widthCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     heightCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     weightUnit?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveryTerms?: EnumDeliveryTermsFieldUpdateOperationsInput | $Enums.DeliveryTerms
+    deliveryTerms?: StringFieldUpdateOperationsInput | string
     deliveryLocation?: StringFieldUpdateOperationsInput | string
     minOrderQuantity?: StringFieldUpdateOperationsInput | string
     preparationTimeDays?: IntFieldUpdateOperationsInput | number
@@ -49698,7 +49646,7 @@ export namespace Prisma {
     widthCm?: Decimal | DecimalJsLike | number | string | null
     heightCm?: Decimal | DecimalJsLike | number | string | null
     weightUnit?: string | null
-    deliveryTerms: $Enums.DeliveryTerms
+    deliveryTerms: string
     deliveryLocation: string
     minOrderQuantity: string
     preparationTimeDays: number
@@ -49739,7 +49687,7 @@ export namespace Prisma {
     widthCm?: Decimal | DecimalJsLike | number | string | null
     heightCm?: Decimal | DecimalJsLike | number | string | null
     weightUnit?: string | null
-    deliveryTerms: $Enums.DeliveryTerms
+    deliveryTerms: string
     deliveryLocation: string
     minOrderQuantity: string
     preparationTimeDays: number
@@ -49893,7 +49841,7 @@ export namespace Prisma {
     widthCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     heightCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     weightUnit?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveryTerms?: EnumDeliveryTermsFieldUpdateOperationsInput | $Enums.DeliveryTerms
+    deliveryTerms?: StringFieldUpdateOperationsInput | string
     deliveryLocation?: StringFieldUpdateOperationsInput | string
     minOrderQuantity?: StringFieldUpdateOperationsInput | string
     preparationTimeDays?: IntFieldUpdateOperationsInput | number
@@ -49934,7 +49882,7 @@ export namespace Prisma {
     widthCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     heightCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     weightUnit?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveryTerms?: EnumDeliveryTermsFieldUpdateOperationsInput | $Enums.DeliveryTerms
+    deliveryTerms?: StringFieldUpdateOperationsInput | string
     deliveryLocation?: StringFieldUpdateOperationsInput | string
     minOrderQuantity?: StringFieldUpdateOperationsInput | string
     preparationTimeDays?: IntFieldUpdateOperationsInput | number
@@ -51700,7 +51648,7 @@ export namespace Prisma {
     widthCm?: Decimal | DecimalJsLike | number | string | null
     heightCm?: Decimal | DecimalJsLike | number | string | null
     weightUnit?: string | null
-    deliveryTerms: $Enums.DeliveryTerms
+    deliveryTerms: string
     deliveryLocation: string
     minOrderQuantity: string
     preparationTimeDays: number
@@ -51843,7 +51791,7 @@ export namespace Prisma {
     widthCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     heightCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     weightUnit?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveryTerms?: EnumDeliveryTermsFieldUpdateOperationsInput | $Enums.DeliveryTerms
+    deliveryTerms?: StringFieldUpdateOperationsInput | string
     deliveryLocation?: StringFieldUpdateOperationsInput | string
     minOrderQuantity?: StringFieldUpdateOperationsInput | string
     preparationTimeDays?: IntFieldUpdateOperationsInput | number
@@ -51883,7 +51831,7 @@ export namespace Prisma {
     widthCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     heightCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     weightUnit?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveryTerms?: EnumDeliveryTermsFieldUpdateOperationsInput | $Enums.DeliveryTerms
+    deliveryTerms?: StringFieldUpdateOperationsInput | string
     deliveryLocation?: StringFieldUpdateOperationsInput | string
     minOrderQuantity?: StringFieldUpdateOperationsInput | string
     preparationTimeDays?: IntFieldUpdateOperationsInput | number
@@ -51923,7 +51871,7 @@ export namespace Prisma {
     widthCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     heightCm?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     weightUnit?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveryTerms?: EnumDeliveryTermsFieldUpdateOperationsInput | $Enums.DeliveryTerms
+    deliveryTerms?: StringFieldUpdateOperationsInput | string
     deliveryLocation?: StringFieldUpdateOperationsInput | string
     minOrderQuantity?: StringFieldUpdateOperationsInput | string
     preparationTimeDays?: IntFieldUpdateOperationsInput | number

@@ -359,7 +359,7 @@ model Product {
   weightUnit    String?  @default("kg")
 
   // تحویل و پرداخت
-  deliveryTerms       DeliveryTerms
+  deliveryTerms       String
   deliveryLocation    String
   minOrderQuantity    String
   preparationTimeDays Int

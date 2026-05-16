@@ -26,8 +26,8 @@ const optionalDateTimeInputSchema = z.preprocess(
 );
 
 const optionalPackagingTypeSchema = z.preprocess(
-  emptyToUndefined,
-  z.enum(['BULK', 'JUMBO_BAG', 'SACK', 'TANK', 'PALLET', 'CARTON', 'DRUM', 'OTHER']).optional(),
+  (v) => (v === '' || v == null ? undefined : v),
+  z.array(z.enum(['BULK', 'JUMBO_BAG', 'SACK', 'TANK', 'PALLET', 'CARTON', 'DRUM', 'OTHER'])).min(1).optional(),
 );
 
 // ─── Dimensions ──────────────────────────────────────────────────────────────
@@ -55,7 +55,7 @@ export const saleConditionsSchema = z.object({
 const createProductObjectSchema = z.object({
   nameFa: z.string().min(2, 'نام فارسی محصول الزامی است').max(200),
   nameEn: z.string().min(2, 'نام انگلیسی محصول الزامی است').max(200),
-  grade: z.string().max(50).optional(),
+  grade: z.string().max(50, 'درجه/گرید محصول حداکثر ۵۰ کاراکتر می‌تواند باشد').optional(),
   serviceCode: z.string().max(30).optional(),       // شناسه کالا/خدمات
   hsCode: z
     .string()
@@ -68,7 +68,7 @@ const createProductObjectSchema = z.object({
   countryOfOrigin: z.string().max(100).optional(),
   packagingType: optionalPackagingTypeSchema,
   dimensions: dimensionsSchema.optional(),
-  deliveryTerms: z.nativeEnum(DeliveryTerms),
+  deliveryTerms: z.array(z.nativeEnum(DeliveryTerms)).min(1, 'حداقل یک شرط تحویل انتخاب کنید'),
   deliveryLocation: z.string().max(200),
   minOrderQuantity: z.string().max(50),             // تعداد/تناژ حداقل سفارش
   preparationTimeDays: z.number().int().min(1).max(365),
@@ -105,7 +105,7 @@ export const productSearchSchema = z.object({
   hsCode: z.string().optional(),
   origin: z.nativeEnum(ProductOrigin).optional(),
   commodityGroup: z.nativeEnum(CommodityGroup).optional(),
-  deliveryTerms: z.nativeEnum(DeliveryTerms).optional(),
+  deliveryTerms: z.array(z.nativeEnum(DeliveryTerms)).min(1).optional(),
   paymentMethod: z.nativeEnum(PaymentMethod).optional(),
   minOrder: z.string().optional(),
   page: z.number().int().min(1).default(1),

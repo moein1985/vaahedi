@@ -60,7 +60,7 @@ function LoginPage() {
         },
         data.accessToken,
       );
-      void navigate({ to: '/dashboard' });
+      void navigate({ to: data.user.isAdmin ? '/admin' : '/dashboard' });
     },
     onError: (error) => {
       // Error is automatically displayed in the form
@@ -83,7 +83,7 @@ function LoginPage() {
         },
         data.accessToken,
       );
-      void navigate({ to: '/dashboard' });
+      void navigate({ to: data.user.isAdmin ? '/admin' : '/dashboard' });
     },
     onError: (error) => {
       console.error('Email login error:', getFriendlyTrpcError(error));
@@ -105,7 +105,7 @@ function LoginPage() {
         },
         data.accessToken,
       );
-      void navigate({ to: '/dashboard' });
+      void navigate({ to: data.user.isAdmin ? '/admin' : '/dashboard' });
     },
     onError: (error) => {
       console.error('OTP login error:', getFriendlyTrpcError(error));

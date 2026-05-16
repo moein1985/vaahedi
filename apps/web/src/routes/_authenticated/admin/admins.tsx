@@ -3,6 +3,16 @@ import { createFileRoute } from '@tanstack/react-router';
 import { trpc } from '../../../trpc.js';
 import { toast } from 'sonner';
 import { useConfirm } from '../../../components/ui/confirm-dialog.js';
+import { getFriendlyTrpcError } from '../../../lib/trpc-error.js';
+
+function showMutationError(err: any) {
+  const zodFields = err?.data?.zodError?.fieldErrors;
+  if (zodFields) {
+    const first = Object.values(zodFields as Record<string, string[]>).flat()[0];
+    if (first) { toast.error(first); return; }
+  }
+  toast.error(getFriendlyTrpcError(err));
+}
 
 export const Route = createFileRoute('/_authenticated/admin/admins')({
   component: AdminAdminsPage,
@@ -39,7 +49,7 @@ function AdminAdminsPage() {
       setAdminRole('EXPERT');
       await utils.admin.listAdmins.invalidate();
     },
-    onError: (err) => toast.error(err.message),
+    onError: (err) => showMutationError(err),
   });
 
   const updateAdminRole = trpc.admin.updateAdminRole.useMutation({
@@ -47,7 +57,7 @@ function AdminAdminsPage() {
       toast.success('نقش ادمین به روز شد');
       await utils.admin.listAdmins.invalidate();
     },
-    onError: (err) => toast.error(err.message),
+    onError: (err) => showMutationError(err),
   });
 
   const removeAdmin = trpc.admin.removeAdmin.useMutation({
@@ -55,7 +65,7 @@ function AdminAdminsPage() {
       toast.success('دسترسی ادمین حذف شد');
       await utils.admin.listAdmins.invalidate();
     },
-    onError: (err) => toast.error(err.message),
+    onError: (err) => showMutationError(err),
   });
 
   async function handleCreateAdmin(e: React.FormEvent) {

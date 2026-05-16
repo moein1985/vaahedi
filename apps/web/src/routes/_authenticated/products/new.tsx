@@ -129,6 +129,8 @@ function NewProductPage() {
     };
   }, [step]);
 
+  const utils = trpc.useUtils();
+
   const { register, handleSubmit, trigger, formState: { errors } } = useForm<NewProductForm>({
     resolver: zodResolver(createProductSchema) as any,
     defaultValues: {
@@ -249,6 +251,8 @@ function NewProductPage() {
       }
 
       setCreatedProductId(createdProductId);
+      void utils.product.myProducts.invalidate();
+      void utils.product.myStats.invalidate();
       toast.success('محصول با موفقیت ثبت شد');
     } catch (error) {
       toast.error(getFriendlyTrpcError(error, 'ثبت محصول انجام نشد'));
@@ -427,7 +431,23 @@ function NewProductPage() {
           )}
         </div>
 
-        <p className="text-xs text-gray-500">پس از تکمیل آپلود، می توانید از منوی محصولات به لیست کالاهای خود بازگردید.</p>
+        <div className="flex items-center gap-3 mt-4">
+          <button
+            type="button"
+            onClick={() => navigate({ to: '/products' })}
+            className="flex-1 btn-secondary"
+          >
+            مشاهده محصولات من
+          </button>
+          <button
+            type="button"
+            onClick={() => { setCreatedProductId(null); setStep(1); setMediaFiles([]); }}
+            className="flex-1 btn-primary"
+          >
+            ثبت محصول جدید
+          </button>
+        </div>
+        <p className="text-xs text-gray-500 mt-3">پس از تکمیل آپلود، می توانید محصول جدید ثبت کنید یا به لیست کالاها بروید.</p>
       </div>
     );
   }
@@ -548,7 +568,8 @@ function NewProductPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="label-text">گرید محصول</label>
-                <input {...register('grade')} className="input-field" placeholder="A / Premium / ..." />
+                <input {...register('grade')} className="input-field" placeholder="A / Premium / ..." maxLength={50} />
+                {errors.grade && <p className="field-error">{errors.grade.message}</p>}
               </div>
             </div>
           </div>
@@ -582,14 +603,21 @@ function NewProductPage() {
           </div>
           <div className="grid grid-cols-2 gap-4 mb-5">
             <div>
-              <label className="label-text">شرایط تحویل *</label>
-              <select {...register('deliveryTerms')} className="input-field">
-                <option value="">انتخاب کنید...</option>
+              <label className="label-text">شرایط تحویل * <span className="text-xs text-gray-400">(چندانتخاب)</span></label>
+              <div className="flex flex-col gap-1.5 mt-1">
                 {DELIVERY_OPTIONS.map((o) => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
+                  <label key={o.value} className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      value={o.value}
+                      {...register('deliveryTerms')}
+                      className="rounded border-gray-300"
+                    />
+                    {o.label}
+                  </label>
                 ))}
-              </select>
-              {errors.deliveryTerms && <p className="field-error">{errors.deliveryTerms.message}</p>}
+              </div>
+              {errors.deliveryTerms && <p className="field-error">{(errors.deliveryTerms as any)?.message ?? (errors.deliveryTerms as any)?.[0]?.message}</p>}
             </div>
             <div>
               <label className="label-text">محل تحویل *</label>
@@ -635,8 +663,8 @@ function NewProductPage() {
                   placeholder="مثال: 70"
                 />
               </div>
-              {(errors as any).saleConditions?.message && (
-                <p className="field-error col-span-2">{(errors as any).saleConditions.message}</p>
+              {((errors as any).saleConditions?.root?.message || (errors as any).saleConditions?.message) && (
+                <p className="field-error col-span-2">{(errors as any).saleConditions?.root?.message ?? (errors as any).saleConditions?.message}</p>
               )}
             </div>
           </div>
@@ -662,13 +690,20 @@ function NewProductPage() {
               />
             </div>
             <div>
-              <label className="label-text">نوع بسته‌بندی</label>
-              <select {...register('packagingType')} className="input-field">
-                <option value="">انتخاب کنید...</option>
+              <label className="label-text">نوع بسته‌بندی <span className="text-xs text-gray-400">(چندانتخاب)</span></label>
+              <div className="flex flex-col gap-1.5 mt-1">
                 {PACKAGING_OPTIONS.map((o) => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
+                  <label key={o.value} className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      value={o.value}
+                      {...register('packagingType')}
+                      className="rounded border-gray-300"
+                    />
+                    {o.label}
+                  </label>
                 ))}
-              </select>
+              </div>
             </div>
           </div>
 

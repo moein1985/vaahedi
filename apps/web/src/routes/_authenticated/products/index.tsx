@@ -30,8 +30,8 @@ function ProductsPage() {
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'PENDING_REVIEW' | 'APPROVED' | 'REJECTED'>('ALL');
-  const { data, isLoading } = trpc.product.myProducts.useQuery({ page });
-  const { data: stats } = trpc.product.myStats.useQuery();
+  const { data, isLoading } = trpc.product.myProducts.useQuery({ page }, { refetchOnWindowFocus: true });
+  const { data: stats } = trpc.product.myStats.useQuery(undefined, { refetchOnWindowFocus: true });
 
   const items = data?.data ?? [];
   const totalPages = data?.pagination.totalPages ?? 1;
@@ -179,11 +179,14 @@ function ProductsPage() {
 
                   {/* Actions */}
                   <div className="flex items-center gap-2 pt-1 border-t border-dashed">
-                    <Button asChild size="sm" variant="ghost" className="flex-1 text-xs">
-                      <Link to="/marketplace">
-                        مشاهده در Marketplace
-                      </Link>
-                    </Button>
+                    <a
+                      href="/catalog"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center text-xs h-8 px-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors text-muted-foreground"
+                    >
+                      مشاهده در Marketplace
+                    </a>
                     <Button asChild size="sm" variant="outline" className="flex-1 text-xs">
                       <Link to="/products/new">
                         <Edit className="h-3 w-3 ml-1" />

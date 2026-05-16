@@ -626,12 +626,6 @@ exports.ProductOrigin = exports.$Enums.ProductOrigin = {
   IMPORTED: 'IMPORTED'
 };
 
-exports.DeliveryTerms = exports.$Enums.DeliveryTerms = {
-  EXW: 'EXW',
-  FCA: 'FCA',
-  FOB: 'FOB'
-};
-
 exports.PaymentMethod = exports.$Enums.PaymentMethod = {
   LC: 'LC',
   SBLC: 'SBLC',

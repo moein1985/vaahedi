@@ -214,10 +214,10 @@ function TradePage() {
           <p className="font-semibold text-gray-900">درخواست تحلیل بازرگانی</p>
           <p className="text-xs text-gray-500 mt-1">برای تصمیم بهتر روی RFQ، تحلیل بازار و مشاوره هدفمند بگیرید.</p>
         </button>
-        <Link to="/marketplace" className="bg-white border border-gray-200 hover:border-emerald-300 rounded-xl p-4 transition-colors">
+        <a href="/catalog" target="_blank" rel="noopener noreferrer" className="bg-white border border-gray-200 hover:border-emerald-300 rounded-xl p-4 transition-colors">
           <p className="font-semibold text-gray-900">مرور Marketplace</p>
           <p className="text-xs text-gray-500 mt-1">قبل از ثبت RFQ، کالاهای فعال بازار را بررسی کنید.</p>
-        </Link>
+        </a>
       </div>
 
       {/* Filters */}
@@ -524,7 +524,7 @@ function TradePage() {
                         </h3>
                       </div>
                       <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-gray-500 mt-1">
-                        <span>مقدار: <span className="font-medium text-gray-700">{item.quantity}</span></span>
+                        <span>مقدار: <span className="font-medium text-gray-700">{String(item.quantity ?? '').replace(/\s*undefined\s*/g, '').trim() || '—'}</span></span>
                         {item.targetPrice && (
                           <span>قیمت هدف: <span className="font-medium text-gray-700">{item.targetPrice} {CURRENCY_LABELS[item.currency] ?? item.currency}</span></span>
                         )}

@@ -39,10 +39,11 @@ export const tradeRouter = router({
         }
       }
 
-      const unitSuffix = QUANTITY_UNIT_SUFFIX[input.quantityUnit] ?? input.quantityUnit;
-      const normalizedQuantity = input.quantity.trim().endsWith(unitSuffix)
-        ? input.quantity.trim()
-        : `${input.quantity.trim()} ${unitSuffix}`;
+      const unitSuffix = QUANTITY_UNIT_SUFFIX[input.quantityUnit] ?? '';
+      const baseQty = input.quantity.trim();
+      const normalizedQuantity = unitSuffix && !baseQty.endsWith(unitSuffix)
+        ? `${baseQty} ${unitSuffix}`
+        : baseQty;
 
       const request = await ctx.db.tradeRequest.create({
         data: {

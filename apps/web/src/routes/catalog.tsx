@@ -373,11 +373,17 @@ function CatalogPage() {
           ) : (
             <>
               <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                {data.data.map((product) => (
+                {data.data.map((product) => {
+                  const mainImage = (product as any).media?.[0]?.fileKey
+                  return (
                   <Link key={product.id} to="/catalog/$productId" params={{ productId: product.id }} className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 block">
-                    {/* Image placeholder */}
-                    <div className="h-40 bg-gradient-to-br from-blue-50 via-slate-100 to-cyan-50 flex items-center justify-center text-4xl">
-                      📦
+                    {/* Product image or placeholder */}
+                    <div className="h-40 bg-gradient-to-br from-blue-50 via-slate-100 to-cyan-50 flex items-center justify-center text-4xl overflow-hidden">
+                      {mainImage ? (
+                        <img src={`/api/media/${mainImage}`} alt={product.nameFa} className="w-full h-full object-cover" />
+                      ) : (
+                        <span>📦</span>
+                      )}
                     </div>
                     <div className="p-4">
                       <h3 className="font-semibold text-gray-900 text-sm mb-1 truncate">{product.nameFa}</h3>
@@ -405,7 +411,8 @@ function CatalogPage() {
                       </div>
                     </div>
                   </Link>
-                ))}
+                  )
+                })}
               </div>
 
               {/* Pagination */}

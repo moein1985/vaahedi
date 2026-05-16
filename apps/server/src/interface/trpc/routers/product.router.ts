@@ -156,8 +156,8 @@ export const productRouter = router({
         standardNumber: input.standardNumber,
         origin: input.origin,
         countryOfOrigin: input.countryOfOrigin,
-        packagingType: input.packagingType,
-        deliveryTerms: input.deliveryTerms,
+        packagingType: Array.isArray(input.packagingType) ? input.packagingType.join(',') : (input.packagingType ?? null),
+        deliveryTerms: Array.isArray(input.deliveryTerms) ? input.deliveryTerms.join(',') : String(input.deliveryTerms ?? ''),
         deliveryLocation: input.deliveryLocation,
         minOrderQuantity: input.minOrderQuantity,
         preparationTimeDays: input.preparationTimeDays,
@@ -188,9 +188,19 @@ export const productRouter = router({
       });
       if (!product) throw new TRPCError({ code: 'NOT_FOUND', message: 'محصول یافت نشد' });
 
+      const { packagingType, deliveryTerms, ...restData } = input.data;
       await ctx.db.product.update({
         where: { id: input.id },
-        data: { ...input.data, isApproved: false }, // re-review after edit
+        data: {
+          ...restData,
+          isApproved: false, // re-review after edit
+          ...(packagingType !== undefined && {
+            packagingType: Array.isArray(packagingType) ? packagingType.join(',') : (packagingType ?? null),
+          }),
+          ...(deliveryTerms !== undefined && {
+            deliveryTerms: Array.isArray(deliveryTerms) ? deliveryTerms.join(',') : String(deliveryTerms ?? ''),
+          }),
+        },
       });
 
       return { message: 'محصول با موفقیت بروزرسانی شد' };

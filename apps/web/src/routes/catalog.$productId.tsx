@@ -11,7 +11,10 @@ function ProductDetailPage() {
   const { productId } = Route.useParams()
   const [selectedImage, setSelectedImage] = useState(0)
 
-  const { data: product, isLoading } = trpc.product.getById.useQuery({ id: productId })
+  const { data: product, isLoading, isError } = trpc.product.getById.useQuery(
+    { id: productId },
+    { retry: false },
+  )
 
   if (isLoading) {
     return (
@@ -21,12 +24,13 @@ function ProductDetailPage() {
     )
   }
 
-  if (!product) {
+  if (isError || !product) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">محصول یافت نشد</h2>
-          <p className="text-gray-600">محصول مورد نظر وجود ندارد.</p>
+          <p className="text-gray-600">محصول مورد نظر وجود ندارد یا هنوز تأیید نشده است.</p>
+          <Link to="/catalog" className="mt-4 inline-block text-blue-600 hover:underline">بازگشت به کاتالوگ</Link>
         </div>
       </div>
     )

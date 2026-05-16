@@ -198,9 +198,9 @@ export function DashboardPage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="تعداد کالا" value={productStats?.total} icon={Package} loading={loadingProducts} error={errorProducts} color="blue" />
+        <StatCard title="تعداد کالا" value={productStats?.total} icon={Package} loading={loadingProducts} error={errorProducts} color="blue" sub={productStats ? `تأیید شده: ${productStats.approved} · در انتظار: ${productStats.pending}` : undefined} />
         <StatCard title="درخواست فعال" value={activeTradeRequests} icon={ArrowLeftRight} loading={loadingTrade} error={errorTrade} color="green" />
-        <StatCard title="پیام جدید" value={unreadCount} icon={MessageSquare} loading={loadingUnread} error={errorUnread} color="orange" />
+        <StatCard title="اعلان جدید" value={unreadCount} icon={MessageSquare} loading={loadingUnread} error={errorUnread} color="orange" />
         <StatCard title="تیکت باز" value={supportStats?.open} icon={Ticket} loading={loadingSupport} error={errorSupport} color="default" />
       </div>
 

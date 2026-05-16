@@ -191,7 +191,7 @@ function TradeDetailPage() {
           <CardTitle className="text-base">جزئیات درخواست</CardTitle>
         </CardHeader>
         <CardContent className="px-5 pb-2">
-          <DetailRow icon={Package}      label="مقدار"          value={data.quantity} />
+          <DetailRow icon={Package}      label="مقدار"          value={(data.quantity ? String(data.quantity).replace(/\s*undefined\s*/g, '').trim() : null) || null} />
           <DetailRow icon={DollarSign}   label="قیمت هدف"       value={data.targetPrice ? `${data.targetPrice} ${CURRENCY_LABELS[data.currency ?? ''] ?? data.currency ?? ''}` : null} />
           <DetailRow icon={MapPin}       label="محل تحویل"      value={data.deliveryLocation} />
           <DetailRow icon={Hash}         label="کد HS"           value={data.hsCode} />

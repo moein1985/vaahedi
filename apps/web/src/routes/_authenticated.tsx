@@ -32,13 +32,14 @@ type NavConfigItem = {
   icon: React.ElementType;
   label: string;
   allowedAdminRoles?: readonly AdminRoleName[];
+  external?: boolean;
 };
 
 const NAV_MAIN: NavConfigItem[] = [
   { href: '/dashboard',           icon: LayoutDashboard,  label: 'داشبورد' },
   { href: '/products',            icon: Package,          label: 'کالاها' },
   { href: '/rfq',                 icon: ArrowLeftRight,   label: 'درخواست ها (RFQ)' },
-  { href: '/marketplace',         icon: Globe,            label: 'بازار (Marketplace)' },
+  { href: '/catalog',             icon: Globe,            label: 'بازار (Marketplace)', external: true },
   { href: '/messages',            icon: MessageSquare,    label: 'پیام ها' },
   { href: '/ai-advisor',          icon: Bell,             label: 'AI مشاور' },
   { href: '/documents',           icon: FileText,         label: 'اسناد' },
@@ -80,30 +81,31 @@ function NavItem({
   label,
   collapsed = false,
   badge,
+  external = false,
 }: {
   href: string;
   icon: React.ElementType;
   label: string;
   collapsed?: boolean;
   badge?: number;
+  external?: boolean;
 }) {
   const location = useLocation();
   const isActive =
-    location.pathname === href ||
-    (href !== '/dashboard' && href !== '/admin' && location.pathname.startsWith(href));
+    !external &&
+    (location.pathname === href ||
+      (href !== '/dashboard' && href !== '/admin' && location.pathname.startsWith(href)));
 
-  return (
-    <Link
-      to={href as '/dashboard'}
-      title={collapsed ? label : undefined}
-      className={cn(
-        'group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all relative',
-        isActive
-          ? 'bg-[var(--brand)] text-white shadow-sm shadow-blue-200'
-          : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-        collapsed && 'justify-center px-2'
-      )}
-    >
+  const className = cn(
+    'group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all relative',
+    isActive
+      ? 'bg-[var(--brand)] text-white shadow-sm shadow-blue-200'
+      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+    collapsed && 'justify-center px-2'
+  );
+
+  const content = (
+    <>
       <Icon className={cn('shrink-0', collapsed ? 'h-5 w-5' : 'h-4 w-4')} />
       {!collapsed && <span className="flex-1">{label}</span>}
       {!collapsed && badge && badge > 0 && (
@@ -114,6 +116,30 @@ function NavItem({
       {collapsed && badge && badge > 0 && (
         <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
       )}
+    </>
+  );
+
+  if (external) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        title={collapsed ? label : undefined}
+        className={className}
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <Link
+      to={href as '/dashboard'}
+      title={collapsed ? label : undefined}
+      className={className}
+    >
+      {content}
     </Link>
   );
 }
@@ -333,6 +359,16 @@ function AuthenticatedLayout() {
     if (!isAuthenticated) { void navigate({ to: '/auth/login' }); return; }
     if (!accessToken && !refreshMutation.isPending) { refreshMutation.mutate(); }
     else { setTokenReady(true); }
+  }, [isAuthenticated]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Proactive token refresh every 13 minutes (token expires in 15 min)
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const REFRESH_INTERVAL = 13 * 60 * 1000;
+    const interval = setInterval(() => {
+      refreshMutation.mutate();
+    }, REFRESH_INTERVAL);
+    return () => clearInterval(interval);
   }, [isAuthenticated]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!isAuthenticated) {

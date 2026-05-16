@@ -216,9 +216,10 @@ app.get('/sitemap.xml', async (req, reply) => {
 
 // ─── Media Proxy ──────────────────────────────────────────────────────────────
 
-app.get('/api/media/:key', async (req: FastifyRequest<{ Params: { key: string } }>, reply) => {
+app.get('/api/media/*', async (req: FastifyRequest, reply) => {
   try {
-    const { key } = req.params;
+    const key = (req.params as Record<string, string>)['*'] ?? '';
+    if (!key) { reply.status(400).send({ error: 'Missing media key' }); return; }
     const url = await storage.getPresignedUrl(key, 3600); // 1 hour expiry
     reply.redirect(url);
   } catch (error) {
