@@ -64,10 +64,24 @@
 
     --radius: 0.5rem;
 
-    /* ─── برند وهدی */
+    /* ─── برند وهدی — آبی */
     --brand:                   hsl(217 91% 40%);
     --brand-foreground:        hsl(0 0% 100%);
     --brand-light:             hsl(214 100% 97%);
+
+    /* ─── برند amber/gold از لندینگ */
+    --brand-amber:             hsl(38 95% 52%);
+    --brand-amber-light:       hsl(40 100% 96%);
+    --brand-amber-dark:        hsl(30 85% 28%);
+
+    /* ─── sidebar dark */
+    --sidebar-bg:              hsl(222 47% 9%);
+    --sidebar-bg-hover:        hsl(222 40% 14%);
+    --sidebar-text:            hsl(215 20% 65%);
+    --sidebar-text-active:     hsl(0 0% 100%);
+    --sidebar-active-bg:       hsl(38 95% 52% / 0.12);
+    --sidebar-active-border:   hsl(38 95% 52%);
+    --sidebar-border:          hsl(222 35% 16%);
 
     --font-persian: 'Vazirmatn', system-ui, sans-serif;
   }
@@ -96,6 +110,16 @@
     --brand:                   hsl(217 91% 60%);
     --brand-foreground:        hsl(224 71.4% 4.1%);
     --brand-light:             hsl(217 30% 15%);
+    --brand-amber:             hsl(38 95% 52%);
+    --brand-amber-light:       hsl(40 80% 20%);
+    --brand-amber-dark:        hsl(30 85% 28%);
+    --sidebar-bg:              hsl(222 47% 7%);
+    --sidebar-bg-hover:        hsl(222 40% 12%);
+    --sidebar-text:            hsl(215 20% 60%);
+    --sidebar-text-active:     hsl(0 0% 100%);
+    --sidebar-active-bg:       hsl(38 95% 52% / 0.12);
+    --sidebar-active-border:   hsl(38 95% 52%);
+    --sidebar-border:          hsl(222 35% 14%);
   }
 
   * {
@@ -138,8 +162,9 @@
   }
 
   .field-error {
-    @apply text-xs mt-1;
+    @apply text-xs mt-1.5 flex items-center gap-1.5 px-2 py-1 rounded-md;
     color: var(--destructive);
+    background-color: hsl(0 84.2% 60.2% / 0.07);
   }
 
   .btn-primary {

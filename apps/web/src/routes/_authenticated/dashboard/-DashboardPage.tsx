@@ -37,16 +37,16 @@ function StatCard({
   error?: boolean;
   color?: 'default' | 'blue' | 'green' | 'orange' | 'red';
 }) {
-  const colors = {
-    default: 'bg-muted text-muted-foreground',
-    blue: 'bg-[var(--brand-light)] text-[var(--brand)]',
-    green: 'bg-green-100 text-green-600',
-    orange: 'bg-orange-100 text-orange-600',
-    red: 'bg-red-100 text-red-600',
+  const iconStyles: Record<string, React.CSSProperties> = {
+    default: { background: 'hsl(220 14% 96%)', color: 'hsl(220 9% 46%)' },
+    blue:    { background: 'linear-gradient(135deg, hsl(38 95% 52% / 0.1), hsl(217 91% 40% / 0.08))', color: 'var(--brand)' },
+    green:   { background: 'hsl(142 60% 50% / 0.1)', color: 'hsl(142 60% 38%)' },
+    orange:  { background: 'hsl(38 95% 52% / 0.12)', color: 'var(--brand-amber)' },
+    red:     { background: 'hsl(0 84% 60% / 0.1)', color: 'hsl(0 84% 55%)' },
   };
 
   return (
-    <Card>
+    <Card className="transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
       <CardContent className="p-5">
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -63,7 +63,7 @@ function StatCard({
             )}
             {sub && !error && <p className="text-xs text-muted-foreground mt-1">{sub}</p>}
           </div>
-          <div className={`rounded-xl p-2.5 ${colors[color]}`}>
+          <div className="rounded-xl p-2.5" style={iconStyles[color]}>
             <Icon className="h-5 w-5" />
           </div>
         </div>
@@ -157,7 +157,10 @@ export function DashboardPage() {
   return (
     <div className="p-5 lg:p-7 space-y-7" dir="rtl">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div
+        className="flex items-center justify-between rounded-xl p-5 border"
+        style={{ background: 'linear-gradient(135deg, hsl(222 47% 9% / 0.04), hsl(38 95% 52% / 0.04))', borderColor: 'hsl(38 95% 52% / 0.15)' }}
+      >
         <div>
           <h1 className="text-2xl font-bold text-foreground">داشبورد</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
@@ -178,14 +181,14 @@ export function DashboardPage() {
 
       {/* Profile Completion Alert */}
       {!loadingCompletion && completion && !completion.isComplete && (
-        <Card className="border-[var(--brand)] bg-[var(--brand-light)]">
+        <Card className="border" style={{ borderColor: 'var(--brand-amber)', background: 'hsl(38 95% 52% / 0.05)' }}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-[var(--brand)] mb-1">پروفایل شما ناقص است</p>
+                <p className="text-sm font-semibold mb-1" style={{ color: 'var(--brand-amber)' }}>پروفایل شما ناقص است</p>
                 <div className="flex items-center gap-3">
                   <Progress value={completion.percent} className="h-1.5 flex-1 max-w-xs" />
-                  <span className="text-xs font-bold text-[var(--brand)]">{completion.percent}%</span>
+                  <span className="text-xs font-bold" style={{ color: 'var(--brand-amber)' }}>{completion.percent}%</span>
                 </div>
               </div>
               <Button asChild size="sm">

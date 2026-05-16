@@ -403,9 +403,9 @@ export function HomePage() {
         </div>
 
         <div className="max-w-[1020px] mx-auto px-4 relative z-30 -mb-7 sm:-mb-8">
-          <div className="flex items-stretch overflow-hidden rounded-tl-lg rounded-tr-lg sm:rounded-tr-none shadow-[0_8px_20px_rgba(0,0,0,0.2)] bg-[linear-gradient(180deg,#1a8ec3_0%,#0f5f8f_25%,#0a3f67_68%,#082f4e_100%)] border border-[#0d4d75]">
+          <div dir="ltr" className="flex items-stretch overflow-hidden rounded-lg shadow-[0_8px_20px_rgba(0,0,0,0.2)] bg-[linear-gradient(180deg,#1a8ec3_0%,#0f5f8f_25%,#0a3f67_68%,#082f4e_100%)] border border-[#0d4d75]">
             <nav className="flex-1 overflow-x-auto">
-              <div className={`min-w-max flex ${isRtl ? 'justify-end' : ''}`}>
+              <div className="min-w-max flex">
                 <Link to="/" className="px-5 py-[14px] text-sm font-bold text-white uppercase tracking-wide border-x border-white/10 bg-[linear-gradient(180deg,rgba(5,31,54,0.4),rgba(3,18,33,0.68))]">{content.nav.home}</Link>
                 <Link to="/about" className="px-5 py-[14px] text-sm font-semibold text-white uppercase tracking-wide border-r border-white/10 hover:bg-white/10 transition-colors">{content.nav.about}</Link>
                 <Link to="/catalog" className="px-5 py-[14px] text-sm font-semibold text-white uppercase tracking-wide border-r border-white/10 hover:bg-white/10 transition-colors">{content.nav.products}</Link>

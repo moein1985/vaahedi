@@ -47,11 +47,27 @@ function ProductDetailPage() {
         <meta property="og:description" content={product.description ?? ''} />
         <link rel="canonical" href={`https://your-domain.ir/catalog/${product.id}`} />
       </Helmet>
-      <div className="max-w-6xl mx-auto p-6">
+      {/* Sticky Navbar */}
+      <nav
+        className="sticky top-0 z-20 px-6 py-3 flex items-center gap-3"
+        dir="rtl"
+        style={{ background: 'var(--sidebar-bg)', borderBottom: '1px solid var(--sidebar-border)' }}
+      >
+        <Link
+          to="/catalog"
+          className="text-sm flex items-center gap-1 transition-opacity hover:opacity-80"
+          style={{ color: 'var(--sidebar-text)' }}
+        >
+          ← بازگشت به کاتالوگ
+        </Link>
+        <span style={{ color: 'var(--sidebar-border)' }}>|</span>
+        <span className="text-sm truncate" style={{ color: 'var(--sidebar-text)' }}>{product.nameFa}</span>
+      </nav>
+      <div className="max-w-6xl mx-auto p-6" dir="rtl">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Product Images */}
         <div className="space-y-4">
-          <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+          <div className="aspect-square bg-muted rounded-lg overflow-hidden">
             {images.length > 0 && images[selectedImage] ? (
               <img
                 src={`/api/media/${images[selectedImage].fileKey}`}
@@ -59,7 +75,7 @@ function ProductDetailPage() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400">
+              <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                 <div className="text-center">
                   <div className="text-6xl mb-2">📦</div>
                   <p>تصویر موجود نیست</p>
@@ -74,7 +90,7 @@ function ProductDetailPage() {
                   key={image.id}
                   onClick={() => setSelectedImage(index)}
                   className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 ${
-                    selectedImage === index ? 'border-blue-500' : 'border-gray-200'
+                    selectedImage === index ? 'border-[var(--brand-amber)]' : 'border-border'
                   }`}
                 >
                   <img
@@ -91,35 +107,35 @@ function ProductDetailPage() {
         {/* Product Info */}
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.nameFa}</h1>
+            <h1 className="text-3xl font-bold text-foreground mb-2">{product.nameFa}</h1>
             {product.nameEn && (
-              <p className="text-xl text-gray-600 mb-4">{product.nameEn}</p>
+              <p className="text-xl text-muted-foreground mb-4">{product.nameEn}</p>
             )}
-            <div className="flex items-center space-x-4 text-sm text-gray-500">
+            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
               <span>کد HS: {product.hsCode}</span>
               {product.commodityGroup && <span>گروه: {product.commodityGroup}</span>}
             </div>
           </div>
 
           {/* Seller Info */}
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h3 className="text-lg font-medium text-gray-900 mb-3">اطلاعات فروشنده</h3>
+          <div className="bg-muted/50 rounded-lg p-4">
+            <h3 className="text-lg font-medium text-foreground mb-3">اطلاعات فروشنده</h3>
             <div className="space-y-2">
               <Link
                 to="/u/$userCode"
                 params={{ userCode: product.user.userCode }}
-                className="flex items-center space-x-3 hover:bg-white p-2 rounded-lg transition-colors"
+                className="flex items-center space-x-3 hover:bg-background p-2 rounded-lg transition-colors"
               >
-                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'var(--brand-amber)' }}>
                   <span className="text-white font-medium">
                     {product.user.userCode.charAt(0).toUpperCase()}
                   </span>
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">
+                  <p className="font-medium text-foreground">
                     {product.user.profile?.companyName || product.user.userCode}
                   </p>
-                  <p className="text-sm text-gray-600">کد کاربری: {product.user.userCode}</p>
+                  <p className="text-sm text-muted-foreground">کد کاربری: {product.user.userCode}</p>
                 </div>
               </Link>
             </div>
@@ -127,12 +143,12 @@ function ProductDetailPage() {
 
           {/* Product Details */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-900">مشخصات محصول</h3>
+            <h3 className="text-lg font-medium text-foreground">مشخصات محصول</h3>
             <div className="grid grid-cols-2 gap-4 text-sm">
               {product.quantity && (
                 <div>
-                  <span className="text-gray-500">مقدار:</span>
-                  <span className="mr-2 text-gray-900">{product.quantity}</span>
+                  <span className="text-muted-foreground">مقدار:</span>
+                  <span className="mr-2 text-foreground">{product.quantity}</span>
                 </div>
               )}
               {/* {product.unit && (
@@ -151,8 +167,8 @@ function ProductDetailPage() {
               )} */}
               {product.minOrder && (
                 <div>
-                  <span className="text-gray-500">حداقل سفارش:</span>
-                  <span className="mr-2 text-gray-900">{product.minOrder}</span>
+                  <span className="text-muted-foreground">حداقل سفارش:</span>
+                  <span className="mr-2 text-foreground">{product.minOrder}</span>
                 </div>
               )}
             </div>
@@ -161,9 +177,9 @@ function ProductDetailPage() {
           {/* Trade Terms */}
           {product.deliveryTerms && (
             <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-900">شرایط تحویل</h3>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-gray-700">{product.deliveryTerms}</p>
+              <h3 className="text-lg font-medium text-foreground">شرایط تحویل</h3>
+              <div className="bg-muted/50 rounded-lg p-4">
+                <p className="text-foreground">{product.deliveryTerms}</p>
               </div>
             </div>
           )}
@@ -171,16 +187,19 @@ function ProductDetailPage() {
           {/* Description */}
           {product.description && (
             <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-900">توضیحات</h3>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-gray-700 whitespace-pre-line">{product.description}</p>
+              <h3 className="text-lg font-medium text-foreground">توضیحات</h3>
+              <div className="bg-muted/50 rounded-lg p-4">
+                <p className="text-foreground whitespace-pre-line">{product.description}</p>
               </div>
             </div>
           )}
 
           {/* Action Button */}
           <div className="pt-4">
-            <button className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+            <button
+              className="w-full py-3 px-6 rounded-lg font-medium transition-opacity hover:opacity-90 text-white"
+              style={{ background: 'linear-gradient(135deg, hsl(38 95% 52%), hsl(30 85% 40%))' }}
+            >
               ارسال درخواست خرید
             </button>
           </div>

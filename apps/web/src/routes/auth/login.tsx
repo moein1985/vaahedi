@@ -30,7 +30,6 @@ export const Route = createFileRoute('/auth/login')({
 function LoginPage() {
   const navigate = useNavigate();
   const setAuth = useAuthStore((s) => s.setAuth);
-  const [userRole, setUserRole] = useState<'seller' | 'buyer' | null>(null);
   const [loginMethod, setLoginMethod] = useState<'userCode' | 'email' | 'otp'>('userCode');
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const captchaRef = useRef<HCaptcha>(null);
@@ -195,56 +194,26 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/50 p-4" dir="rtl">
+    <div
+      className="min-h-screen flex items-center justify-center p-4"
+      dir="rtl"
+      style={{ background: 'radial-gradient(ellipse at 60% 30%, hsl(38 80% 22%), hsl(222 47% 9%) 65%)' }}
+    >
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--brand)] text-white text-2xl font-black mb-3">ت</div>
-          <h1 className="text-2xl font-bold text-foreground">تجارت هوشمند</h1>
-          <p className="text-muted-foreground text-sm mt-1">مرکز تجارت متمرکز هوشمند ایرانیان</p>
+          <div
+            className="inline-flex h-16 w-16 items-center justify-center rounded-2xl text-3xl font-black mb-3 shadow-lg"
+            style={{ background: 'linear-gradient(135deg, hsl(38 95% 52%), hsl(30 85% 40%))' }}
+          >ت</div>
+          <h1 className="text-2xl font-bold" style={{ color: 'hsl(0 0% 95%)' }}>تجارت هوشمند</h1>
+          <p className="text-sm mt-1" style={{ color: 'hsl(215 20% 65%)' }}>سامانه تجارت ایرانیان</p>
         </div>
 
-        <Card>
+        <Card className="border-0 shadow-2xl" style={{ background: 'hsl(0 0% 100% / 0.97)', backdropFilter: 'blur(8px)' }}>
           <CardHeader><CardTitle>ورود به حساب</CardTitle></CardHeader>
           <CardContent>
-            {!userRole ? (
-              // Role Selection Screen
-              <div className="space-y-4">
-                <p className="text-center text-muted-foreground mb-6">لطفاً نقش خود را انتخاب کنید</p>
-                <div className="grid grid-cols-2 gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setUserRole('seller')}
-                    className="border-2 border-gray-200 hover:border-[var(--brand)] rounded-lg p-6 text-center transition-all hover:bg-muted/50"
-                  >
-                    <div className="text-4xl mb-2">🏪</div>
-                    <h3 className="font-semibold text-foreground">فروشنده</h3>
-                    <p className="text-xs text-muted-foreground mt-2">ارائه‌دهنده محصول یا خدمات</p>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setUserRole('buyer')}
-                    className="border-2 border-gray-200 hover:border-[var(--brand)] rounded-lg p-6 text-center transition-all hover:bg-muted/50"
-                  >
-                    <div className="text-4xl mb-2">🛒</div>
-                    <h3 className="font-semibold text-foreground">خریدار</h3>
-                    <p className="text-xs text-muted-foreground mt-2">جستجو و خریداری محصول</p>
-                  </button>
-                </div>
-              </div>
-            ) : (
-              // Login Forms
-              <div className="space-y-4">
-                <button
-                  type="button"
-                  onClick={() => setUserRole(null)}
-                  className="text-xs text-muted-foreground hover:text-foreground mb-3"
-                >
-                  ← تغییر نقش
-                </button>
-                <p className="text-sm text-muted-foreground mb-4">
-                  ورود به عنوان <span className="font-semibold text-foreground">{userRole === 'seller' ? 'فروشنده' : 'خریدار'}</span>
-                </p>
+            <div className="space-y-4">
               {/* Tab selector */}
               <div className="grid grid-cols-3 gap-2 mb-6 bg-muted rounded-lg p-1">
                 <button
@@ -455,7 +424,6 @@ function LoginPage() {
                 </form>
               )}
               </div>
-            )}
           </CardContent>
         </Card>
       </div>

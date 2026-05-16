@@ -250,12 +250,14 @@ function CatalogPage() {
 
       {/* Hero */}
       <section className="max-w-6xl mx-auto px-4 pt-8 pb-6">
-        <div className="rounded-2xl overflow-hidden border border-slate-200 bg-gradient-to-r from-slate-900 via-blue-900 to-slate-800 p-6 lg:p-8 text-white relative">
-          <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_15%_20%,rgba(255,255,255,0.35),transparent_40%),radial-gradient(circle_at_85%_75%,rgba(125,211,252,0.35),transparent_35%)]" />
+        <div
+          className="rounded-2xl overflow-hidden p-6 lg:p-8 text-white relative"
+          style={{ background: 'radial-gradient(circle at 52% 56%, rgba(255,217,99,0.82), rgba(245,132,31,0.5) 30%, rgba(19,19,19,0.94) 70%), linear-gradient(180deg, rgba(197,99,10,0.62), rgba(9,18,33,0.92))' }}
+        >
           <div className="relative z-10">
-            <p className="text-[11px] tracking-[0.16em] text-slate-200">GLOBAL TRADE PRODUCTS</p>
-            <h1 className="text-2xl lg:text-3xl font-black mt-2">{content.heroTitle}</h1>
-            <p className="text-sm text-slate-200 mt-3 max-w-3xl leading-7">
+            <p className="text-[11px] tracking-[0.16em] text-amber-200/80">GLOBAL TRADE PRODUCTS</p>
+            <h1 className="text-2xl lg:text-3xl font-black mt-2" style={{ color: 'hsl(0 0% 95%)' }}>{content.heroTitle}</h1>
+            <p className="text-sm mt-3 max-w-3xl leading-7" style={{ color: 'hsl(215 20% 75%)' }}>
               {content.heroDesc}
             </p>
           </div>
