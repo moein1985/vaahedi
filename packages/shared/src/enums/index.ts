@@ -41,6 +41,11 @@ export const DocumentType = {
   ISO_CERTIFICATE: 'ISO_CERTIFICATE',                     // گواهی ایزو / استاندارد
   BUSINESS_CARD: 'BUSINESS_CARD',                         // کارت بازرگانی
   ID_DOCUMENT: 'ID_DOCUMENT',                             // تصویر مدرک شناسایی مخاطب
+  // ── کشاورزی ───────────────────────────────────────────────────────────────
+  AGRICULTURAL_LICENSE: 'AGRICULTURAL_LICENSE',           // مجوز کشاورزی (جهاد کشاورزی)
+  FARMING_CERTIFICATE: 'FARMING_CERTIFICATE',             // گواهینامه کشاورز
+  WATER_RIGHTS_DOCUMENT: 'WATER_RIGHTS_DOCUMENT',         // سند حق آب و زمین
+  EXPORT_CERTIFICATE: 'EXPORT_CERTIFICATE',               // گواهی صادراتی (بهداشت / قرنطینه)
 } as const;
 export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
 
@@ -172,3 +177,30 @@ export const ConsultationCategory = {
 } as const;
 export type ConsultationCategory =
   (typeof ConsultationCategory)[keyof typeof ConsultationCategory];
+
+// ─── Agriculture Stakeholder Platform ────────────────────────────────────────
+
+export const IrrigationType = {
+  IRRIGATED: 'آبی',           // آبی
+  RAINFED: 'دیم',             // دیم
+  GREENHOUSE: 'گلخانه',       // گلخانه
+  HYDROPONIC: 'هیدروپونیک',   // هیدروپونیک
+} as const;
+export type IrrigationType = (typeof IrrigationType)[keyof typeof IrrigationType];
+
+export const TradeDirection = {
+  EXPORT: 'صادراتی',         // صادراتی
+  IMPORT: 'وارداتی',         // وارداتی
+  BOTH: 'هر دو',             // هر دو جهت
+  DOMESTIC: 'داخلی',         // داخلی
+} as const;
+export type TradeDirection = (typeof TradeDirection)[keyof typeof TradeDirection];
+
+export const AgriInsightType = {
+  PRICE: 'price',             // قیمت
+  DEMAND: 'demand',           // تقاضا
+  SUPPLY: 'supply',           // عرضه
+  TREND: 'trend',             // روند بازار
+  REGULATION: 'regulation',   // مقررات و بخشنامه
+} as const;
+export type AgriInsightType = (typeof AgriInsightType)[keyof typeof AgriInsightType];

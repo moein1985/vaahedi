@@ -54,11 +54,11 @@ function CatalogPage() {
 
   const copy = {
     fa: {
-      title: 'Marketplace کالاها',
-      titleSeo: 'کاتالوگ محصولات | پلتفرم تجارت متمرکز هوشمند ایرانیان',
-      descriptionSeo: 'جستجو و مشاهده محصولات صنعتی، شیمیایی و تجاری تولیدکنندگان و بازرگانان ایرانی',
-      heroTitle: 'Marketplace هوشمند برای کالاهای صادراتی و وارداتی',
-      heroDesc: 'کالاها را بر اساس گروه کالایی، منشا، کد HS و نام جستجو کنید و سریع به جزئیات کامل هر مورد برسید.',
+      title: 'Marketplace محصولات کشاورزی',
+      titleSeo: 'کاتالوگ محصولات | سامانه ذینفعان حوزه کشاورزی',
+      descriptionSeo: 'جستجو و مشاهده محصولات کشاورزی ، دامی و غذایی تولیدکنندگان و بازرگانان حوزه کشاورزی',
+      heroTitle: 'Marketplace هوشمند صادرات و واردات محصولات کشاورزی',
+      heroDesc: 'محصولات کشاورزی را بر اساس گروه کالایی، منشا، کد HS و نام جستجو کنید و سریع به جزئیات کامل هر مورد دسترسی پیدا کنید.',',
       searchPlaceholder: 'جستجو محصول، کد HS، نام...',
       searchBtn: 'جستجو',
       catalogLabel: 'Catalog',
@@ -86,10 +86,10 @@ function CatalogPage() {
       ] as const,
     },
     en: {
-      title: 'Product Catalog',
-      titleSeo: 'Product Catalog | Employers Association of Exporters and Importers',
-      descriptionSeo: 'Search and explore industrial, chemical and commercial products from verified suppliers.',
-      heroTitle: 'Smart Catalog for Export & Import Products',
+      title: 'Agricultural Product Catalog',
+      titleSeo: 'Product Catalog | Agriculture Stakeholders Platform',
+      descriptionSeo: 'Search and explore agricultural, livestock, and food products from verified producers and traders.',
+      heroTitle: 'Smart Catalog for Agricultural Export & Import Products',
       heroDesc: 'Filter products by commodity group, origin, HS code and name, then access details instantly.',
       searchPlaceholder: 'Search products, HS code, names...',
       searchBtn: 'Search',
@@ -157,11 +157,11 @@ function CatalogPage() {
   const SORT_OPTIONS = content.sortOptions;
   const previousArrow = isRtl ? '›' : '‹';
   const nextArrow = isRtl ? '‹' : '›';
-  const officialBrandNameFa = 'انجمن صنفی کارفرمایی صادرکنندگان و واردکنندگان کالا و خدمات';
+  const officialBrandNameFa = 'سامانه ذینفعان حوزه کشاورزی';
   const officialBrandNameByLanguage = {
-    fa: 'انجمن صنفی کارفرمایی صادرکنندگان و واردکنندگان کالا و خدمات',
-    en: 'Employers Association of Exporters and Importers of Goods and Services',
-    ar: 'جمعية أصحاب العمل للمصدرين والمستوردين للسلع والخدمات',
+    fa: 'سامانه ذینفعان حوزه کشاورزی',
+    en: 'Agriculture Stakeholders Platform',
+    ar: 'منصة أصحاب المصلحة في قطاع الزراعة',
   } as const;
 
   const [q, setQ] = useState('');

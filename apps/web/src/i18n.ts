@@ -7,7 +7,7 @@ const resources = {
     translation: {
       // Common
       'app.name': 'وهدی',
-      'app.description': 'مرکز تجارت متمرکز هوشمند ایرانیان',
+      'app.description': 'سامانه ذینفعان حوزه کشاورزی — صادرات و واردات محصولات کشاورزی',
       'loading': 'در حال بارگذاری...',
       'error': 'خطا',
       'success': 'موفقیت',
@@ -48,6 +48,8 @@ const resources = {
       'nav.profile': 'پروفایل',
       'nav.services': 'خدمات',
       'nav.admin': 'مدیریت',
+      'nav.harvestCalendar': 'تقویم برداشت',
+      'nav.marketInsights': 'بینش بازار',
 
       // Dashboard
       'dashboard.welcome': 'خوش آمدید',
@@ -116,6 +118,10 @@ const resources = {
       'doc.ISO_CERTIFICATE': 'گواهی ایزو / استاندارد',
       'doc.BUSINESS_CARD': 'کارت بازرگانی',
       'doc.ID_DOCUMENT': 'تصویر مدرک هویتی (کارت ملی/پاسپورت)',
+      'doc.AGRICULTURAL_LICENSE': 'مجوز کشاورزی (جهاد کشاورزی)',
+      'doc.FARMING_CERTIFICATE': 'گواهینامه کشاورز',
+      'doc.WATER_RIGHTS_DOCUMENT': 'سند حق آب و زمین',
+      'doc.EXPORT_CERTIFICATE': 'گواهی صادراتی (بهداشت / قرنطینه)',
 
       // Consultation Categories
       'consultation.COMMERCIAL': 'بازرگانی',
@@ -140,8 +146,8 @@ const resources = {
   en: {
     translation: {
       // Common
-      'app.name': 'Exporters and Importers Association',
-      'app.description': 'Iranian Smart Centralized Trade Center',
+      'app.name': 'Agriculture Stakeholders Platform',
+      'app.description': 'Agriculture Stakeholders Network — Import & Export of Agricultural Products',
       'loading': 'Loading...',
       'error': 'Error',
       'success': 'Success',
@@ -250,6 +256,10 @@ const resources = {
       'doc.ISO_CERTIFICATE': 'ISO Certificate',
       'doc.BUSINESS_CARD': 'Business Card',
       'doc.ID_DOCUMENT': 'Identity/Passport Document',
+      'doc.AGRICULTURAL_LICENSE': 'Agricultural License (Jihad-e-Agriculture)',
+      'doc.FARMING_CERTIFICATE': 'Farming Certificate',
+      'doc.WATER_RIGHTS_DOCUMENT': 'Water Rights & Land Document',
+      'doc.EXPORT_CERTIFICATE': 'Export Certificate (Health / Quarantine)',
 
       // Consultation Categories
       'consultation.COMMERCIAL': 'Commercial',
@@ -384,6 +394,10 @@ const resources = {
       'doc.ISO_CERTIFICATE': 'شهادة ISO',
       'doc.BUSINESS_CARD': 'بطاقة الأعمال',
       'doc.ID_DOCUMENT': 'وثيقة الهوية/جواز السفر',
+      'doc.AGRICULTURAL_LICENSE': 'رخصة الزراعة (جهاد الزراعة)',
+      'doc.FARMING_CERTIFICATE': 'شهادة المزارع',
+      'doc.WATER_RIGHTS_DOCUMENT': 'وثيقة حقوق المياه والأرض',
+      'doc.EXPORT_CERTIFICATE': 'شهادة التصدير (الصحة / الحجر الصحي)',
 
       // Consultation Categories
       'consultation.COMMERCIAL': 'تجاري',
