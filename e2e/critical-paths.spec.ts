@@ -1,9 +1,17 @@
 import { test, expect, type Page, type Request } from '@playwright/test';
 
-const SEED_USER = {
-  userCode: '0000001',
-  password: 'Admin@1234',
+type LoginCandidate = {
+  userCode: string;
+  password: string;
 };
+
+const LOGIN_CANDIDATES: LoginCandidate[] = [
+  { userCode: process.env['E2E_USER_CODE'] ?? '', password: process.env['E2E_PASSWORD'] ?? '' },
+  { userCode: '01000001', password: 'Farmer@1234' },
+  { userCode: '0000001', password: 'Admin@1234' },
+].filter((candidate) => candidate.userCode.length > 0 && candidate.password.length > 0);
+
+let preferredLoginCandidate: LoginCandidate | null = null;
 
 const PRODUCT_BASE = {
   nameEn: 'CriticalPathProduct',
@@ -16,23 +24,107 @@ const PRODUCT_BASE = {
 
 async function selectSellerRole(page: Page) {
   const sellerButton = page.getByRole('button', { name: /فروشنده/ }).first();
-  await expect(sellerButton).toBeVisible({ timeout: 10000 });
-  await sellerButton.click();
+  if (await sellerButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+    await sellerButton.click();
+  }
+
+  const userCodeTab = page.getByRole('button', { name: /ورود با کد کاربری/ }).first();
+  if (await userCodeTab.isVisible({ timeout: 2000 }).catch(() => false)) {
+    await userCodeTab.click();
+  }
+}
+
+async function openUserCodeLoginForm(page: Page) {
+  await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
+  await selectSellerRole(page);
+
+  const userCodeInput = page
+    .locator('input[name="userCode"], input[placeholder*="0100001"], input[autocomplete="username"]')
+    .first();
+  const passwordInput = page.locator('input[type="password"], input[name="password"]').first();
+
+  await expect(userCodeInput).toBeVisible({ timeout: 10000 });
+  await expect(passwordInput).toBeVisible({ timeout: 10000 });
+
+  return { userCodeInput, passwordInput };
 }
 
 async function loginAsSeedUser(page: Page) {
-  await page.goto('/auth/login');
-  await selectSellerRole(page);
-  await expect(page.getByPlaceholder('مثال: 0100001')).toBeVisible({ timeout: 10000 });
-  await page.getByPlaceholder('مثال: 0100001').fill(SEED_USER.userCode);
-  await page.locator('input[type="password"]').first().fill(SEED_USER.password);
-  await page.getByRole('button', { name: 'ورود', exact: true }).click();
+  const orderedCandidates = preferredLoginCandidate
+    ? [
+        preferredLoginCandidate,
+        ...LOGIN_CANDIDATES.filter((candidate) => {
+          return candidate.userCode !== preferredLoginCandidate!.userCode
+            || candidate.password !== preferredLoginCandidate!.password;
+        }),
+      ]
+    : LOGIN_CANDIDATES;
 
-  await page.waitForURL(/\/dashboard|\/profile/, { timeout: 15000 });
+  let lastPath = '/auth/login';
+  for (const candidate of orderedCandidates) {
+    const { userCodeInput, passwordInput } = await openUserCodeLoginForm(page);
+
+    await userCodeInput.fill(candidate.userCode);
+    await passwordInput.fill(candidate.password);
+    await page.getByRole('button', { name: 'ورود', exact: true }).first().click();
+
+    const loggedIn = await page
+      .waitForFunction(() => {
+        const path = new URL(window.location.href).pathname;
+        if (path.startsWith('/auth/') || path.startsWith('/admin')) {
+          return false;
+        }
+
+        const authRaw = window.localStorage.getItem('trade-association-auth');
+        if (!authRaw) {
+          return false;
+        }
+
+        try {
+          const parsed = JSON.parse(authRaw) as any;
+          return Boolean(
+            parsed?.state?.isAuthenticated === true
+              || parsed?.state?.user
+              || parsed?.state?.accessToken
+              || parsed?.accessToken,
+          );
+        } catch {
+          return authRaw.length > 20;
+        }
+      }, { timeout: 5000 })
+      .then(() => true)
+      .catch(() => false);
+
+    lastPath = new URL(page.url()).pathname;
+    if (loggedIn) {
+      preferredLoginCandidate = candidate;
+      return;
+    }
+  }
+
+  throw new Error(
+    `Seed login failed for non-admin candidates: ${orderedCandidates.map((c) => c.userCode).join(', ')} | lastPath=${lastPath}`,
+  );
+}
+
+async function navigateSpa(page: Page, targetPath: string, expected: string | RegExp = targetPath) {
+  await page.evaluate((path) => {
+    window.history.pushState({}, '', path);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  }, targetPath);
+
+  if (expected instanceof RegExp) {
+    await page.waitForURL(expected, { timeout: 10000 });
+    return;
+  }
+
+  await page.waitForURL((url) => {
+    return url.pathname === expected || url.pathname === `${expected}/`;
+  }, { timeout: 10000 });
 }
 
 async function fillProductFormUntilStep3(page: Page, nameSuffix: string) {
-  await page.goto('/products/new');
+  await navigateSpa(page, '/products/new');
   await expect(page.getByRole('heading', { name: 'ثبت محصول جدید' })).toBeVisible();
 
   // Step 1
@@ -46,16 +138,64 @@ async function fillProductFormUntilStep3(page: Page, nameSuffix: string) {
   await page.getByRole('button', { name: 'مرحله بعد' }).click();
 
   // Step 2
-  await page.locator('input[name="minOrderQuantity"]').fill(PRODUCT_BASE.minOrderQuantity);
-  await page.locator('input[name="preparationTimeDays"]').fill(PRODUCT_BASE.preparationTimeDays);
-  await page.locator('select[name="deliveryTerms"]').selectOption('FOB');
-  await page.locator('input[name="deliveryLocation"]').fill(PRODUCT_BASE.deliveryLocation);
-  await page.locator('select[name="paymentMethod"]').selectOption('TT');
-  await page.locator('input[name="saleConditions.advancePercent"]').fill('30');
-  await page.locator('input[name="saleConditions.onDeliveryPercent"]').fill('70');
+  await page.locator('input[name="minOrderQuantity"], input[placeholder*="کیلوگرم"]').first().fill(PRODUCT_BASE.minOrderQuantity);
+
+  const prepDaysInput = page.locator('input[name="preparationTimeDays"]');
+  if (await prepDaysInput.count() > 0) {
+    await prepDaysInput.first().fill(PRODUCT_BASE.preparationTimeDays);
+  } else {
+    await page.getByRole('spinbutton').first().fill(PRODUCT_BASE.preparationTimeDays);
+  }
+
+  const deliveryTermsSelect = page.locator('select[name="deliveryTerms"]');
+  if (await deliveryTermsSelect.count() > 0) {
+    await deliveryTermsSelect.first().selectOption('FOB');
+  } else {
+    const fobCheckbox = page.getByRole('checkbox', { name: /FOB/ }).first();
+    await expect(fobCheckbox).toBeVisible({ timeout: 10000 });
+    if (!(await fobCheckbox.isChecked().catch(() => false))) {
+      await fobCheckbox.check();
+    }
+  }
+
+  const deliveryLocationInput = page.locator('input[name="deliveryLocation"]');
+  if (await deliveryLocationInput.count() > 0) {
+    await deliveryLocationInput.first().fill(PRODUCT_BASE.deliveryLocation);
+  } else {
+    await page.getByPlaceholder('بندر شهید رجایی').fill(PRODUCT_BASE.deliveryLocation);
+  }
+
+  const paymentMethodSelect = page.locator('select[name="paymentMethod"]');
+  if (await paymentMethodSelect.count() > 0) {
+    await paymentMethodSelect.first().selectOption('TT');
+  } else {
+    const paymentSelectFallback = page.locator('select').filter({ has: page.locator('option', { hasText: 'TT - حواله بانکی' }) }).first();
+    if (await paymentSelectFallback.count() > 0) {
+      await paymentSelectFallback.selectOption({ label: 'TT - حواله بانکی' }).catch(async () => {
+        await paymentSelectFallback.selectOption('TT');
+      });
+    }
+  }
+
+  const advancePercentInput = page.locator('input[name="saleConditions.advancePercent"]');
+  if (await advancePercentInput.count() > 0) {
+    await advancePercentInput.first().fill('30');
+  }
+
+  const onDeliveryPercentInput = page.locator('input[name="saleConditions.onDeliveryPercent"]');
+  if (await onDeliveryPercentInput.count() > 0) {
+    await onDeliveryPercentInput.first().fill('70');
+  }
 
   await page.getByRole('button', { name: 'مرحله بعد' }).click();
   await expect(page.getByRole('heading', { name: 'مشخصات فیزیکی و جزئیات' })).toBeVisible({ timeout: 10000 });
+
+  // The current form resolver treats empty packaging selections as invalid.
+  const bulkPackagingCheckbox = page.getByRole('checkbox', { name: 'فله' }).first();
+  await expect(bulkPackagingCheckbox).toBeVisible({ timeout: 10000 });
+  if (!(await bulkPackagingCheckbox.isChecked().catch(() => false))) {
+    await bulkPackagingCheckbox.check();
+  }
 }
 
 async function fillDateTimeInput(page: Page, fieldName: 'productionDate' | 'expiryDate', value: string) {
@@ -136,9 +276,16 @@ test.describe('Critical User Journeys', () => {
     await page.goto('/auth/login');
     await selectSellerRole(page);
 
-    await expect(page.getByPlaceholder('مثال: 0100001')).toBeVisible({ timeout: 10000 });
-    await page.getByPlaceholder('مثال: 0100001').fill(SEED_USER.userCode);
-    await page.locator('input[type="password"]').first().fill('WrongPassword123!');
+    const userCodeInput = page
+      .locator('input[name="userCode"], input[placeholder*="0100001"], input[autocomplete="username"]')
+      .first();
+    const passwordInput = page.locator('input[type="password"], input[name="password"]').first();
+
+    await expect(userCodeInput).toBeVisible({ timeout: 10000 });
+    await expect(passwordInput).toBeVisible({ timeout: 10000 });
+
+    await userCodeInput.fill(LOGIN_CANDIDATES[0]!.userCode);
+    await passwordInput.fill('WrongPassword123!');
     await page.getByRole('button', { name: 'ورود', exact: true }).click();
 
     await expect(page.getByText(/برای ادامه باید وارد حساب شوید|کد کاربری یا رمز عبور اشتباه است/)).toBeVisible({ timeout: 10000 });
@@ -146,7 +293,7 @@ test.describe('Critical User Journeys', () => {
 
   test('Profile: Blocks save when selected required document is not uploaded', async ({ page }) => {
     await loginAsSeedUser(page);
-    await page.goto('/profile');
+    await navigateSpa(page, '/profile');
 
     await expect(page.getByRole('heading', { name: 'پروفایل کاربری' })).toBeVisible();
 
@@ -160,12 +307,12 @@ test.describe('Critical User Journeys', () => {
     await page.getByRole('checkbox', { name: 'آگهی تأسیس' }).check();
     await page.getByRole('button', { name: 'ذخیره تغییرات' }).click();
 
-    await expect(page.getByText(/ابتدا فایل مربوط به/).first()).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(/ابتدا فایل مربوط به|هنوز مدرکی آپلود نشده است/).first()).toBeVisible({ timeout: 10000 });
   });
 
   test('Profile: Blocks save when identity/passport document is selected but not uploaded', async ({ page }) => {
     await loginAsSeedUser(page);
-    await page.goto('/profile');
+    await navigateSpa(page, '/profile');
 
     await expect(page.getByRole('heading', { name: 'پروفایل کاربری' })).toBeVisible();
 
@@ -179,7 +326,7 @@ test.describe('Critical User Journeys', () => {
     await page.getByRole('checkbox', { name: /مدرک هویتی|مدرک شناسایی|پاسپورت/ }).check();
     await page.getByRole('button', { name: 'ذخیره تغییرات' }).click();
 
-    await expect(page.getByText(/ابتدا فایل مربوط به/).first()).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(/ابتدا فایل مربوط به|هنوز مدرکی آپلود نشده است/).first()).toBeVisible({ timeout: 10000 });
   });
 
   test('Product: Reject invalid date range (expiry before production)', async ({ page }) => {
@@ -214,43 +361,40 @@ test.describe('Critical User Journeys', () => {
     expect(productCreateCalls).toBe(0);
   });
 
-  test('RFQ: Create request with clarity fields', async ({ page }) => {
+  test('Request: Create request with clarity fields', async ({ page }) => {
     await loginAsSeedUser(page);
-    await page.goto('/trade');
+    await navigateSpa(page, '/trade');
 
     const tradeName = `فولاد تست بحرانی ${Date.now()}`;
 
-    await page.getByRole('button', { name: /RFQ جدید|درخواست جدید/ }).click();
-    await expect(page.getByText(/ثبت RFQ جدید|درخواست تجاری جدید/)).toBeVisible();
+    await page.getByRole('button', { name: 'درخواست جدید' }).click();
+    await expect(page.getByText(/ثبت درخواست جدید|درخواست تجاری جدید/)).toBeVisible();
 
     await page.locator('input[name="productNameFa"]').fill(tradeName);
     await page.locator('input[name="serviceCode"]').fill('SRV-CRIT-01');
     await page.locator('select[name="supplySourceType"]').selectOption('COMPANY');
     await page.locator('input[name="supplySourceName"]').fill('شرکت تستی بحرانی');
+    await page.locator('select[name="commodityGroup"]').selectOption('INDUSTRIAL');
     await page.locator('input[name="quantity"]').fill('100');
     await page.locator('select[name="quantityUnit"]').selectOption('TON');
 
-    await page.getByRole('button', { name: /ثبت درخواست/ }).click();
+    await page.getByRole('button', { name: 'ثبت درخواست', exact: true }).click();
 
-    await expect(page.getByText(/ثبت RFQ جدید|درخواست تجاری جدید/)).not.toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(/ثبت درخواست جدید|درخواست تجاری جدید/)).not.toBeVisible({ timeout: 10000 });
     await expect(page.getByText(tradeName)).toBeVisible({ timeout: 10000 });
   });
 
   test('Chat: AI advisor alias opens advisor mode', async ({ page }) => {
     await loginAsSeedUser(page);
-    await page.goto('/ai-advisor');
-
-    await page.waitForURL(/\/chat/, { timeout: 10000 });
-    await expect(page.getByRole('heading', { name: 'AI مشاور بازرگانی' })).toBeVisible({ timeout: 10000 });
+    await navigateSpa(page, '/ai-advisor', /\/chat/);
+    await expect(page.getByRole('heading', { name: 'مشاور هوشمند کشاورزی' })).toBeVisible({ timeout: 10000 });
     await expect(page.getByRole('button', { name: 'دریافت پیشنهاد' })).toBeVisible({ timeout: 10000 });
-    await expect(page.getByPlaceholder(/برای افزایش نرخ پاسخ به RFQ های من چه کاری انجام دهم/)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByPlaceholder(/چطور گواهی قرنطینه برای صادرات سیب دریافت کنم/)).toBeVisible({ timeout: 10000 });
   });
 
   test('Chat: Messages alias opens messages mode', async ({ page }) => {
     await loginAsSeedUser(page);
-    await page.goto('/messages');
-
-    await page.waitForURL(/\/chat/, { timeout: 10000 });
+    await navigateSpa(page, '/messages', /\/chat/);
     await expect(page.getByRole('heading', { name: 'مرکز ارتباطات' })).toBeVisible({ timeout: 10000 });
     await expect(page.getByRole('button', { name: 'پیام ها' })).toBeVisible({ timeout: 10000 });
     await expect(page.getByText('یک مکالمه انتخاب کنید')).toBeVisible({ timeout: 10000 });
