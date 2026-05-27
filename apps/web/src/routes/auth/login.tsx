@@ -195,22 +195,20 @@ function LoginPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-4"
+      className="min-h-screen flex items-center justify-center p-4 bg-[radial-gradient(ellipse_at_60%_30%,hsl(38_80%_22%),hsl(222_47%_9%)_65%)]"
       dir="rtl"
-      style={{ background: 'radial-gradient(ellipse at 60% 30%, hsl(38 80% 22%), hsl(222 47% 9%) 65%)' }}
     >
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
           <div
-            className="inline-flex h-16 w-16 items-center justify-center rounded-2xl text-3xl font-black mb-3 shadow-lg"
-            style={{ background: 'linear-gradient(135deg, hsl(38 95% 52%), hsl(30 85% 40%))' }}
+            className="inline-flex h-16 w-16 items-center justify-center rounded-2xl text-3xl font-black mb-3 shadow-lg bg-[linear-gradient(135deg,hsl(38_95%_52%),hsl(30_85%_40%))]"
           >ت</div>
-          <h1 className="text-2xl font-bold" style={{ color: 'hsl(0 0% 95%)' }}>تجارت هوشمند</h1>
-          <p className="text-sm mt-1" style={{ color: 'hsl(215 20% 65%)' }}>سامانه تجارت ایرانیان</p>
+          <h1 className="text-2xl font-bold text-[hsl(0_0%_95%)]">تجارت هوشمند</h1>
+          <p className="text-sm mt-1 text-[hsl(215_20%_65%)]">سامانه تجارت ایرانیان</p>
         </div>
 
-        <Card className="border-0 shadow-2xl" style={{ background: 'hsl(0 0% 100% / 0.97)', backdropFilter: 'blur(8px)' }}>
+        <Card className="border-0 shadow-2xl bg-[hsl(0_0%_100%_/_0.97)] backdrop-blur-[8px]">
           <CardHeader><CardTitle>ورود به حساب</CardTitle></CardHeader>
           <CardContent>
             <div className="space-y-4">

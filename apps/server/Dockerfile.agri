@@ -1,0 +1,18 @@
+# ── Jahad-Agri API/Worker Dockerfile ────────────────────────────────────────────
+# Inherits node_modules from existing prod image — no npm install needed.
+# Build context must be the project root.
+FROM vaahedi-prod-api:latest
+
+WORKDIR /app
+
+# Replace dist files with agri branch builds
+COPY apps/server/dist ./apps/server/dist
+COPY packages/shared/dist ./packages/shared/dist
+COPY packages/db/dist ./packages/db/dist
+
+# Update Prisma schema + client for agri schema
+COPY packages/db/prisma ./packages/db/prisma
+COPY packages/db/prisma-client ./node_modules/.prisma/client
+
+EXPOSE 4000
+CMD ["node", "apps/server/dist/main.js"]

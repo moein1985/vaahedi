@@ -32,8 +32,9 @@ const formSchema = z.object({
   type: z.nativeEnum(TradeType),
   productNameFa: z.string().min(2, 'نام فارسی الزامی است'),
   serviceCode: z.string().min(2, 'کد کالا/خدمات الزامی است').max(50),
-  supplySourceType: z.enum(['COMPANY', 'FACTORY']),
+  supplySourceType: z.enum(['COMPANY', 'FACTORY', 'FARM', 'COOPERATIVE']),
   supplySourceName: z.string().min(2, 'نام مبدا تامین الزامی است').max(150),
+  commodityGroup: z.nativeEnum(CommodityGroup).optional(),
   quantity: z.string().min(1, 'مقدار الزامی است'),
   quantityUnit: z.enum(['KG', 'TON', 'PIECE', 'LITER', 'METER']).default('KG'),
   targetPrice: z.string().optional(),
@@ -175,7 +176,7 @@ function TradePage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">RFQ و درخواست‌های تجاری</h1>
-          <p className="text-gray-500 text-sm mt-1">ثبت و پیگیری درخواست‌های خرید و فروش</p>
+          <p className="text-gray-500 text-sm mt-1">ثبت و پیگیری درخواست‌های خرید و فروش (محصولات کشاورزی و سایر کالاها)</p>
         </div>
         <div className="flex gap-2">
           <Button onClick={() => setShowAnalysisForm(true)} variant="outline">تحلیل RFQ</Button>
@@ -208,7 +209,7 @@ function TradePage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
         <button onClick={() => setShowForm(true)} className="text-right bg-white border border-gray-200 hover:border-blue-300 rounded-xl p-4 transition-colors">
           <p className="font-semibold text-gray-900">ثبت RFQ خرید یا فروش</p>
-          <p className="text-xs text-gray-500 mt-1">نوع درخواست، مقدار، مبدا تامین و قیمت هدف را سریع ثبت کنید.</p>
+          <p className="text-xs text-gray-500 mt-1">نوع درخواست، مقدار، مبدا تامین (مزرعه / شرکت / تعاونی) و قیمت هدف را سریع ثبت کنید.</p>
         </button>
         <button onClick={() => setShowAnalysisForm(true)} className="text-right bg-white border border-gray-200 hover:border-violet-300 rounded-xl p-4 transition-colors">
           <p className="font-semibold text-gray-900">درخواست تحلیل بازرگانی</p>
@@ -330,7 +331,10 @@ function TradePage() {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit((d) => createReq.mutate(d as any))} className="space-y-4">
+            <form onSubmit={handleSubmit((d) => {
+              const payload = { ...d, commodityGroup: d.commodityGroup || undefined };
+              createReq.mutate(payload as any);
+            })} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">نوع RFQ</label>
                 <select
@@ -380,6 +384,8 @@ function TradePage() {
                   >
                     <option value="COMPANY">شرکت</option>
                     <option value="FACTORY">کارخانه</option>
+                    <option value="FARM">مزرعه / باغ</option>
+                    <option value="COOPERATIVE">تعاونی کشاورزی</option>
                   </select>
                 </div>
               </div>
@@ -396,6 +402,19 @@ function TradePage() {
                 {errors.supplySourceName && (
                   <p className="text-red-500 text-xs mt-1">{errors.supplySourceName.message}</p>
                 )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.trade.commodityGroup}</label>
+                <select
+                  {...register('commodityGroup')}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">-- انتخاب گروه کالایی (اختیاری) --</option>
+                  {Object.entries(COMMODITY_LABELS).map(([val, label]) => (
+                    <option key={val} value={val}>{label}</option>
+                  ))}
+                </select>
               </div>
 
               <div className="grid grid-cols-3 gap-3">

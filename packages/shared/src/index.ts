@@ -6,6 +6,7 @@ export * from './schemas/auth.schema.js';
 export * from './schemas/profile.schema.js';
 export * from './schemas/product.schema.js';
 export * from './schemas/trade.schema.js';
+export * from './schemas/agri.schema.js';
 
 // ─── Utils ───────────────────────────────────────────────────────────────────
 export * from './utils/index.js';

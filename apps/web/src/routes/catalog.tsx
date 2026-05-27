@@ -251,13 +251,12 @@ function CatalogPage() {
       {/* Hero */}
       <section className="max-w-6xl mx-auto px-4 pt-8 pb-6">
         <div
-          className="rounded-2xl overflow-hidden p-6 lg:p-8 text-white relative"
-          style={{ background: 'radial-gradient(circle at 52% 56%, rgba(255,217,99,0.82), rgba(245,132,31,0.5) 30%, rgba(19,19,19,0.94) 70%), linear-gradient(180deg, rgba(197,99,10,0.62), rgba(9,18,33,0.92))' }}
+          className="rounded-2xl overflow-hidden p-6 lg:p-8 text-white relative bg-[radial-gradient(circle_at_52%_56%,rgba(255,217,99,0.82),rgba(245,132,31,0.5)_30%,rgba(19,19,19,0.94)_70%),linear-gradient(180deg,rgba(197,99,10,0.62),rgba(9,18,33,0.92))]"
         >
           <div className="relative z-10">
             <p className="text-[11px] tracking-[0.16em] text-amber-200/80">GLOBAL TRADE PRODUCTS</p>
-            <h1 className="text-2xl lg:text-3xl font-black mt-2" style={{ color: 'hsl(0 0% 95%)' }}>{content.heroTitle}</h1>
-            <p className="text-sm mt-3 max-w-3xl leading-7" style={{ color: 'hsl(215 20% 75%)' }}>
+            <h1 className="text-2xl lg:text-3xl font-black mt-2 text-[hsl(0_0%_95%)]">{content.heroTitle}</h1>
+            <p className="text-sm mt-3 max-w-3xl leading-7 text-[hsl(215_20%_75%)]">
               {content.heroDesc}
             </p>
           </div>

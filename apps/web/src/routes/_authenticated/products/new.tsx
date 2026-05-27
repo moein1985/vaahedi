@@ -131,7 +131,7 @@ function NewProductPage() {
 
   const utils = trpc.useUtils();
 
-  const { register, handleSubmit, trigger, formState: { errors } } = useForm<NewProductForm>({
+  const { register, handleSubmit, trigger, watch, formState: { errors } } = useForm<NewProductForm>({
     resolver: zodResolver(createProductSchema) as any,
     defaultValues: {
       isAvailableInStock: false,
@@ -139,6 +139,9 @@ function NewProductPage() {
       dimensions: { unit: 'kg' },
     },
   });
+
+  const watchedCommodityGroup = watch('commodityGroup');
+  const isAgri = watchedCommodityGroup === 'AGRICULTURAL';
 
   const createMutation = trpc.product.create.useMutation();
 
@@ -522,9 +525,54 @@ function NewProductPage() {
             </div>
             <div>
               <label className="label-text">کشور مبدأ</label>
-              <input {...register('countryOfOrigin')} className="input-field" placeholder="ایران / ترکیه / ..." />
+              <input {...register('countryOfOrigin')} className="input-field" placeholder={isAgri ? 'استان / منطقه برداشت (مثال: خراسان رضوی)' : 'ایران / ترکیه / ...'} />
             </div>
           </div>
+
+          {/* بلوک شرطی: مشخصات ویژه کشاورزی */}
+          {isAgri && (
+            <div className="mb-5 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+              <h3 className="text-xs font-semibold text-emerald-800 mb-3">🌾 مشخصات ویژه محصول کشاورزی</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="label-text">رقم / واریته</label>
+                  <input className="input-field" placeholder="مثال: پیکتور، لاین ۷، محلی" onChange={() => {}} id="agri-variety" name="agri-variety" />
+                  <p className="text-[11px] text-gray-400 mt-0.5">نام رقم یا واریته محصول</p>
+                </div>
+                <div>
+                  <label className="label-text">فصل برداشت</label>
+                  <select className="input-field" id="agri-harvest-season" name="agri-harvest-season" title="فصل برداشت">
+                    <option value="">انتخاب کنید...</option>
+                    <option value="بهار">بهار (فروردین – خرداد)</option>
+                    <option value="تابستان">تابستان (تیر – شهریور)</option>
+                    <option value="پاییز">پاییز (مهر – آذر)</option>
+                    <option value="زمستان">زمستان (دی – اسفند)</option>
+                    <option value="تمام سال">تمام سال</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="label-text">درجه کیفی</label>
+                  <select {...register('grade')} className="input-field">
+                    <option value="">انتخاب کنید...</option>
+                    <option value="A">درجه A (ممتاز)</option>
+                    <option value="B">درجه B (درجه ۱)</option>
+                    <option value="C">درجه C (درجه ۲)</option>
+                    <option value="Export">صادراتی</option>
+                    <option value="Industrial">صنعتی</option>
+                  </select>
+                  {errors.grade && <p className="field-error">{errors.grade.message}</p>}
+                </div>
+                <div>
+                  <label className="label-text">رطوبت (%)</label>
+                  <input className="input-field" type="number" min={0} max={100} placeholder="مثال: ۱۲" id="agri-moisture" name="agri-moisture" />
+                  <p className="text-[11px] text-gray-400 mt-0.5">درصد رطوبت محصول در زمان تحویل</p>
+                </div>
+              </div>
+              <p className="text-[11px] text-emerald-700 mt-3">
+                💡 اطلاعات رقم، فصل برداشت و رطوبت را در بخش «مشخصات فنی» نیز تکرار کنید تا در پروفایل محصول نمایش داده شود.
+              </p>
+            </div>
+          )}
 
           <div className="space-y-1 mb-4 pb-3 border-b border-gray-50 mt-6">
             <h3 className="text-xs font-semibold text-gray-600 uppercase">کدهای دسته‌بندی</h3>
@@ -561,16 +609,20 @@ function NewProductPage() {
                 {...register('technicalSpecs')}
                 rows={3}
                 className="input-field resize-none"
-                placeholder="ابعاد، استاندارد، گواهینامه‌ها ..."
+                placeholder={isAgri
+                  ? 'رقم: محلی | فصل برداشت: پاییز | رطوبت: ۱۲٪ | درجه: A | بسته‌بندی: کیسه ۵۰ کیلویی ...'
+                  : 'ابعاد، استاندارد، گواهینامه‌ها ...'}
               />
               {errors.technicalSpecs && <p className="field-error">{errors.technicalSpecs.message}</p>}
             </div>
             <div className="grid grid-cols-2 gap-4">
+              {!isAgri && (
               <div>
                 <label className="label-text">گرید محصول</label>
                 <input {...register('grade')} className="input-field" placeholder="A / Premium / ..." maxLength={50} />
                 {errors.grade && <p className="field-error">{errors.grade.message}</p>}
               </div>
+              )}
             </div>
           </div>
         </div>

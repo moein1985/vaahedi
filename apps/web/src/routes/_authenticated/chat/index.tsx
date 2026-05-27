@@ -151,12 +151,12 @@ function RouteComponent() {
     if (hasUnread) {
       contextSuggestions.push(`${unreadCount} اعلان خوانده نشده دارید — پاسخ سریع به پیام‌ها نرخ موفقیت مذاکره را افزایش می‌دهد.`)
     }
-    contextSuggestions.push('برای تحلیل عمیق‌تر بازار هدف، نام کالا یا کشور مقصد را در سوال بعدی مشخص کنید.')
+    contextSuggestions.push('برای تحلیل دقیق‌تر بازار کشاورزی، نام محصول، استان تولید یا کشور هدف صادراتی را در سوال بعدی مشخص کنید.')
 
     await new Promise((resolve) => setTimeout(resolve, 400))
 
     setAdvisorReply([
-      `بر اساس وضعیت فعلی حساب شما، تحلیل برای: «${question}»`,
+      `بر اساس وضعیت فعلی حساب شما، پیشنهاد مشاور کشاورزی برای: «${question}»`,
       '',
       ...contextSuggestions.map((item, index) => `${index + 1}. ${item}`),
     ].join('\n'))
@@ -167,12 +167,12 @@ function RouteComponent() {
     return conversation.participants.find(p => p.id !== user?.id)
   }
 
-  // Quick advisor prompts
+  // Quick advisor prompts — agri-focused
   const QUICK_PROMPTS = [
-    'چطور RFQ من برای بازار عراق بهتر شود؟',
-    'برای این کالا قیمت هدف را چگونه تعیین کنم؟',
-    'بهترین اقدام بعدی برای افزایش پیام‌های ورودی چیست؟',
-    'نرخ تبدیل RFQ به معامله را چطور بهبود دهم؟',
+    'برای صادرات گندم به عراق چه مراحلی لازم است؟',
+    'چطور گواهی بهداشت محصول کشاورزی دریافت کنم؟',
+    'قیمت‌گذاری صادراتی محصول کشاورزی را چطور انجام دهم؟',
+    'بهترین فصل صادرات میوه‌جات به بازارهای هدف کدام است؟',
   ]
 
   return (
@@ -280,13 +280,13 @@ function RouteComponent() {
         {activeMode === 'advisor' ? (
           <div className="flex-1 p-6 overflow-y-auto">
             <Card className="max-w-3xl mx-auto p-5 border-violet-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">AI مشاور بازرگانی</h3>
-              <p className="text-sm text-gray-600 mb-4">یک سوال عملیاتی درباره Marketplace، RFQ یا پیگیری پیام ها ثبت کنید.</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">مشاور هوشمند کشاورزی</h3>
+              <p className="text-sm text-gray-600 mb-4">سوال خود را درباره صادرات، واردات، مجوزهای کشاورزی، قیمت‌گذاری یا مراحل تجاری ثبت کنید.</p>
               <div className="space-y-3">
                 <textarea
                   value={advisorInput}
                   onChange={(e) => setAdvisorInput(e.target.value)}
-                  placeholder="مثال: برای افزایش نرخ پاسخ به RFQ های من چه کاری انجام دهم؟"
+                  placeholder="مثال: چطور گواهی قرنطینه برای صادرات سیب دریافت کنم؟"
                   className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-violet-500"
                   rows={4}
                 />

@@ -11,6 +11,8 @@ import {
   AlertCircle,
   TrendingUp,
   Building2,
+  Wheat,
+  MapPin,
 } from 'lucide-react';
 import { trpc } from '../../../trpc.js';
 import { useAuthStore } from '../../../store/auth.store.js';
@@ -37,12 +39,12 @@ function StatCard({
   error?: boolean;
   color?: 'default' | 'blue' | 'green' | 'orange' | 'red';
 }) {
-  const iconStyles: Record<string, React.CSSProperties> = {
-    default: { background: 'hsl(220 14% 96%)', color: 'hsl(220 9% 46%)' },
-    blue:    { background: 'linear-gradient(135deg, hsl(38 95% 52% / 0.1), hsl(217 91% 40% / 0.08))', color: 'var(--brand)' },
-    green:   { background: 'hsl(142 60% 50% / 0.1)', color: 'hsl(142 60% 38%)' },
-    orange:  { background: 'hsl(38 95% 52% / 0.12)', color: 'var(--brand-amber)' },
-    red:     { background: 'hsl(0 84% 60% / 0.1)', color: 'hsl(0 84% 55%)' },
+  const iconClasses: Record<string, string> = {
+    default: 'bg-[hsl(220_14%_96%)] text-[hsl(220_9%_46%)]',
+    blue: 'bg-[linear-gradient(135deg,hsl(38_95%_52%_/_0.1),hsl(217_91%_40%_/_0.08))] text-[var(--brand)]',
+    green: 'bg-[hsl(142_60%_50%_/_0.1)] text-[hsl(142_60%_38%)]',
+    orange: 'bg-[hsl(38_95%_52%_/_0.12)] text-[var(--brand-amber)]',
+    red: 'bg-[hsl(0_84%_60%_/_0.1)] text-[hsl(0_84%_55%)]',
   };
 
   return (
@@ -63,7 +65,7 @@ function StatCard({
             )}
             {sub && !error && <p className="text-xs text-muted-foreground mt-1">{sub}</p>}
           </div>
-          <div className="rounded-xl p-2.5" style={iconStyles[color]}>
+          <div className={cn('rounded-xl p-2.5', iconClasses[color])}>
             <Icon className="h-5 w-5" />
           </div>
         </div>
@@ -108,6 +110,16 @@ export function DashboardPage() {
     limit: 4,
     sortBy: 'createdAt',
     sortOrder: 'desc',
+  });
+  const { data: harvestData } = trpc.agri.harvest.list.useQuery({
+    onlyActive: true,
+    page: 1,
+    limit: 4,
+  });
+  const { data: marketData } = trpc.agri.market.list.useQuery({
+    onlyPublished: true,
+    page: 1,
+    limit: 3,
   });
 
   const activeTradeRequests = (tradeStats?.pending ?? 0) + (tradeStats?.inNegotiation ?? 0);
@@ -158,8 +170,7 @@ export function DashboardPage() {
     <div className="p-5 lg:p-7 space-y-7" dir="rtl">
       {/* Header */}
       <div
-        className="flex items-center justify-between rounded-xl p-5 border"
-        style={{ background: 'linear-gradient(135deg, hsl(222 47% 9% / 0.04), hsl(38 95% 52% / 0.04))', borderColor: 'hsl(38 95% 52% / 0.15)' }}
+        className="flex items-center justify-between rounded-xl p-5 border bg-[linear-gradient(135deg,hsl(222_47%_9%_/_0.04),hsl(38_95%_52%_/_0.04))] border-[hsl(38_95%_52%_/_0.15)]"
       >
         <div>
           <h1 className="text-2xl font-bold text-foreground">داشبورد</h1>
@@ -181,14 +192,14 @@ export function DashboardPage() {
 
       {/* Profile Completion Alert */}
       {!loadingCompletion && completion && !completion.isComplete && (
-        <Card className="border" style={{ borderColor: 'var(--brand-amber)', background: 'hsl(38 95% 52% / 0.05)' }}>
+        <Card className="border border-[var(--brand-amber)] bg-[hsl(38_95%_52%_/_0.05)]">
           <CardContent className="p-4">
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold mb-1" style={{ color: 'var(--brand-amber)' }}>پروفایل شما ناقص است</p>
+                <p className="text-sm font-semibold mb-1 text-[var(--brand-amber)]">پروفایل شما ناقص است</p>
                 <div className="flex items-center gap-3">
                   <Progress value={completion.percent} className="h-1.5 flex-1 max-w-xs" />
-                  <span className="text-xs font-bold" style={{ color: 'var(--brand-amber)' }}>{completion.percent}%</span>
+                  <span className="text-xs font-bold text-[var(--brand-amber)]">{completion.percent}%</span>
                 </div>
               </div>
               <Button asChild size="sm">
@@ -351,15 +362,88 @@ export function DashboardPage() {
         )}
       </div>
 
+      {/* Agri Widgets */}
+      <div className="grid lg:grid-cols-2 gap-4">
+        {/* تقویم برداشت */}
+        <Card>
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Wheat className="h-4 w-4 text-emerald-600" />
+                تقویم برداشت
+              </CardTitle>
+              <Link to="/harvest" className="text-xs text-emerald-600 hover:underline">
+                مشاهده همه ›
+              </Link>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {harvestData?.items?.length ? (
+              harvestData.items.map((item) => (
+                <div key={item.id} className="flex items-center justify-between rounded-lg bg-emerald-50 px-3 py-2">
+                  <div>
+                    <p className="text-sm font-medium text-gray-800">{item.cropNameFa}</p>
+                    {item.province && (
+                      <p className="text-xs text-gray-500 flex items-center gap-1">
+                        <MapPin className="h-2.5 w-2.5" />{item.province}
+                      </p>
+                    )}
+                  </div>
+                  <span className="text-xs bg-white border border-emerald-200 text-emerald-700 px-2 py-0.5 rounded-full">
+                    {['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'][item.harvestStartMonth - 1]}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <p className="text-xs text-muted-foreground py-4 text-center">هنوز اطلاعاتی ثبت نشده است.</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* تحلیل بازار */}
+        <Card>
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-cyan-600" />
+                تحلیل بازار
+              </CardTitle>
+              <Link to="/market-insights" className="text-xs text-cyan-600 hover:underline">
+                مشاهده همه ›
+              </Link>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {marketData?.items?.length ? (
+              marketData.items.map((item) => (
+                <div key={item.id} className="rounded-lg border border-gray-100 px-3 py-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-sm font-medium text-gray-800 line-clamp-1">{item.title}</p>
+                    <span className="text-[10px] bg-cyan-100 text-cyan-700 px-1.5 py-0.5 rounded shrink-0">
+                      {({ price: 'قیمت', demand: 'تقاضا', supply: 'عرضه', trend: 'روند', regulation: 'مقررات' } as Record<string, string>)[item.insightType] ?? item.insightType}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-0.5">{item.commodityFa}</p>
+                </div>
+              ))
+            ) : (
+              <p className="text-xs text-muted-foreground py-4 text-center">هنوز تحلیلی منتشر نشده است.</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Quick Actions */}
       <div>
         <h2 className="text-base font-semibold text-foreground mb-3">دسترسی سریع</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {[
-            { href: '/products/new', icon: Package,        label: 'کالای جدید',        color: 'bg-blue-50 text-blue-600 hover:bg-blue-100' },
-            { href: '/rfq',          icon: ArrowLeftRight,  label: 'RFQ جدید',          color: 'bg-green-50 text-green-600 hover:bg-green-100' },
-            { href: '/messages',     icon: MessageSquare,   label: 'پیام ها',           color: 'bg-orange-50 text-orange-600 hover:bg-orange-100' },
-            { href: '/ai-advisor',   icon: Sparkles,        label: 'مشاور AI',          color: 'bg-purple-50 text-purple-600 hover:bg-purple-100' },
+            { href: '/products/new',    icon: Package,        label: 'کالای جدید',   color: 'bg-blue-50 text-blue-600 hover:bg-blue-100' },
+            { href: '/rfq',             icon: ArrowLeftRight, label: 'RFQ جدید',     color: 'bg-green-50 text-green-600 hover:bg-green-100' },
+            { href: '/harvest',         icon: Wheat,          label: 'تقویم برداشت', color: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' },
+            { href: '/market-insights', icon: TrendingUp,     label: 'تحلیل بازار',  color: 'bg-cyan-50 text-cyan-600 hover:bg-cyan-100' },
+            { href: '/messages',        icon: MessageSquare,  label: 'پیام ها',      color: 'bg-orange-50 text-orange-600 hover:bg-orange-100' },
+            { href: '/ai-advisor',      icon: Sparkles,       label: 'مشاور کشاورزی', color: 'bg-purple-50 text-purple-600 hover:bg-purple-100' },
           ].map(({ href, icon: Icon, label, color }) => (
             <Link
               key={href}

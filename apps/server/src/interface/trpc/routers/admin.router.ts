@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { TRPCError } from '@trpc/server';
 import { router, adminProcedure } from '../trpc.js';
 import { UserStatus, VerificationStatus, TradeRequestStatus } from '@repo/shared';
+import { DocumentType } from '@repo/db';
 
 const MANAGEABLE_ADMIN_ROLES = ['EXPERT', 'MEDIA_SUPERVISOR', 'ANALYST'] as const;
 const ALL_ADMIN_ROLES = ['SUPER_ADMIN', ...MANAGEABLE_ADMIN_ROLES] as const;
@@ -173,6 +174,13 @@ export const adminRouter = router({
 
   // ── داشبورد آمار ─────────────────────────────────────────────────────────
   dashboard: adminProcedure.query(async ({ ctx }) => {
+    const AGRI_DOC_TYPES: DocumentType[] = [
+      DocumentType.AGRICULTURAL_LICENSE,
+      DocumentType.FARMING_CERTIFICATE,
+      DocumentType.WATER_RIGHTS_DOCUMENT,
+      DocumentType.EXPORT_CERTIFICATE,
+    ];
+
     const [
       totalUsers,
       pendingUsers,
@@ -183,6 +191,11 @@ export const adminRouter = router({
       openTradeRequests,
       totalTickets,
       openTickets,
+      agriPendingDocs,
+      occupationCategoryCount,
+      harvestEntryCount,
+      publishedInsightCount,
+      agriTradeRequestCount,
     ] = await Promise.all([
       ctx.db.user.count(),
       ctx.db.user.count({ where: { status: UserStatus.PENDING } }),
@@ -193,6 +206,13 @@ export const adminRouter = router({
       ctx.db.tradeRequest.count({ where: { status: TradeRequestStatus.PENDING } }),
       ctx.db.supportTicket.count(),
       ctx.db.supportTicket.count({ where: { status: 'OPEN' } }),
+      ctx.db.document.count({
+        where: { type: { in: AGRI_DOC_TYPES }, status: VerificationStatus.PENDING },
+      }),
+      ctx.db.occupationCategory.count({ where: { isActive: true } }),
+      ctx.db.harvestCalendar.count({ where: { isActive: true } }),
+      ctx.db.marketInsight.count({ where: { isPublished: true } }),
+      ctx.db.tradeRequest.count({ where: { commodityGroup: 'AGRICULTURAL' } }),
     ]);
 
     return {
@@ -200,6 +220,13 @@ export const adminRouter = router({
       products: { total: totalProducts, pending: pendingProducts },
       tradeRequests: { total: totalTradeRequests, open: openTradeRequests },
       tickets: { total: totalTickets, open: openTickets },
+      agri: {
+        pendingDocuments: agriPendingDocs,
+        taxonomy: occupationCategoryCount,
+        harvestEntries: harvestEntryCount,
+        publishedInsights: publishedInsightCount,
+        tradeRequests: agriTradeRequestCount,
+      },
     };
   }),
 

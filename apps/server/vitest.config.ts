@@ -5,13 +5,37 @@ export default defineConfig({
   test: {
     environment: 'node',
     globals: true,
+    env: {
+      DATABASE_URL: 'postgresql://postgres:password@localhost:5434/vaahedi_test',
+    },
     setupFiles: ['./src/test/setup.ts'],
-    hookTimeout: 30000, // Increase hook timeout to 30 seconds
-    testTimeout: 30000, // Increase test timeout to 30 seconds
-    pool: 'threads', // Use threads instead of forks for better isolation
+    hookTimeout: 30000,
+    testTimeout: 30000,
+    pool: 'threads',
     poolOptions: {
       threads: {
-        singleThread: true, // Run tests sequentially to avoid database conflicts
+        singleThread: true,
+      },
+    },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov', 'json-summary'],
+      include: [
+        'src/interface/trpc/routers/**/*.ts',
+        'src/domain/**/*.ts',
+        'src/application/**/*.ts',
+      ],
+      exclude: [
+        '**/*.test.ts',
+        '**/__tests__/**',
+        '**/test/**',
+        'src/main.ts',
+      ],
+      thresholds: {
+        lines: 60,
+        functions: 60,
+        branches: 50,
+        statements: 60,
       },
     },
   },

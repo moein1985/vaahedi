@@ -52,6 +52,12 @@ const formSchema = z.object({
   passportExpiryDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'تاریخ اعتبار پاسپورت معتبر نیست').optional().or(z.literal('')),
   licenseTypes: z.array(z.nativeEnum(DocumentType)).min(1, 'حداقل یک نوع مجوز انتخاب کنید'),
   description: z.string().max(1000).optional().or(z.literal('')),
+  // کشاورزی
+  occupationCategoryId: z.string().cuid().optional().or(z.literal('')),
+  farmingAreaHectares: z.coerce.number().positive().max(100000).optional(),
+  irrigationType: z.enum(['آبی', 'دیم', 'گلخانه']).optional().or(z.literal('')),
+  mainCropsInput: z.string().max(500).optional().or(z.literal('')),
+  tradeDirection: z.enum(['صادراتی', 'وارداتی', 'هر دو', 'داخلی']).optional().or(z.literal('')),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -92,6 +98,11 @@ const DOC_TYPE_LABELS: Record<string, string> = {
   ISO_CERTIFICATE: 'گواهی ایزو',
   BUSINESS_CARD: 'کارت بازرگانی',
   ID_DOCUMENT: 'مدرک هویتی (کارت ملی/پاسپورت)',
+  // کشاورزی
+  AGRICULTURAL_LICENSE: 'مجوز کشاورزی (جهاد کشاورزی)',
+  FARMING_CERTIFICATE: 'گواهینامه کشاورز',
+  WATER_RIGHTS_DOCUMENT: 'سند حق آب و زمین',
+  EXPORT_CERTIFICATE: 'گواهی صادراتی (بهداشت/قرنطینه)',
 };
 
 const MAX_DOC_SIZE_BYTES = 20 * 1024 * 1024;
@@ -110,6 +121,9 @@ function sanitizeOptionalText(value: string | undefined): string | undefined {
 }
 
 function toProfilePayload(data: FormData) {
+  const mainCrops = data.mainCropsInput
+    ? data.mainCropsInput.split(',').map((s) => s.trim()).filter(Boolean)
+    : [];
   return {
     ...data,
     companyName: sanitizeOptionalText(data.companyName),
@@ -128,12 +142,19 @@ function toProfilePayload(data: FormData) {
     passportNumber: sanitizeOptionalText(data.passportNumber),
     passportExpiryDate: sanitizeOptionalText(data.passportExpiryDate),
     description: sanitizeOptionalText(data.description),
+    // کشاورزی
+    occupationCategoryId: sanitizeOptionalText(data.occupationCategoryId),
+    irrigationType: sanitizeOptionalText(data.irrigationType) as FormData['irrigationType'],
+    tradeDirection: sanitizeOptionalText(data.tradeDirection) as FormData['tradeDirection'],
+    mainCrops,
+    mainCropsInput: undefined,
   };
 }
 
 function ProfilePage() {
   const { data, isLoading } = trpc.profile.me.useQuery();
   const { data: completion } = trpc.profile.completionStatus.useQuery();
+  const { data: occupationCategories } = trpc.agri.taxonomy.listFlat.useQuery({ onlyActive: true });
   const profileWithPassport = data?.profile as (typeof data extends undefined ? never : any) | undefined;
   const utils = trpc.useUtils();
 
@@ -254,6 +275,12 @@ function ProfilePage() {
             : '',
           licenseTypes: [],
           description: data.profile.description ?? '',
+          // کشاورزی
+          occupationCategoryId: (profileWithPassport as any)?.occupationCategoryId ?? '',
+          farmingAreaHectares: (profileWithPassport as any)?.farmingAreaHectares ?? undefined,
+          irrigationType: ((profileWithPassport as any)?.irrigationType ?? '') as any,
+          mainCropsInput: ((profileWithPassport as any)?.mainCrops as string[] | undefined)?.join(', ') ?? '',
+          tradeDirection: ((profileWithPassport as any)?.tradeDirection ?? '') as any,
         }
       : undefined,
   });
@@ -629,6 +656,77 @@ function ProfilePage() {
               />
               <p className="text-[11px] text-gray-400 mt-0.5">{FORM_HINTS.profile.passportExpiryDate}</p>
               {errors.passportExpiryDate && <p className="text-red-500 text-xs mt-1">{errors.passportExpiryDate.message}</p>}
+            </div>
+          </div>
+        </div>
+
+        {/* فیلدهای تخصصی کشاورزی */}
+        <div className="bg-white rounded-xl border border-green-100 p-5">
+          <h2 className="font-semibold text-gray-800 mb-1">اطلاعات تخصصی کشاورزی</h2>
+          <p className="text-xs text-gray-500 mb-4">اگر در حوزه کشاورزی فعالیت می‌کنید این اطلاعات را تکمیل کنید</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">دسته‌بندی شغلی</label>
+              <select
+                {...register('occupationCategoryId')}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="">انتخاب کنید...</option>
+                {(occupationCategories ?? []).filter(c => !c.parentId).map((parent) => (
+                  <optgroup key={parent.id} label={parent.nameFa}>
+                    {(occupationCategories ?? []).filter(c => c.parentId === parent.id).map((child) => (
+                      <option key={child.id} value={child.id}>{child.nameFa}</option>
+                    ))}
+                    <option value={parent.id}>{parent.nameFa} — (سایر)</option>
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">مساحت زمین کشاورزی (هکتار)</label>
+              <Input
+                type="number"
+                {...register('farmingAreaHectares')}
+                min={0}
+                step="0.1"
+                placeholder="مثال: ۱۲.۵"
+                className="w-full"
+                dir="ltr"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">نوع آبیاری</label>
+              <select
+                {...register('irrigationType')}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="">انتخاب کنید...</option>
+                <option value="آبی">آبی (آبیاری)</option>
+                <option value="دیم">دیم (بارانی)</option>
+                <option value="گلخانه">گلخانه</option>
+              </select>
+            </div>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">محصولات اصلی</label>
+              <Input
+                {...register('mainCropsInput')}
+                placeholder="مثال: گندم، ذرت، سیب (با ویرگول جدا کنید)"
+                className="w-full"
+              />
+              <p className="text-[11px] text-gray-400 mt-0.5">محصولات را با ویرگول از هم جدا کنید</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">جهت تجاری</label>
+              <select
+                {...register('tradeDirection')}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="">انتخاب کنید...</option>
+                <option value="صادراتی">صادراتی</option>
+                <option value="وارداتی">وارداتی</option>
+                <option value="هر دو">صادراتی و وارداتی</option>
+                <option value="داخلی">داخلی</option>
+              </select>
             </div>
           </div>
         </div>

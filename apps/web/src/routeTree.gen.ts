@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as NewsRouteImport } from './routes/news'
+import { Route as MarketInsightsRouteImport } from './routes/market-insights'
+import { Route as HarvestCalendarRouteImport } from './routes/harvest-calendar'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as AboutRouteImport } from './routes/about'
@@ -31,6 +33,9 @@ import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authent
 import { Route as AuthenticatedProductsIndexRouteImport } from './routes/_authenticated/products/index'
 import { Route as AuthenticatedMessagesIndexRouteImport } from './routes/_authenticated/messages/index'
 import { Route as AuthenticatedMarketplaceIndexRouteImport } from './routes/_authenticated/marketplace/index'
+import { Route as AuthenticatedMarketInsightsIndexRouteImport } from './routes/_authenticated/market-insights/index'
+import { Route as AuthenticatedLicensesIndexRouteImport } from './routes/_authenticated/licenses/index'
+import { Route as AuthenticatedHarvestIndexRouteImport } from './routes/_authenticated/harvest/index'
 import { Route as AuthenticatedFinanceIndexRouteImport } from './routes/_authenticated/finance/index'
 import { Route as AuthenticatedDocumentsIndexRouteImport } from './routes/_authenticated/documents/index'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
@@ -42,9 +47,12 @@ import { Route as AuthenticatedServicesHsCodesRouteImport } from './routes/_auth
 import { Route as AuthenticatedServicesCircularsRouteImport } from './routes/_authenticated/services/circulars'
 import { Route as AuthenticatedProductsNewRouteImport } from './routes/_authenticated/products/new'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
+import { Route as AuthenticatedAdminTaxonomyRouteImport } from './routes/_authenticated/admin/taxonomy'
 import { Route as AuthenticatedAdminSupportRouteImport } from './routes/_authenticated/admin/support'
 import { Route as AuthenticatedAdminProductsRouteImport } from './routes/_authenticated/admin/products'
 import { Route as AuthenticatedAdminNewsRouteImport } from './routes/_authenticated/admin/news'
+import { Route as AuthenticatedAdminMarketRouteImport } from './routes/_authenticated/admin/market'
+import { Route as AuthenticatedAdminHarvestRouteImport } from './routes/_authenticated/admin/harvest'
 import { Route as AuthenticatedAdminDocumentsRouteImport } from './routes/_authenticated/admin/documents'
 import { Route as AuthenticatedAdminCircularsRouteImport } from './routes/_authenticated/admin/circulars'
 import { Route as AuthenticatedAdminAdsRouteImport } from './routes/_authenticated/admin/ads'
@@ -54,6 +62,16 @@ import { Route as AuthenticatedAdminUsersUserIdRouteImport } from './routes/_aut
 const NewsRoute = NewsRouteImport.update({
   id: '/news',
   path: '/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketInsightsRoute = MarketInsightsRouteImport.update({
+  id: '/market-insights',
+  path: '/market-insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HarvestCalendarRoute = HarvestCalendarRouteImport.update({
+  id: '/harvest-calendar',
+  path: '/harvest-calendar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -166,6 +184,24 @@ const AuthenticatedMarketplaceIndexRoute =
     path: '/marketplace/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedMarketInsightsIndexRoute =
+  AuthenticatedMarketInsightsIndexRouteImport.update({
+    id: '/market-insights/',
+    path: '/market-insights/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedLicensesIndexRoute =
+  AuthenticatedLicensesIndexRouteImport.update({
+    id: '/licenses/',
+    path: '/licenses/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedHarvestIndexRoute =
+  AuthenticatedHarvestIndexRouteImport.update({
+    id: '/harvest/',
+    path: '/harvest/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedFinanceIndexRoute =
   AuthenticatedFinanceIndexRouteImport.update({
     id: '/finance/',
@@ -228,6 +264,12 @@ const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   path: '/admin/users',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdminTaxonomyRoute =
+  AuthenticatedAdminTaxonomyRouteImport.update({
+    id: '/admin/taxonomy',
+    path: '/admin/taxonomy',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminSupportRoute =
   AuthenticatedAdminSupportRouteImport.update({
     id: '/admin/support',
@@ -245,6 +287,18 @@ const AuthenticatedAdminNewsRoute = AuthenticatedAdminNewsRouteImport.update({
   path: '/admin/news',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdminMarketRoute =
+  AuthenticatedAdminMarketRouteImport.update({
+    id: '/admin/market',
+    path: '/admin/market',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAdminHarvestRoute =
+  AuthenticatedAdminHarvestRouteImport.update({
+    id: '/admin/harvest',
+    path: '/admin/harvest',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminDocumentsRoute =
   AuthenticatedAdminDocumentsRouteImport.update({
     id: '/admin/documents',
@@ -280,6 +334,8 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/catalog': typeof CatalogRouteWithChildren
   '/contact': typeof ContactRoute
+  '/harvest-calendar': typeof HarvestCalendarRoute
+  '/market-insights': typeof MarketInsightsRoute
   '/news': typeof NewsRouteWithChildren
   '/ads-request': typeof AuthenticatedAdsRequestRoute
   '/downloads': typeof AuthenticatedDownloadsRoute
@@ -294,9 +350,12 @@ export interface FileRoutesByFullPath {
   '/admin/ads': typeof AuthenticatedAdminAdsRoute
   '/admin/circulars': typeof AuthenticatedAdminCircularsRoute
   '/admin/documents': typeof AuthenticatedAdminDocumentsRoute
+  '/admin/harvest': typeof AuthenticatedAdminHarvestRoute
+  '/admin/market': typeof AuthenticatedAdminMarketRoute
   '/admin/news': typeof AuthenticatedAdminNewsRoute
   '/admin/products': typeof AuthenticatedAdminProductsRoute
   '/admin/support': typeof AuthenticatedAdminSupportRoute
+  '/admin/taxonomy': typeof AuthenticatedAdminTaxonomyRoute
   '/admin/users': typeof AuthenticatedAdminUsersRouteWithChildren
   '/products/new': typeof AuthenticatedProductsNewRoute
   '/services/circulars': typeof AuthenticatedServicesCircularsRoute
@@ -308,6 +367,9 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/documents/': typeof AuthenticatedDocumentsIndexRoute
   '/finance/': typeof AuthenticatedFinanceIndexRoute
+  '/harvest/': typeof AuthenticatedHarvestIndexRoute
+  '/licenses/': typeof AuthenticatedLicensesIndexRoute
+  '/market-insights/': typeof AuthenticatedMarketInsightsIndexRoute
   '/marketplace/': typeof AuthenticatedMarketplaceIndexRoute
   '/messages/': typeof AuthenticatedMessagesIndexRoute
   '/products/': typeof AuthenticatedProductsIndexRoute
@@ -322,6 +384,8 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/catalog': typeof CatalogRouteWithChildren
   '/contact': typeof ContactRoute
+  '/harvest-calendar': typeof HarvestCalendarRoute
+  '/market-insights': typeof AuthenticatedMarketInsightsIndexRoute
   '/news': typeof NewsRouteWithChildren
   '/ads-request': typeof AuthenticatedAdsRequestRoute
   '/downloads': typeof AuthenticatedDownloadsRoute
@@ -336,9 +400,12 @@ export interface FileRoutesByTo {
   '/admin/ads': typeof AuthenticatedAdminAdsRoute
   '/admin/circulars': typeof AuthenticatedAdminCircularsRoute
   '/admin/documents': typeof AuthenticatedAdminDocumentsRoute
+  '/admin/harvest': typeof AuthenticatedAdminHarvestRoute
+  '/admin/market': typeof AuthenticatedAdminMarketRoute
   '/admin/news': typeof AuthenticatedAdminNewsRoute
   '/admin/products': typeof AuthenticatedAdminProductsRoute
   '/admin/support': typeof AuthenticatedAdminSupportRoute
+  '/admin/taxonomy': typeof AuthenticatedAdminTaxonomyRoute
   '/admin/users': typeof AuthenticatedAdminUsersRouteWithChildren
   '/products/new': typeof AuthenticatedProductsNewRoute
   '/services/circulars': typeof AuthenticatedServicesCircularsRoute
@@ -350,6 +417,8 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/documents': typeof AuthenticatedDocumentsIndexRoute
   '/finance': typeof AuthenticatedFinanceIndexRoute
+  '/harvest': typeof AuthenticatedHarvestIndexRoute
+  '/licenses': typeof AuthenticatedLicensesIndexRoute
   '/marketplace': typeof AuthenticatedMarketplaceIndexRoute
   '/messages': typeof AuthenticatedMessagesIndexRoute
   '/products': typeof AuthenticatedProductsIndexRoute
@@ -366,6 +435,8 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/catalog': typeof CatalogRouteWithChildren
   '/contact': typeof ContactRoute
+  '/harvest-calendar': typeof HarvestCalendarRoute
+  '/market-insights': typeof MarketInsightsRoute
   '/news': typeof NewsRouteWithChildren
   '/_authenticated/ads-request': typeof AuthenticatedAdsRequestRoute
   '/_authenticated/downloads': typeof AuthenticatedDownloadsRoute
@@ -380,9 +451,12 @@ export interface FileRoutesById {
   '/_authenticated/admin/ads': typeof AuthenticatedAdminAdsRoute
   '/_authenticated/admin/circulars': typeof AuthenticatedAdminCircularsRoute
   '/_authenticated/admin/documents': typeof AuthenticatedAdminDocumentsRoute
+  '/_authenticated/admin/harvest': typeof AuthenticatedAdminHarvestRoute
+  '/_authenticated/admin/market': typeof AuthenticatedAdminMarketRoute
   '/_authenticated/admin/news': typeof AuthenticatedAdminNewsRoute
   '/_authenticated/admin/products': typeof AuthenticatedAdminProductsRoute
   '/_authenticated/admin/support': typeof AuthenticatedAdminSupportRoute
+  '/_authenticated/admin/taxonomy': typeof AuthenticatedAdminTaxonomyRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRouteWithChildren
   '/_authenticated/products/new': typeof AuthenticatedProductsNewRoute
   '/_authenticated/services/circulars': typeof AuthenticatedServicesCircularsRoute
@@ -394,6 +468,9 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/documents/': typeof AuthenticatedDocumentsIndexRoute
   '/_authenticated/finance/': typeof AuthenticatedFinanceIndexRoute
+  '/_authenticated/harvest/': typeof AuthenticatedHarvestIndexRoute
+  '/_authenticated/licenses/': typeof AuthenticatedLicensesIndexRoute
+  '/_authenticated/market-insights/': typeof AuthenticatedMarketInsightsIndexRoute
   '/_authenticated/marketplace/': typeof AuthenticatedMarketplaceIndexRoute
   '/_authenticated/messages/': typeof AuthenticatedMessagesIndexRoute
   '/_authenticated/products/': typeof AuthenticatedProductsIndexRoute
@@ -410,6 +487,8 @@ export interface FileRouteTypes {
     | '/about'
     | '/catalog'
     | '/contact'
+    | '/harvest-calendar'
+    | '/market-insights'
     | '/news'
     | '/ads-request'
     | '/downloads'
@@ -424,9 +503,12 @@ export interface FileRouteTypes {
     | '/admin/ads'
     | '/admin/circulars'
     | '/admin/documents'
+    | '/admin/harvest'
+    | '/admin/market'
     | '/admin/news'
     | '/admin/products'
     | '/admin/support'
+    | '/admin/taxonomy'
     | '/admin/users'
     | '/products/new'
     | '/services/circulars'
@@ -438,6 +520,9 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/documents/'
     | '/finance/'
+    | '/harvest/'
+    | '/licenses/'
+    | '/market-insights/'
     | '/marketplace/'
     | '/messages/'
     | '/products/'
@@ -452,6 +537,8 @@ export interface FileRouteTypes {
     | '/about'
     | '/catalog'
     | '/contact'
+    | '/harvest-calendar'
+    | '/market-insights'
     | '/news'
     | '/ads-request'
     | '/downloads'
@@ -466,9 +553,12 @@ export interface FileRouteTypes {
     | '/admin/ads'
     | '/admin/circulars'
     | '/admin/documents'
+    | '/admin/harvest'
+    | '/admin/market'
     | '/admin/news'
     | '/admin/products'
     | '/admin/support'
+    | '/admin/taxonomy'
     | '/admin/users'
     | '/products/new'
     | '/services/circulars'
@@ -480,6 +570,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/documents'
     | '/finance'
+    | '/harvest'
+    | '/licenses'
     | '/marketplace'
     | '/messages'
     | '/products'
@@ -495,6 +587,8 @@ export interface FileRouteTypes {
     | '/about'
     | '/catalog'
     | '/contact'
+    | '/harvest-calendar'
+    | '/market-insights'
     | '/news'
     | '/_authenticated/ads-request'
     | '/_authenticated/downloads'
@@ -509,9 +603,12 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/ads'
     | '/_authenticated/admin/circulars'
     | '/_authenticated/admin/documents'
+    | '/_authenticated/admin/harvest'
+    | '/_authenticated/admin/market'
     | '/_authenticated/admin/news'
     | '/_authenticated/admin/products'
     | '/_authenticated/admin/support'
+    | '/_authenticated/admin/taxonomy'
     | '/_authenticated/admin/users'
     | '/_authenticated/products/new'
     | '/_authenticated/services/circulars'
@@ -523,6 +620,9 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/'
     | '/_authenticated/documents/'
     | '/_authenticated/finance/'
+    | '/_authenticated/harvest/'
+    | '/_authenticated/licenses/'
+    | '/_authenticated/market-insights/'
     | '/_authenticated/marketplace/'
     | '/_authenticated/messages/'
     | '/_authenticated/products/'
@@ -539,6 +639,8 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   CatalogRoute: typeof CatalogRouteWithChildren
   ContactRoute: typeof ContactRoute
+  HarvestCalendarRoute: typeof HarvestCalendarRoute
+  MarketInsightsRoute: typeof MarketInsightsRoute
   NewsRoute: typeof NewsRouteWithChildren
   AuthLoginRoute: typeof AuthLoginRoute
   AuthLoginOtpRoute: typeof AuthLoginOtpRoute
@@ -553,6 +655,20 @@ declare module '@tanstack/react-router' {
       path: '/news'
       fullPath: '/news'
       preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/market-insights': {
+      id: '/market-insights'
+      path: '/market-insights'
+      fullPath: '/market-insights'
+      preLoaderRoute: typeof MarketInsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/harvest-calendar': {
+      id: '/harvest-calendar'
+      path: '/harvest-calendar'
+      fullPath: '/harvest-calendar'
+      preLoaderRoute: typeof HarvestCalendarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -702,6 +818,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMarketplaceIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/market-insights/': {
+      id: '/_authenticated/market-insights/'
+      path: '/market-insights'
+      fullPath: '/market-insights/'
+      preLoaderRoute: typeof AuthenticatedMarketInsightsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/licenses/': {
+      id: '/_authenticated/licenses/'
+      path: '/licenses'
+      fullPath: '/licenses/'
+      preLoaderRoute: typeof AuthenticatedLicensesIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/harvest/': {
+      id: '/_authenticated/harvest/'
+      path: '/harvest'
+      fullPath: '/harvest/'
+      preLoaderRoute: typeof AuthenticatedHarvestIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/finance/': {
       id: '/_authenticated/finance/'
       path: '/finance'
@@ -779,6 +916,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/taxonomy': {
+      id: '/_authenticated/admin/taxonomy'
+      path: '/admin/taxonomy'
+      fullPath: '/admin/taxonomy'
+      preLoaderRoute: typeof AuthenticatedAdminTaxonomyRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin/support': {
       id: '/_authenticated/admin/support'
       path: '/admin/support'
@@ -798,6 +942,20 @@ declare module '@tanstack/react-router' {
       path: '/admin/news'
       fullPath: '/admin/news'
       preLoaderRoute: typeof AuthenticatedAdminNewsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/market': {
+      id: '/_authenticated/admin/market'
+      path: '/admin/market'
+      fullPath: '/admin/market'
+      preLoaderRoute: typeof AuthenticatedAdminMarketRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/harvest': {
+      id: '/_authenticated/admin/harvest'
+      path: '/admin/harvest'
+      fullPath: '/admin/harvest'
+      preLoaderRoute: typeof AuthenticatedAdminHarvestRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/admin/documents': {
@@ -860,9 +1018,12 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminAdsRoute: typeof AuthenticatedAdminAdsRoute
   AuthenticatedAdminCircularsRoute: typeof AuthenticatedAdminCircularsRoute
   AuthenticatedAdminDocumentsRoute: typeof AuthenticatedAdminDocumentsRoute
+  AuthenticatedAdminHarvestRoute: typeof AuthenticatedAdminHarvestRoute
+  AuthenticatedAdminMarketRoute: typeof AuthenticatedAdminMarketRoute
   AuthenticatedAdminNewsRoute: typeof AuthenticatedAdminNewsRoute
   AuthenticatedAdminProductsRoute: typeof AuthenticatedAdminProductsRoute
   AuthenticatedAdminSupportRoute: typeof AuthenticatedAdminSupportRoute
+  AuthenticatedAdminTaxonomyRoute: typeof AuthenticatedAdminTaxonomyRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRouteWithChildren
   AuthenticatedProductsNewRoute: typeof AuthenticatedProductsNewRoute
   AuthenticatedServicesCircularsRoute: typeof AuthenticatedServicesCircularsRoute
@@ -874,6 +1035,9 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
   AuthenticatedDocumentsIndexRoute: typeof AuthenticatedDocumentsIndexRoute
   AuthenticatedFinanceIndexRoute: typeof AuthenticatedFinanceIndexRoute
+  AuthenticatedHarvestIndexRoute: typeof AuthenticatedHarvestIndexRoute
+  AuthenticatedLicensesIndexRoute: typeof AuthenticatedLicensesIndexRoute
+  AuthenticatedMarketInsightsIndexRoute: typeof AuthenticatedMarketInsightsIndexRoute
   AuthenticatedMarketplaceIndexRoute: typeof AuthenticatedMarketplaceIndexRoute
   AuthenticatedMessagesIndexRoute: typeof AuthenticatedMessagesIndexRoute
   AuthenticatedProductsIndexRoute: typeof AuthenticatedProductsIndexRoute
@@ -891,9 +1055,12 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminAdsRoute: AuthenticatedAdminAdsRoute,
   AuthenticatedAdminCircularsRoute: AuthenticatedAdminCircularsRoute,
   AuthenticatedAdminDocumentsRoute: AuthenticatedAdminDocumentsRoute,
+  AuthenticatedAdminHarvestRoute: AuthenticatedAdminHarvestRoute,
+  AuthenticatedAdminMarketRoute: AuthenticatedAdminMarketRoute,
   AuthenticatedAdminNewsRoute: AuthenticatedAdminNewsRoute,
   AuthenticatedAdminProductsRoute: AuthenticatedAdminProductsRoute,
   AuthenticatedAdminSupportRoute: AuthenticatedAdminSupportRoute,
+  AuthenticatedAdminTaxonomyRoute: AuthenticatedAdminTaxonomyRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRouteWithChildren,
   AuthenticatedProductsNewRoute: AuthenticatedProductsNewRoute,
   AuthenticatedServicesCircularsRoute: AuthenticatedServicesCircularsRoute,
@@ -905,6 +1072,9 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   AuthenticatedDocumentsIndexRoute: AuthenticatedDocumentsIndexRoute,
   AuthenticatedFinanceIndexRoute: AuthenticatedFinanceIndexRoute,
+  AuthenticatedHarvestIndexRoute: AuthenticatedHarvestIndexRoute,
+  AuthenticatedLicensesIndexRoute: AuthenticatedLicensesIndexRoute,
+  AuthenticatedMarketInsightsIndexRoute: AuthenticatedMarketInsightsIndexRoute,
   AuthenticatedMarketplaceIndexRoute: AuthenticatedMarketplaceIndexRoute,
   AuthenticatedMessagesIndexRoute: AuthenticatedMessagesIndexRoute,
   AuthenticatedProductsIndexRoute: AuthenticatedProductsIndexRoute,
@@ -945,6 +1115,8 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   CatalogRoute: CatalogRouteWithChildren,
   ContactRoute: ContactRoute,
+  HarvestCalendarRoute: HarvestCalendarRoute,
+  MarketInsightsRoute: MarketInsightsRoute,
   NewsRoute: NewsRouteWithChildren,
   AuthLoginRoute: AuthLoginRoute,
   AuthLoginOtpRoute: AuthLoginOtpRoute,

@@ -55,6 +55,12 @@ export const createProfileSchema = z.object({
     .min(1, 'حداقل یک نوع مجوز باید مشخص شود'),
   website: websiteSchema,
   description: z.string().max(1000).optional(),
+  // ── فیلدهای تخصصی کشاورزی ──────────────────────────────────────────────
+  occupationCategoryId: z.string().cuid('شناسه دسته‌بندی شغلی معتبر نیست').optional(),
+  farmingAreaHectares: z.number().positive('مساحت باید عدد مثبت باشد').max(100000).optional(),
+  irrigationType: z.enum(['آبی', 'دیم', 'گلخانه']).optional(),
+  mainCrops: z.array(z.string().min(1).max(100)).max(20).optional(),
+  tradeDirection: z.enum(['صادراتی', 'وارداتی', 'هر دو', 'داخلی']).optional(),
 });
 
 export const updateProfileSchema = createProfileSchema.partial();

@@ -11,7 +11,7 @@ export const createTradeRequestSchema = z.object({
   serviceCode: z.string().min(2).max(50).optional(),
   hsCode: z.string().regex(/^\d{6,10}$/).optional(),
   commodityGroup: z.nativeEnum(CommodityGroup).optional(),
-  supplySourceType: z.enum(['COMPANY', 'FACTORY']).optional(),
+  supplySourceType: z.enum(['COMPANY', 'FACTORY', 'FARM', 'COOPERATIVE']).optional(),
   supplySourceName: z.string().min(2).max(150).optional(),
   quantity: z.string().min(1, 'مقدار مورد نیاز الزامی است').max(100),
   quantityUnit: z.enum(['KG', 'TON', 'PIECE', 'LITER', 'METER']).default('KG'),

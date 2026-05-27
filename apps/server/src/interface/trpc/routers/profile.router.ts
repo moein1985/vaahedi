@@ -115,6 +115,12 @@ export const profileRouter = router({
           passportNumber: input.passportNumber,
           passportExpiryDate,
           description: input.description,
+          // فیلدهای کشاورزی
+          occupationCategoryId: input.occupationCategoryId,
+          farmingAreaHectares: input.farmingAreaHectares,
+          irrigationType: input.irrigationType,
+          mainCrops: input.mainCrops ?? [],
+          tradeDirection: input.tradeDirection,
         },
         update: {
           companyName: input.companyName,
@@ -139,6 +145,12 @@ export const profileRouter = router({
           passportNumber: input.passportNumber,
           passportExpiryDate,
           description: input.description,
+          // فیلدهای کشاورزی
+          occupationCategoryId: input.occupationCategoryId,
+          farmingAreaHectares: input.farmingAreaHectares,
+          irrigationType: input.irrigationType,
+          mainCrops: input.mainCrops ?? [],
+          tradeDirection: input.tradeDirection,
         },
       });
       return profile;
@@ -177,6 +189,12 @@ export const profileRouter = router({
             addressLine: input.address.addressLine,
             postalCode: input.address.postalCode,
           }),
+          // فیلدهای کشاورزی
+          ...(input.occupationCategoryId !== undefined && { occupationCategoryId: input.occupationCategoryId }),
+          ...(input.farmingAreaHectares !== undefined && { farmingAreaHectares: input.farmingAreaHectares }),
+          ...(input.irrigationType !== undefined && { irrigationType: input.irrigationType }),
+          ...(input.mainCrops !== undefined && { mainCrops: input.mainCrops }),
+          ...(input.tradeDirection !== undefined && { tradeDirection: input.tradeDirection }),
         },
       });
     }),

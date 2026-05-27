@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Package, ArrowLeftRight, Ticket, MessageSquare,
   Bell, User, LogOut, ChevronLeft, ChevronRight, Globe,
   Users, FileText, Megaphone, BookOpen, BarChart3, Hash,
-  Download,
+  Download, Wheat, TrendingUp, TreePine, BadgeCheck,
 } from 'lucide-react';
 import { useAuthStore } from '../store/auth.store.js';
 import { trpc } from '../trpc.js';
@@ -41,7 +41,10 @@ const NAV_MAIN: NavConfigItem[] = [
   { href: '/rfq',                 icon: ArrowLeftRight,   label: 'درخواست ها (RFQ)' },
   { href: '/catalog',             icon: Globe,            label: 'بازار (Marketplace)', external: true },
   { href: '/messages',            icon: MessageSquare,    label: 'پیام ها' },
-  { href: '/ai-advisor',          icon: Bell,             label: 'AI مشاور' },
+  { href: '/ai-advisor',          icon: Bell,             label: 'مشاور کشاورزی' },
+  { href: '/licenses',            icon: BadgeCheck,       label: 'مجوزهای من' },
+  { href: '/harvest',             icon: Wheat,            label: 'تقویم برداشت' },
+  { href: '/market-insights',     icon: TrendingUp,       label: 'تحلیل بازار' },
   { href: '/documents',           icon: FileText,         label: 'اسناد' },
   { href: '/finance',             icon: BarChart3,        label: 'مالی' },
 ];
@@ -63,6 +66,9 @@ const NAV_ADMIN: NavConfigItem[] = [
   { href: '/admin/ads',           icon: Megaphone,  label: 'تبلیغات', allowedAdminRoles: ['SUPER_ADMIN', 'MEDIA_SUPERVISOR'] },
   { href: '/admin/support',       icon: Ticket,     label: 'پشتیبانی' },
   { href: '/admin/circulars',     icon: BookOpen,   label: 'بخشنامه‌ها', allowedAdminRoles: ['SUPER_ADMIN', 'MEDIA_SUPERVISOR'] },
+  { href: '/admin/taxonomy',      icon: TreePine,   label: 'دسته‌بندی شغلی', allowedAdminRoles: ['SUPER_ADMIN'] },
+  { href: '/admin/harvest',       icon: Wheat,      label: 'تقویم برداشت', allowedAdminRoles: ['SUPER_ADMIN'] },
+  { href: '/admin/market',        icon: TrendingUp, label: 'تحلیل بازار', allowedAdminRoles: ['SUPER_ADMIN'] },
 ];
 
 const MOBILE_NAV: NavConfigItem[] = [
@@ -96,15 +102,11 @@ function NavItem({
     (location.pathname === href ||
       (href !== '/dashboard' && href !== '/admin' && location.pathname.startsWith(href)));
 
-  const activeStyle = isActive
-    ? { background: 'var(--sidebar-active-bg)', borderRightColor: 'var(--sidebar-active-border)', color: 'var(--sidebar-text-active)' } as React.CSSProperties
-    : { color: 'var(--sidebar-text)' } as React.CSSProperties;
-
   const className = cn(
     'group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all relative',
     isActive
-      ? 'border-r-2'
-      : 'hover:brightness-125',
+      ? 'border-r-2 bg-[var(--sidebar-active-bg)] border-r-[var(--sidebar-active-border)] text-[var(--sidebar-text-active)]'
+      : 'text-[var(--sidebar-text)] hover:bg-[var(--sidebar-bg-hover)] hover:brightness-125',
     collapsed && 'justify-center px-2'
   );
 
@@ -131,7 +133,6 @@ function NavItem({
         rel="noopener noreferrer"
         title={collapsed ? label : undefined}
         className={className}
-        style={activeStyle}
       >
         {content}
       </a>
@@ -143,7 +144,6 @@ function NavItem({
       to={href as '/dashboard'}
       title={collapsed ? label : undefined}
       className={className}
-      style={activeStyle}
     >
       {content}
     </Link>
@@ -166,11 +166,11 @@ function NavSection({
   return (
     <div className="space-y-1">
       {!collapsed && (
-        <p className={cn('px-3 text-[10px] font-semibold uppercase tracking-widest mb-2', titleColor ?? '')} style={!titleColor ? { color: 'hsl(215 15% 40%)' } : undefined}>
+        <p className={cn('px-3 text-[10px] font-semibold uppercase tracking-widest mb-2', titleColor ?? 'text-[hsl(215_15%_40%)]')}>
           {title}
         </p>
       )}
-      {collapsed && <div className="my-2 mx-3 h-px" style={{ background: 'var(--sidebar-border)' }} />}
+      {collapsed && <div className="my-2 mx-3 h-px bg-[var(--sidebar-border)]" />}
       {items.map((item) => (
         <NavItem key={item.href} {...item} collapsed={collapsed} />
       ))}
@@ -199,23 +199,22 @@ function Sidebar({ isAdmin, adminRole }: { isAdmin: boolean; adminRole?: string 
         'hidden lg:flex flex-col min-h-screen transition-all duration-300 flex-shrink-0',
         collapsed ? 'w-16' : 'w-60'
       )}
-      style={{ background: 'var(--sidebar-bg)', borderLeft: '1px solid var(--sidebar-border)' }}
+      className={cn(
+        'hidden lg:flex flex-col min-h-screen transition-all duration-300 flex-shrink-0 bg-[var(--sidebar-bg)] border-l border-l-[var(--sidebar-border)]',
+        collapsed ? 'w-16' : 'w-60'
+      )}
     >
       {/* Logo */}
-      <div
-        className={cn('flex items-center gap-3 px-4 py-5', collapsed && 'justify-center px-2')}
-        style={{ borderBottom: '1px solid var(--sidebar-border)' }}
-      >
+      <div className={cn('flex items-center gap-3 px-4 py-5 border-b border-b-[var(--sidebar-border)]', collapsed && 'justify-center px-2')}>
         <div
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-black text-base"
-          style={{ background: 'linear-gradient(135deg, hsl(38 95% 52%), hsl(30 85% 40%))', color: '#fff' }}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-black text-base bg-[linear-gradient(135deg,hsl(38_95%_52%),hsl(30_85%_40%))] text-white"
         >
           ت
         </div>
         {!collapsed && (
           <div>
-            <div className="text-sm font-black" style={{ color: 'hsl(0 0% 95%)' }}>تجارت هوشمند</div>
-            <div className="text-[10px]" style={{ color: 'var(--sidebar-text)' }}>سامانه تجارت ایرانیان</div>
+            <div className="text-sm font-black text-[hsl(0_0%_95%)]">تجارت هوشمند</div>
+            <div className="text-[10px] text-[var(--sidebar-text)]">سامانه تجارت ایرانیان</div>
           </div>
         )}
       </div>
@@ -231,32 +230,29 @@ function Sidebar({ isAdmin, adminRole }: { isAdmin: boolean; adminRole?: string 
 
       {/* Profile Progress */}
       {!collapsed && completion && !completion.isComplete && (
-        <div className="px-4 py-3" style={{ borderTop: '1px solid var(--sidebar-border)', background: 'hsl(38 95% 52% / 0.06)' }}>
-          <div className="flex items-center justify-between text-xs mb-1.5" style={{ color: 'var(--sidebar-text)' }}>
+        <div className="px-4 py-3 border-t border-t-[var(--sidebar-border)] bg-[hsl(38_95%_52%_/_0.06)]">
+          <div className="flex items-center justify-between text-xs mb-1.5 text-[var(--sidebar-text)]">
             <span>تکمیل پروفایل</span>
-            <span className="font-semibold" style={{ color: 'var(--brand-amber)' }}>{completion.percent}%</span>
+            <span className="font-semibold text-[var(--brand-amber)]">{completion.percent}%</span>
           </div>
           <Progress value={completion.percent} className="h-1.5" />
-          <Link to="/profile" className="text-xs hover:underline mt-1.5 block" style={{ color: 'var(--brand-amber)' }}>
+          <Link to="/profile" className="text-xs hover:underline mt-1.5 block text-[var(--brand-amber)]">
             تکمیل کنید ←
           </Link>
         </div>
       )}
 
       {/* Bottom */}
-      <div className={cn('p-2 space-y-1', collapsed && 'flex flex-col items-center')} style={{ borderTop: '1px solid var(--sidebar-border)' }}>
+      <div className={cn('p-2 space-y-1 border-t border-t-[var(--sidebar-border)]', collapsed && 'flex flex-col items-center')}>
         <NavItem href="/profile" icon={User} label="پروفایل" collapsed={collapsed} />
         {!collapsed && <LanguageSwitcher />}
         <ThemeToggle collapsed={collapsed} />
         <button
           onClick={() => logoutMutation.mutate()}
           className={cn(
-            'group w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
+            'group w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all text-[var(--sidebar-text)] hover:text-[hsl(0_84%_65%)] hover:bg-[hsl(0_84%_60%_/_0.1)]',
             collapsed && 'justify-center px-2 w-10 h-10'
           )}
-          style={{ color: 'var(--sidebar-text)' }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = 'hsl(0 84% 65%)'; e.currentTarget.style.background = 'hsl(0 84% 60% / 0.1)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--sidebar-text)'; e.currentTarget.style.background = ''; }}
           title={collapsed ? 'خروج' : undefined}
           aria-label="خروج از حساب"
         >
@@ -269,8 +265,7 @@ function Sidebar({ isAdmin, adminRole }: { isAdmin: boolean; adminRole?: string 
       <button
         onClick={() => setCollapsed(!collapsed)}
         aria-label={collapsed ? 'باز کردن منو' : 'جمع کردن منو'}
-        className="sticky bottom-20 self-end m-2 absolute top-1/2 -translate-y-1/2 -left-3 h-6 w-6 rounded-full flex items-center justify-center shadow-sm transition-all hover:shadow-md z-10"
-        style={{ background: 'var(--sidebar-bg-hover)', border: '1px solid var(--sidebar-border)', color: 'var(--sidebar-text)' }}
+        className="sticky bottom-20 self-end m-2 absolute top-1/2 -translate-y-1/2 -left-3 h-6 w-6 rounded-full flex items-center justify-center shadow-sm transition-all hover:shadow-md z-10 bg-[var(--sidebar-bg-hover)] border border-[var(--sidebar-border)] text-[var(--sidebar-text)]"
       >
         {collapsed ? <ChevronLeft className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
       </button>
@@ -290,20 +285,13 @@ function TopHeader() {
   });
 
   return (
-    <header
-      className="lg:hidden sticky top-0 z-30 px-4 py-3 flex items-center justify-between"
-      dir="rtl"
-      style={{ background: 'var(--sidebar-bg)', borderBottom: '1px solid var(--sidebar-border)' }}
-    >
+    <header className="lg:hidden sticky top-0 z-30 px-4 py-3 flex items-center justify-between bg-[var(--sidebar-bg)] border-b border-b-[var(--sidebar-border)]" dir="rtl">
       <div className="flex items-center gap-2">
-        <div
-          className="h-7 w-7 rounded-lg flex items-center justify-center font-black text-xs"
-          style={{ background: 'linear-gradient(135deg, hsl(38 95% 52%), hsl(30 85% 40%))', color: '#fff' }}
-        >ت</div>
-        <span className="text-sm font-black" style={{ color: 'hsl(0 0% 95%)' }}>تجارت هوشمند</span>
+        <div className="h-7 w-7 rounded-lg flex items-center justify-center font-black text-xs bg-[linear-gradient(135deg,hsl(38_95%_52%),hsl(30_85%_40%))] text-white">ت</div>
+        <span className="text-sm font-black text-[hsl(0_0%_95%)]">تجارت هوشمند</span>
       </div>
       <div className="flex items-center gap-2">
-        <Link to="/notifications" className="relative p-2 transition-colors" aria-label="اعلان‌ها" style={{ color: 'var(--sidebar-text)' }}>
+        <Link to="/notifications" className="relative p-2 transition-colors text-[var(--sidebar-text)]" aria-label="اعلان‌ها">
           <Bell className="h-5 w-5" />
           {unreadCount && unreadCount > 0 && (
             <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
@@ -313,7 +301,7 @@ function TopHeader() {
           <LanguageSwitcher />
         </div>
         <Avatar className="h-8 w-8">
-          <AvatarFallback className="text-xs" style={{ background: 'var(--sidebar-bg-hover)', color: 'var(--brand-amber)' }}>
+          <AvatarFallback className="text-xs bg-[var(--sidebar-bg-hover)] text-[var(--brand-amber)]">
             {String(user?.userCode ?? '').slice(0, 2)}
           </AvatarFallback>
         </Avatar>
@@ -321,8 +309,7 @@ function TopHeader() {
           variant="ghost"
           size="icon"
           onClick={() => logoutMutation.mutate()}
-          className="h-8 w-8"
-          style={{ color: 'var(--sidebar-text)' }}
+          className="h-8 w-8 text-[var(--sidebar-text)]"
           aria-label="خروج از حساب"
         >
           <LogOut className="h-4 w-4" />
@@ -337,10 +324,7 @@ function TopHeader() {
 function MobileNav() {
   const location = useLocation();
   return (
-    <nav
-      className="lg:hidden fixed bottom-0 inset-x-0 flex z-40 safe-area-inset-bottom"
-      style={{ background: 'var(--sidebar-bg)', borderTop: '1px solid var(--sidebar-border)' }}
-    >
+    <nav className="lg:hidden fixed bottom-0 inset-x-0 flex z-40 safe-area-inset-bottom bg-[var(--sidebar-bg)] border-t border-t-[var(--sidebar-border)]">
       {MOBILE_NAV.map(({ href, icon: Icon, label }) => {
         const isActive = location.pathname === href ||
           (href !== '/dashboard' && location.pathname.startsWith(href));
@@ -348,8 +332,10 @@ function MobileNav() {
           <Link
             key={href}
             to={href as '/dashboard'}
-            className="flex-1 flex flex-col items-center justify-center py-2.5 gap-1 text-[10px] font-medium transition-colors"
-            style={{ color: isActive ? 'var(--brand-amber)' : 'var(--sidebar-text)' }}
+            className={cn(
+              'flex-1 flex flex-col items-center justify-center py-2.5 gap-1 text-[10px] font-medium transition-colors',
+              isActive ? 'text-[var(--brand-amber)]' : 'text-[var(--sidebar-text)]'
+            )}
           >
             <Icon className="h-5 w-5" />
             <span>{label}</span>

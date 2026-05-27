@@ -49,19 +49,17 @@ function ProductDetailPage() {
       </Helmet>
       {/* Sticky Navbar */}
       <nav
-        className="sticky top-0 z-20 px-6 py-3 flex items-center gap-3"
+        className="sticky top-0 z-20 px-6 py-3 flex items-center gap-3 bg-[var(--sidebar-bg)] border-b border-b-[var(--sidebar-border)]"
         dir="rtl"
-        style={{ background: 'var(--sidebar-bg)', borderBottom: '1px solid var(--sidebar-border)' }}
       >
         <Link
           to="/catalog"
-          className="text-sm flex items-center gap-1 transition-opacity hover:opacity-80"
-          style={{ color: 'var(--sidebar-text)' }}
+          className="text-sm flex items-center gap-1 transition-opacity hover:opacity-80 text-[var(--sidebar-text)]"
         >
           ← بازگشت به کاتالوگ
         </Link>
-        <span style={{ color: 'var(--sidebar-border)' }}>|</span>
-        <span className="text-sm truncate" style={{ color: 'var(--sidebar-text)' }}>{product.nameFa}</span>
+        <span className="text-[var(--sidebar-border)]">|</span>
+        <span className="text-sm truncate text-[var(--sidebar-text)]">{product.nameFa}</span>
       </nav>
       <div className="max-w-6xl mx-auto p-6" dir="rtl">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -126,7 +124,7 @@ function ProductDetailPage() {
                 params={{ userCode: product.user.userCode }}
                 className="flex items-center space-x-3 hover:bg-background p-2 rounded-lg transition-colors"
               >
-                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'var(--brand-amber)' }}>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--brand-amber)]">
                   <span className="text-white font-medium">
                     {product.user.userCode.charAt(0).toUpperCase()}
                   </span>
@@ -197,8 +195,7 @@ function ProductDetailPage() {
           {/* Action Button */}
           <div className="pt-4">
             <button
-              className="w-full py-3 px-6 rounded-lg font-medium transition-opacity hover:opacity-90 text-white"
-              style={{ background: 'linear-gradient(135deg, hsl(38 95% 52%), hsl(30 85% 40%))' }}
+              className="w-full py-3 px-6 rounded-lg font-medium transition-opacity hover:opacity-90 text-white bg-[linear-gradient(135deg,hsl(38_95%_52%),hsl(30_85%_40%))]"
             >
               ارسال درخواست خرید
             </button>
