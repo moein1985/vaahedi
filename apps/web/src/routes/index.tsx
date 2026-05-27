@@ -69,53 +69,65 @@ export function HomePage() {
     limit: 3,
   });
 
+  const harvestSummary = trpc.agri.harvest.list.useQuery({
+    onlyActive: true,
+    page: 1,
+    limit: 1,
+  });
+
+  const marketSummary = trpc.agri.market.list.useQuery({
+    onlyPublished: true,
+    page: 1,
+    limit: 1,
+  });
+
   const pageCopy = {
     fa: {
-      topStripTitle: 'دروازه تجارت و صادرات و واردات',
-      topStripDesc: 'راهکار یکپارچه برای تجارت بین الملل و زنجیره تامین',
-      ctaRequest: 'درخواست قیمت',
-      nav: { home: 'خانه', about: 'درباره', products: 'کالاها', services: 'خدمات', news: 'اخبار', contact: 'ارتباط' },
+      topStripTitle: 'سامانه یکپارچه ذینفعان حوزه کشاورزی',
+      topStripDesc: 'بستر تخصصی برای پروفایل، مجوزها، بازار محصولات و فرصت های همکاری',
+      ctaRequest: 'ثبت درخواست',
+      nav: { home: 'خانه', about: 'درباره', products: 'محصولات', services: 'خدمات', news: 'اخبار', contact: 'ارتباط' },
       heroSlides: [
         {
-          title: 'مرجع تجارت بین الملل',
-          subtitle: 'شبکه مطمئن صادرکنندگان و واردکنندگان',
-          desc: 'سبد محصولات خود را با تنوع جهانی گسترش دهید و به بازارهای جدید دسترسی پیدا کنید.',
-          ctaText: 'راهکار ما',
+          title: 'شبکه تخصصی ذینفعان کشاورزی',
+          subtitle: 'اتصال تولیدکننده، تامین کننده و متقاضی خدمات',
+          desc: 'در یک مسیر یکپارچه، پروفایل حرفه ای خود را تکمیل کنید، محصولات را معرفی کنید و فرصت های همکاری را پیگیری کنید.',
+          ctaText: 'مشاهده بازار محصولات',
           ctaTo: '/about',
           bgImage:
             'radial-gradient(circle at 52% 56%, rgba(255, 217, 99, 0.88), rgba(245, 132, 31, 0.54) 30%, rgba(19, 19, 19, 0.9) 72%), linear-gradient(180deg, rgba(197, 99, 10, 0.68), rgba(9, 18, 33, 0.85))',
         },
         {
-          title: 'دروازه هوشمند تجارت',
-          subtitle: 'اتصال تولیدکنندگان، تامین کنندگان و خریداران',
-          desc: 'از کشف بازار تا مذاکره و تامین، همه مراحل را در یک پلتفرم یکپارچه انجام دهید.',
-          ctaText: 'کاتالوگ',
+          title: 'بازار محصولات و خدمات کشاورزی',
+          subtitle: 'جستجو، مقایسه و ارتباط هدفمند',
+          desc: 'محصولات حوزه کشاورزی را با فیلترهای دقیق بررسی کنید و برای تعامل سریع تر با طرف مقابل اقدام کنید.',
+          ctaText: 'ورود به بازار',
           ctaTo: '/catalog',
           bgImage:
             'radial-gradient(circle at 50% 42%, rgba(250, 181, 60, 0.88), rgba(199, 82, 19, 0.48) 31%, rgba(20, 20, 20, 0.88) 72%), linear-gradient(180deg, rgba(161, 81, 12, 0.75), rgba(15, 23, 42, 0.85))',
         },
         {
-          title: 'THE TERMINAL OF EXPORT & IMPORT',
-          subtitle: 'پشتیبانی تخصصی در معاملات خارجی',
-          desc: 'داده بازار، شبکه همکاران تجاری و خدمات مشاوره ای برای تصمیم گیری دقیق.',
-          ctaText: 'تماس با ما',
+          title: 'تقویم برداشت و تحلیل بازار نمایشی',
+          subtitle: 'آگاهی بیشتر برای تصمیم های روزانه',
+          desc: 'با استفاده از داده های نمایشی و تحلیل های قابل کنترل، برنامه ریزی تامین و فروش خود را دقیق تر انجام دهید.',
+          ctaText: 'مشاهده تحلیل ها',
           ctaTo: '/contact',
           bgImage:
             'radial-gradient(circle at 54% 58%, rgba(239, 202, 112, 0.85), rgba(193, 91, 27, 0.46) 28%, rgba(17, 17, 17, 0.9) 70%), linear-gradient(180deg, rgba(185, 98, 22, 0.72), rgba(18, 24, 38, 0.85))',
         },
       ] as const,
-      introTitle: 'قطب یکپارچه تجارت بین الملل',
+      introTitle: 'سکوی یکپارچه عملیات کشاورزی',
       introText:
-        'ما با اتصال فعالان زنجیره تامین، مسیر صادرات و واردات را سریع تر، شفاف تر و قابل اطمینان تر می کنیم. از تحلیل بازار تا هماهنگی تامین و فروش، در کنار کسب وکار شما هستیم.',
+        'ما با اتصال ذینفعان حوزه کشاورزی، مسیر معرفی محصول، ثبت درخواست، پیگیری مجوزها و دسترسی به داده های بازار را شفاف تر و قابل اتکاتر می کنیم.',
       introMore: 'درباره ما',
       whyTitle: 'چرا ما را انتخاب کنید؟',
       whyItems: [
-        { title: 'بینش لحظه ای', desc: 'به داده های ارزشمند بازار دسترسی پیدا کنید و تصمیم های دقیق بگیرید.' },
-        { title: 'پشتیبانی تخصصی', desc: 'تیم حرفه ای ما در تمام مراحل معامله کنار شماست.' },
-        { title: 'دسترسی جهانی', desc: 'با شرکای بین المللی ارتباط بگیرید و بازارهای جدید را فتح کنید.' },
+        { title: 'داده های قابل اقدام', desc: 'به داده های نمایشی بازار و تقویم برداشت دسترسی پیدا کنید و تصمیم های دقیق تر بگیرید.' },
+        { title: 'اعتبارسنجی و اعتماد', desc: 'جریان بازبینی اولیه مدارک و وضعیت پروفایل، تعاملات حرفه ای را قابل اطمینان تر می کند.' },
+        { title: 'فرصت های همکاری', desc: 'درخواست ها و فرصت های خرید، فروش و همکاری را در یک مسیر یکپارچه مدیریت کنید.' },
       ],
-      terminalHead: 'ترمینال صادرات و واردات',
-      terminalSub: 'THE TERMINAL OF EXPORT AND IMPORT',
+      terminalHead: 'داده، فرصت و همکاری در یک شبکه',
+      terminalSub: 'AGRICULTURE STAKEHOLDERS PLATFORM',
       categoryTitles: {
         petrochemical: 'پتروشیمی',
         energy: 'انرژی',
@@ -129,7 +141,7 @@ export function HomePage() {
         food: 'غذایی',
       },
       latestProducts: 'جدیدترین محصولات',
-      latestNews: 'آخرین مقالات',
+      latestNews: 'آخرین خبرها و آگاهی ها',
       emptyProducts: 'محصولی برای نمایش وجود ندارد.',
       emptyNews: 'مقاله ای برای نمایش وجود ندارد.',
       readMore: 'بیشتر',
@@ -142,13 +154,13 @@ export function HomePage() {
         email: 'ایمیل',
         about: 'درباره ما',
         aboutDesc:
-          'انجمن صنفی کارفرمایی صادرکنندگان و واردکنندگان کالا و خدمات، مسیر توسعه تجارت خارجی را برای کسب وکارها ساده و حرفه ای می کند.',
+          'این سامانه مسیر مدیریت پروفایل، مجوزها، محصولات، خدمات و فرصت های همکاری حوزه کشاورزی را برای ذینفعان ساده و عملیاتی می کند.',
         supplies: 'کالاها',
         services: 'خدمات',
         follow: 'شبکه های اجتماعی',
         city: 'تهران، ایران',
-        serviceItems: ['مشاوره بازرگانی', 'اخبار و رویدادها', 'درخواست همکاری'],
-        defaultSupplies: ['محصولات پتروشیمی', 'محصولات غذایی', 'تجهیزات صنعتی'],
+        serviceItems: ['مشاوره تخصصی', 'اخبار و آگاهی ها', 'درخواست همکاری'],
+        defaultSupplies: ['محصولات کشاورزی', 'خدمات تخصصی', 'فرصت های همکاری'],
       },
     },
     en: {
@@ -316,7 +328,7 @@ export function HomePage() {
   } as const;
 
   const content = pageCopy[language];
-  const officialBrandNameFa = 'انجمن صنفی کارفرمایی صادرکنندگان و واردکنندگان کالا و خدمات';
+  const officialBrandNameFa = 'سامانه یکپارچه ذینفعان حوزه کشاورزی';
 
   const productItems = (products.data?.data ?? []) as ProductCard[];
   const newsItems = (news.data?.items ?? []) as NewsCard[];
@@ -348,8 +360,6 @@ export function HomePage() {
     return nameFa;
   };
 
-  const leadImageSrc = productItems[0]?.media?.[0]?.fileKey ? `/api/media/${productItems[0].media[0].fileKey}` : null;
-
   const footerSupplies = productItems.length > 0
     ? productItems.slice(0, 6).map((item) => localizedProductName(item.nameFa, item.nameEn))
     : content.footer.defaultSupplies;
@@ -367,163 +377,321 @@ export function HomePage() {
     { key: 'food', to: '/catalog', icon: Apple, color: 'bg-[#dd0f73]' },
   ] as const;
 
+  const challengeItemsByLanguage = {
+    fa: [
+      'پراکندگی اطلاعات ذینفعان و دشواری یافتن طرف معتبر',
+      'نبود مسیر یکپارچه برای پیگیری مجوز، محصول و درخواست',
+      'کمبود دید سریع نسبت به تقویم برداشت و تحلیل بازار',
+    ],
+    en: [
+      'Fragmented stakeholder information and hard partner discovery',
+      'No unified workflow for licenses, products, and requests',
+      'Limited visibility into harvest windows and market insights',
+    ],
+    ar: [
+      'تشتت معلومات أصحاب المصلحة وصعوبة العثور على طرف موثوق',
+      'غياب مسار موحد لإدارة التراخيص والمنتجات والطلبات',
+      'ضعف الرؤية السريعة لتقويم الحصاد وتحليلات السوق',
+    ],
+  } as const;
+
+  const solutionItemsByLanguage = {
+    fa: [
+      'پروفایل تخصصی و اعتبارسنجی اولیه برای افزایش اعتماد',
+      'بازار محصولات و فرصت های همکاری در یک داشبورد عملیاتی',
+      'داده های نمایشی قابل کنترل برای تصمیم گیری روزانه',
+    ],
+    en: [
+      'Specialized profiles and initial verification for trust',
+      'Products and opportunities managed in one operational view',
+      'Controlled insight data for better day-to-day decisions',
+    ],
+    ar: [
+      'ملفات تخصصية وتحقق أولي لرفع مستوى الثقة',
+      'إدارة المنتجات والفرص ضمن واجهة تشغيل موحدة',
+      'بيانات تحليلية منضبطة لدعم القرار اليومي',
+    ],
+  } as const;
+
+  const stakeholderItemsByLanguage = {
+    fa: [
+      { title: 'تولیدکنندگان و کشاورزان', desc: 'معرفی محصول، تکمیل پروفایل و دریافت فرصت های هدفمند' },
+      { title: 'تامین کنندگان و بازرگانان', desc: 'کشف سریع عرضه و تقاضا در زنجیره کشاورزی' },
+      { title: 'ارائه دهندگان خدمات تخصصی', desc: 'ثبت خدمات، مجوزها و تعامل ساختارمند با متقاضیان' },
+      { title: 'مدیران و اپراتورها', desc: 'کنترل taxonomy، بازبینی مدارک و پایش عملیات روزانه' },
+    ],
+    en: [
+      { title: 'Producers & Farmers', desc: 'Showcase products and receive targeted opportunities' },
+      { title: 'Suppliers & Traders', desc: 'Discover supply and demand across agri value chains' },
+      { title: 'Specialized Service Providers', desc: 'Offer services with structured interactions and licenses' },
+      { title: 'Operators & Admins', desc: 'Control taxonomy, verification queues, and daily operations' },
+    ],
+    ar: [
+      { title: 'المنتجون والمزارعون', desc: 'عرض المنتجات والحصول على فرص مناسبة' },
+      { title: 'الموردون والتجار', desc: 'اكتشاف العرض والطلب عبر سلسلة القيمة الزراعية' },
+      { title: 'مقدمو الخدمات المتخصصة', desc: 'تقديم الخدمات مع تفاعل منظم وإدارة التراخيص' },
+      { title: 'المشغلون والمديرون', desc: 'إدارة التصنيفات ومسارات التحقق والعمليات اليومية' },
+    ],
+  } as const;
+
+  const stakeholderIcons = [Leaf, Factory, HousePlus, Cpu] as const;
+  const challengeItems = challengeItemsByLanguage[language];
+  const solutionItems = solutionItemsByLanguage[language];
+  const stakeholderItems = stakeholderItemsByLanguage[language];
+
+  const localizedNumber = (value: number) => value.toLocaleString(language === 'fa' ? 'fa-IR' : language === 'ar' ? 'ar-EG' : 'en-US');
+
+  const keyMetrics = [
+    {
+      label: language === 'fa' ? 'محصول ثبت شده' : language === 'ar' ? 'منتج مسجل' : 'Registered Products',
+      value: products.data?.pagination.total ?? productItems.length,
+    },
+    {
+      label: language === 'fa' ? 'آیتم تقویم برداشت' : language === 'ar' ? 'عناصر تقويم الحصاد' : 'Harvest Calendar Items',
+      value: harvestSummary.data?.total ?? 0,
+    },
+    {
+      label: language === 'fa' ? 'تحلیل بازار نمایشی' : language === 'ar' ? 'تحليلات السوق' : 'Market Insights',
+      value: marketSummary.data?.total ?? 0,
+    },
+    {
+      label: language === 'fa' ? 'دسته تخصصی' : language === 'ar' ? 'فئات تخصصية' : 'Specialized Categories',
+      value: categoryTiles.length,
+    },
+  ];
+
+  const labelsByLanguage = {
+    fa: {
+      platformOverline: 'AGRICULTURE STAKEHOLDERS PLATFORM',
+      viewMarket: 'مشاهده بازار محصولات',
+      challengeTitle: 'چالش های رایج اکوسیستم',
+      solutionTitle: 'راهکار سامانه',
+      stakeholdersTitle: 'گروه های اصلی ذینفع',
+      stakeholdersSubtitle: 'طراحی شده برای عملیات واقعی روزانه، نه صرفا نمایش اطلاعات',
+      categoriesTitle: 'حوزه های بازار محصولات و خدمات',
+      categoriesSubtitle: 'جستجو و مسیرهای سریع بر اساس دسته های تخصصی',
+      freshProductsTitle: 'جدیدترین محصولات ثبت شده',
+      freshProductsSubtitle: 'مستقیما از داده های سامانه',
+      freshNewsTitle: 'جدیدترین خبرها و آگاهی ها',
+      freshNewsSubtitle: 'به روزرسانی های منتخب حوزه کشاورزی',
+      noImage: 'تصویر موجود نیست',
+    },
+    en: {
+      platformOverline: 'AGRICULTURE STAKEHOLDERS PLATFORM',
+      viewMarket: 'Explore Market',
+      challengeTitle: 'Ecosystem Challenges',
+      solutionTitle: 'Platform Approach',
+      stakeholdersTitle: 'Primary Stakeholder Groups',
+      stakeholdersSubtitle: 'Built for day-to-day operations, not just display pages',
+      categoriesTitle: 'Products & Services Domains',
+      categoriesSubtitle: 'Fast navigation through specialized market categories',
+      freshProductsTitle: 'Latest Registered Products',
+      freshProductsSubtitle: 'Directly from platform data',
+      freshNewsTitle: 'Latest News & Insights',
+      freshNewsSubtitle: 'Selected updates from the agricultural ecosystem',
+      noImage: 'No image',
+    },
+    ar: {
+      platformOverline: 'AGRICULTURE STAKEHOLDERS PLATFORM',
+      viewMarket: 'استعراض السوق',
+      challengeTitle: 'تحديات المنظومة',
+      solutionTitle: 'منهج المنصة',
+      stakeholdersTitle: 'الفئات الرئيسية لأصحاب المصلحة',
+      stakeholdersSubtitle: 'مصممة للتشغيل اليومي العملي وليس للعرض فقط',
+      categoriesTitle: 'مجالات المنتجات والخدمات',
+      categoriesSubtitle: 'تنقل سريع عبر فئات السوق المتخصصة',
+      freshProductsTitle: 'أحدث المنتجات المسجلة',
+      freshProductsSubtitle: 'مباشرة من بيانات المنصة',
+      freshNewsTitle: 'آخر الأخبار والتنبيهات',
+      freshNewsSubtitle: 'تحديثات مختارة من منظومة الزراعة',
+      noImage: 'لا توجد صورة',
+    },
+  } as const;
+
+  const labels = labelsByLanguage[language];
+
   return (
-    <div dir={isRtl ? 'rtl' : 'ltr'} className="bg-[#e9e9e9] text-slate-900">
-      <header className="bg-white shadow-sm">
-        <div className="max-w-[1020px] mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-3">
+    <div dir={isRtl ? 'rtl' : 'ltr'} className="min-h-screen bg-[var(--field-mist)] text-foreground">
+      <header className="sticky top-0 z-40 border-b border-[var(--sidebar-border)] bg-[hsl(153_41%_9%_/_0.92)] backdrop-blur">
+        <div className="max-w-[1120px] mx-auto px-4 py-3 flex flex-wrap lg:flex-nowrap items-center justify-between gap-3">
           <Link to="/" className="flex items-center gap-3 min-w-0">
             <img
               src="/brand/logo_without_persian_words.png"
               alt={officialBrandNameFa}
-              className="h-16 sm:h-20 w-auto object-contain"
+              className="h-14 sm:h-16 w-auto object-contain"
             />
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-slate-800 line-clamp-1">{content.topStripTitle}</p>
-              <p className="text-xs text-slate-500 line-clamp-2">{content.topStripDesc}</p>
+              <p className="text-sm font-semibold text-[hsl(0_0%_96%)] line-clamp-1">{content.topStripTitle}</p>
+              <p className="text-xs text-[hsl(148_10%_74%)] line-clamp-2">{content.topStripDesc}</p>
             </div>
           </Link>
+
+          <nav className="hidden lg:flex items-center gap-1">
+            <Link to="/" className="px-3 py-2 text-sm text-[hsl(148_10%_82%)] hover:text-white hover:bg-white/10 rounded-md">{content.nav.home}</Link>
+            <Link to="/about" className="px-3 py-2 text-sm text-[hsl(148_10%_82%)] hover:text-white hover:bg-white/10 rounded-md">{content.nav.about}</Link>
+            <Link to="/catalog" className="px-3 py-2 text-sm text-[hsl(148_10%_82%)] hover:text-white hover:bg-white/10 rounded-md">{content.nav.products}</Link>
+            <Link to="/news" className="px-3 py-2 text-sm text-[hsl(148_10%_82%)] hover:text-white hover:bg-white/10 rounded-md">{content.nav.news}</Link>
+            <Link to="/contact" className="px-3 py-2 text-sm text-[hsl(148_10%_82%)] hover:text-white hover:bg-white/10 rounded-md">{content.nav.contact}</Link>
+          </nav>
 
           <div className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
             <LanguageSwitcher />
             <Button size="sm" asChild>
               <Link to="/auth/register" aria-label="register-cta">{t('auth.register')}</Link>
             </Button>
-            <Button variant="ghost" size="sm" asChild>
+            <Button variant="ghost" size="sm" className="text-[hsl(148_12%_88%)] hover:text-white hover:bg-white/10" asChild>
               <Link to="/auth/login">{t('auth.login')}</Link>
             </Button>
-            <div className="hidden md:flex items-center gap-1 text-slate-500">
-              <a className="h-7 w-7 rounded-full border border-slate-300 flex items-center justify-center hover:text-slate-800" href="#" aria-label="facebook">
+            <div className="hidden md:flex items-center gap-1 text-[hsl(148_10%_74%)]">
+              <a className="h-7 w-7 rounded-full border border-white/20 flex items-center justify-center hover:text-white hover:bg-white/10" href="#" aria-label="facebook">
                 <Facebook className="h-3.5 w-3.5" />
               </a>
-              <a className="h-7 w-7 rounded-full border border-slate-300 flex items-center justify-center hover:text-slate-800" href="#" aria-label="linkedin">
+              <a className="h-7 w-7 rounded-full border border-white/20 flex items-center justify-center hover:text-white hover:bg-white/10" href="#" aria-label="linkedin">
                 <Linkedin className="h-3.5 w-3.5" />
               </a>
             </div>
           </div>
         </div>
-
-        <div className="max-w-[1020px] mx-auto px-4 relative z-30 -mb-7 sm:-mb-8">
-          <div dir="ltr" className="flex items-stretch overflow-hidden rounded-lg shadow-[0_8px_20px_rgba(0,0,0,0.2)] bg-[linear-gradient(180deg,#1a8ec3_0%,#0f5f8f_25%,#0a3f67_68%,#082f4e_100%)] border border-[#0d4d75]">
-            <nav className="flex-1 overflow-x-auto">
-              <div className="min-w-max flex">
-                <Link to="/" className="px-5 py-[14px] text-sm font-bold text-white uppercase tracking-wide border-x border-white/10 bg-[linear-gradient(180deg,rgba(5,31,54,0.4),rgba(3,18,33,0.68))]">{content.nav.home}</Link>
-                <Link to="/about" className="px-5 py-[14px] text-sm font-semibold text-white uppercase tracking-wide border-r border-white/10 hover:bg-white/10 transition-colors">{content.nav.about}</Link>
-                <Link to="/catalog" className="px-5 py-[14px] text-sm font-semibold text-white uppercase tracking-wide border-r border-white/10 hover:bg-white/10 transition-colors">{content.nav.products}</Link>
-                <Link to="/contact" className="px-5 py-[14px] text-sm font-semibold text-white uppercase tracking-wide border-r border-white/10 hover:bg-white/10 transition-colors">{content.nav.services}</Link>
-                <Link to="/news" className="px-5 py-[14px] text-sm font-semibold text-white uppercase tracking-wide border-r border-white/10 hover:bg-white/10 transition-colors">{content.nav.news}</Link>
-                <Link to="/contact" className="px-5 py-[14px] text-sm font-semibold text-white uppercase tracking-wide border-r border-white/10 hover:bg-white/10 transition-colors">{content.nav.contact}</Link>
-              </div>
-            </nav>
-            <Link to="/contact" className="shrink-0 bg-[#f5861f] hover:bg-[#ea760f] text-white px-8 py-[14px] text-sm font-bold uppercase tracking-wide border-l border-[#d86d10]">
-              {content.ctaRequest}
-            </Link>
-          </div>
-        </div>
       </header>
 
       <section
-        className="relative min-h-[430px] sm:min-h-[500px] overflow-hidden"
+        className="relative overflow-hidden"
         onMouseEnter={() => setIsHeroPaused(true)}
         onMouseLeave={() => setIsHeroPaused(false)}
       >
-        <div className={`absolute inset-0 ${currentSlideBackgroundClass}`} />
-        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,hsl(153_41%_9%),hsl(148_62%_24%)_52%,hsl(139_50%_37%))]" />
+        <div className={`absolute inset-0 opacity-20 ${currentSlideBackgroundClass}`} />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,hsl(40_62%_57%_/_0.24),transparent_34%)]" />
 
-        <div className="relative z-10 max-w-[1020px] mx-auto px-4 min-h-[430px] sm:min-h-[500px] flex items-center justify-center text-center text-white">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl sm:text-5xl font-black drop-shadow-sm">{currentSlide.title}</h1>
-            <p className="text-xl sm:text-3xl mt-4 text-white/95">{currentSlide.subtitle}</p>
-            <p className="mt-6 text-sm sm:text-base text-white/90 max-w-2xl mx-auto">{currentSlide.desc}</p>
-            <Link
-              to={currentSlide.ctaTo}
-              className="inline-block mt-7 bg-[#f5861f] hover:bg-[#ec7410] text-white px-8 py-3 text-sm font-bold uppercase tracking-wide"
-            >
-              {currentSlide.ctaText}
-            </Link>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          className="absolute top-1/2 left-4 -translate-y-1/2 z-20 h-11 w-11 bg-black/25 hover:bg-black/40 text-white flex items-center justify-center transition"
-          onClick={() => setHeroIndex((prev) => (prev === 0 ? heroSlides.length - 1 : prev - 1))}
-          aria-label="hero-prev"
-        >
-          {prevArrow}
-        </button>
-        <button
-          type="button"
-          className="absolute top-1/2 right-4 -translate-y-1/2 z-20 h-11 w-11 bg-black/25 hover:bg-black/40 text-white flex items-center justify-center transition"
-          onClick={() => setHeroIndex((prev) => (prev + 1) % heroSlides.length)}
-          aria-label="hero-next"
-        >
-          {nextArrow}
-        </button>
-      </section>
-
-      <section className="py-16 bg-[radial-gradient(#dcdcdc_0.6px,transparent_0.6px)] [background-size:6px_6px] bg-[#f0f0f0]">
-        <div className="max-w-[1020px] mx-auto px-4 grid lg:grid-cols-2 gap-8 items-start">
+        <div className="relative max-w-[1120px] mx-auto px-4 py-10 lg:py-14 grid lg:grid-cols-[1.2fr_0.8fr] gap-7 items-start">
           <div>
-            <h2 className="text-4xl font-black uppercase tracking-tight text-slate-800 mb-6">{content.introTitle}</h2>
-            <div className="h-48 w-full border border-slate-300 bg-white mb-6 overflow-hidden">
-              {leadImageSrc ? (
-                <img src={leadImageSrc} alt={content.introTitle} className="h-full w-full object-cover" />
-              ) : (
-                <div className="h-full w-full bg-[linear-gradient(135deg,#72b2d9_0%,#3e4a69_60%,#1f2335_100%)] flex items-center justify-center text-white font-semibold">
-                  TRADE TERMINAL
+            <p className="text-[11px] tracking-[0.2em] text-[hsl(90_22%_88%_/_0.86)]">{labels.platformOverline}</p>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black mt-3 text-[hsl(0_0%_98%)]">{currentSlide.title}</h1>
+            <p className="text-base sm:text-lg mt-3 text-[hsl(148_14%_86%)]">{currentSlide.subtitle}</p>
+            <p className="mt-4 text-sm sm:text-base leading-8 text-[hsl(148_14%_80%)] max-w-2xl">{currentSlide.desc}</p>
+
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <Link to="/auth/register" className="inline-flex items-center justify-center rounded-lg bg-white text-[hsl(153_41%_10%)] px-5 py-2.5 text-sm font-bold hover:bg-[hsl(90_22%_94%)] transition-colors">
+                {t('auth.register')}
+              </Link>
+              <Link to="/catalog" className="inline-flex items-center justify-center rounded-lg border border-white/35 bg-white/10 text-white px-5 py-2.5 text-sm font-semibold hover:bg-white/15 transition-colors">
+                {labels.viewMarket}
+              </Link>
+            </div>
+
+            <div className="mt-7 grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {keyMetrics.map((metric) => (
+                <div key={metric.label} className="rounded-xl border border-white/20 bg-[hsl(153_24%_10%_/_0.45)] px-3 py-3">
+                  <p className="text-xl sm:text-2xl font-black text-white">{localizedNumber(metric.value)}</p>
+                  <p className="text-[11px] mt-1 text-[hsl(148_12%_82%)]">{metric.label}</p>
                 </div>
-              )}
+              ))}
             </div>
-            <p className="text-sm leading-8 text-slate-700">{content.introText}</p>
-            <Link to="/about" className="inline-block mt-6 border border-slate-300 bg-white hover:bg-slate-50 px-8 py-3 text-xs font-bold uppercase tracking-wide">
-              {content.introMore}
+
+            {heroSlides.length > 1 && (
+              <div className="mt-6 flex items-center gap-2">
+                <button
+                  type="button"
+                  className="h-8 w-8 rounded-full border border-white/30 bg-white/10 text-white flex items-center justify-center hover:bg-white/20"
+                  onClick={() => setHeroIndex((prev) => (prev === 0 ? heroSlides.length - 1 : prev - 1))}
+                  aria-label="hero-prev"
+                >
+                  {isRtl ? nextArrow : prevArrow}
+                </button>
+                {heroSlides.map((_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => setHeroIndex(index)}
+                    className={`h-2.5 rounded-full transition-all ${heroIndex === index ? 'w-7 bg-white' : 'w-2.5 bg-white/45 hover:bg-white/70'}`}
+                    aria-label={`hero-slide-${index + 1}`}
+                  />
+                ))}
+                <button
+                  type="button"
+                  className="h-8 w-8 rounded-full border border-white/30 bg-white/10 text-white flex items-center justify-center hover:bg-white/20"
+                  onClick={() => setHeroIndex((prev) => (prev + 1) % heroSlides.length)}
+                  aria-label="hero-next"
+                >
+                  {isRtl ? prevArrow : nextArrow}
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="rounded-2xl border border-white/20 bg-[hsl(153_24%_10%_/_0.55)] p-5 lg:p-6 backdrop-blur-sm">
+            <h2 className="text-base font-bold text-[hsl(0_0%_97%)]">{labels.challengeTitle}</h2>
+            <ul className="mt-3 space-y-2 text-sm text-[hsl(148_14%_82%)] leading-7">
+              {challengeItems.map((item) => (
+                <li key={item} className="flex items-start gap-2">
+                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[var(--wheat-accent)] shrink-0" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            <h3 className="text-base font-bold text-[hsl(0_0%_97%)] mt-6">{labels.solutionTitle}</h3>
+            <ul className="mt-3 space-y-2 text-sm text-[hsl(148_14%_82%)] leading-7">
+              {solutionItems.map((item) => (
+                <li key={item} className="flex items-start gap-2">
+                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[var(--agri-leaf)] shrink-0" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            <Link to="/about" className="inline-flex mt-5 text-sm font-semibold text-[hsl(90_22%_90%)] hover:text-white">
+              {content.introMore} {isRtl ? '←' : '→'}
             </Link>
           </div>
+        </div>
+      </section>
 
+      <section className="max-w-[1120px] mx-auto px-4 py-12">
+        <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h3 className="text-4xl font-black uppercase tracking-tight text-slate-800 mb-6">{content.whyTitle}</h3>
-            <div className="space-y-4">
-              <article className="border border-[#e9c22a] bg-[#fee88f] rounded-lg px-5 py-5 shadow-sm">
-                <h4 className="text-lg font-black uppercase mb-2 text-slate-800">{content.whyItems[0].title}</h4>
-                <p className="text-sm text-slate-700">{content.whyItems[0].desc}</p>
-              </article>
-              <article className="border border-[#8dc4df] bg-[#a8d4e7] rounded-lg px-5 py-5 shadow-sm">
-                <h4 className="text-lg font-black uppercase mb-2 text-slate-800">{content.whyItems[1].title}</h4>
-                <p className="text-sm text-slate-700">{content.whyItems[1].desc}</p>
-              </article>
-              <article className="border border-[#d7e437] bg-[#e7f35f] rounded-lg px-5 py-5 shadow-sm">
-                <h4 className="text-lg font-black uppercase mb-2 text-slate-800">{content.whyItems[2].title}</h4>
-                <p className="text-sm text-slate-700">{content.whyItems[2].desc}</p>
-              </article>
-            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-foreground">{labels.stakeholdersTitle}</h2>
+            <p className="text-sm text-muted-foreground mt-2">{labels.stakeholdersSubtitle}</p>
           </div>
+          <Button variant="ghost" asChild>
+            <Link to="/about">{content.introMore}</Link>
+          </Button>
+        </div>
+
+        <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {stakeholderItems.map((item, index) => {
+            const Icon = stakeholderIcons[index % stakeholderIcons.length] ?? Leaf;
+            return (
+              <article key={item.title} className="rounded-xl border border-border bg-card p-4 shadow-[0_1px_2px_hsl(153_20%_12%_/_0.06)]">
+                <div className="h-9 w-9 rounded-lg bg-[hsl(139_50%_37%_/_0.14)] text-[var(--agri-leaf)] flex items-center justify-center">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-3 text-sm font-bold text-foreground leading-6">{item.title}</h3>
+                <p className="mt-2 text-xs text-muted-foreground leading-6">{item.desc}</p>
+              </article>
+            );
+          })}
         </div>
       </section>
 
-      <section className="relative py-16 text-center text-white overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(120deg,#4f648b_0%,#324560_45%,#28344c_100%)]" />
-        <div className="absolute inset-0 bg-black/35" />
-        <div className="relative z-10 max-w-[1020px] mx-auto px-4">
-          <h3 className="text-4xl font-black uppercase">{content.terminalHead}</h3>
-          <p className="text-3xl mt-4 text-white/90">{content.terminalSub}</p>
-        </div>
-      </section>
+      <section className="border-y border-border bg-background/80">
+        <div className="max-w-[1120px] mx-auto px-4 py-10">
+          <h3 className="text-2xl font-black text-foreground">{labels.categoriesTitle}</h3>
+          <p className="text-sm text-muted-foreground mt-2">{labels.categoriesSubtitle}</p>
 
-      <section className="bg-[#001126] py-14">
-        <div className="max-w-[1020px] mx-auto px-4">
-          <div className="max-w-[760px] mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-0">
+          <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {categoryTiles.map((tile) => {
               const Icon = tile.icon;
               return (
                 <Link
                   key={tile.key}
                   to={tile.to}
-                  className={`${tile.color} h-36 flex flex-col items-center justify-center text-white text-center p-3 hover:brightness-110 transition`}
+                  className="group rounded-xl border border-border bg-card px-3 py-4 hover:border-[hsl(139_50%_37%_/_0.45)] hover:shadow-sm transition-all"
                 >
-                  <p className="text-[11px] font-semibold uppercase tracking-wide leading-4 min-h-8">
-                    {content.categoryTitles[tile.key]}
-                  </p>
-                  <Icon className="h-10 w-10 mt-2" />
+                  <div className={`h-9 w-9 rounded-lg text-white flex items-center justify-center ${tile.color}`}>
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <p className="mt-3 text-xs font-semibold text-foreground leading-5 line-clamp-2">{content.categoryTitles[tile.key]}</p>
                 </Link>
               );
             })}
@@ -531,111 +699,102 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="bg-[#f4f4f4] py-14 shadow-[0_-12px_22px_rgba(0,0,0,0.15)]">
-        <div className="max-w-[1020px] mx-auto px-4">
-          <h3 className="text-3xl font-black uppercase text-slate-800">{content.latestProducts}</h3>
-          {(productItems.length > 0) ? (
-            <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-6 place-items-center">
-              {productItems.map((p) => {
-                const imageSrc = p.media?.[0]?.fileKey ? `/api/media/${p.media[0].fileKey}` : null;
+      <section className="max-w-[1120px] mx-auto px-4 py-12 grid lg:grid-cols-2 gap-8">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-[0_1px_2px_hsl(153_20%_12%_/_0.06)]">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <h3 className="text-xl font-black text-foreground">{labels.freshProductsTitle}</h3>
+              <p className="text-xs text-muted-foreground mt-1">{labels.freshProductsSubtitle}</p>
+            </div>
+            <Link to="/catalog" className="text-xs text-[var(--data-blue)] hover:underline">{labels.viewMarket}</Link>
+          </div>
+
+          {productItems.length > 0 ? (
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              {productItems.map((item) => {
+                const imageSrc = item.media?.[0]?.fileKey ? `/api/media/${item.media[0].fileKey}` : null;
                 return (
-                  <Link key={p.id} to="/catalog/$productId" params={{ productId: p.id }} className="group text-center">
-                    <div className="h-40 w-40 bg-white border border-slate-300 overflow-hidden shadow-sm group-hover:shadow-md transition">
+                  <Link key={item.id} to="/catalog/$productId" params={{ productId: item.id }} className="rounded-xl border border-border bg-background p-2 hover:border-[hsl(139_50%_37%_/_0.4)] transition-colors">
+                    <div className="h-24 rounded-lg overflow-hidden bg-[hsl(146_22%_90%)] flex items-center justify-center text-xs text-muted-foreground">
                       {imageSrc ? (
-                        <img src={imageSrc} alt={localizedProductName(p.nameFa, p.nameEn)} className="h-full w-full object-cover" />
+                        <img src={imageSrc} alt={localizedProductName(item.nameFa, item.nameEn)} className="h-full w-full object-cover" />
                       ) : (
-                        <div className="h-full w-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-4xl">📦</div>
+                        <span>{labels.noImage}</span>
                       )}
                     </div>
-                    <p className="mt-3 text-xs font-semibold text-slate-700 max-w-40 line-clamp-2">{localizedProductName(p.nameFa, p.nameEn)}</p>
+                    <p className="mt-2 text-xs font-semibold text-foreground line-clamp-2 leading-5">{localizedProductName(item.nameFa, item.nameEn)}</p>
                   </Link>
                 );
               })}
             </div>
           ) : (
-            <p className="mt-8 text-sm text-slate-600">{content.emptyProducts}</p>
+            <p className="mt-5 text-sm text-muted-foreground">{content.emptyProducts}</p>
           )}
         </div>
-      </section>
 
-      <section className="bg-[#ececec] py-14 border-t border-slate-300 border-b border-slate-300">
-        <div className="max-w-[1020px] mx-auto px-4">
-          <h3 className="text-3xl font-black uppercase text-slate-800">{content.latestNews}</h3>
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-[0_1px_2px_hsl(153_20%_12%_/_0.06)]">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <h3 className="text-xl font-black text-foreground">{labels.freshNewsTitle}</h3>
+              <p className="text-xs text-muted-foreground mt-1">{labels.freshNewsSubtitle}</p>
+            </div>
+            <Link to="/news" className="text-xs text-[var(--data-blue)] hover:underline">{content.readMore}</Link>
+          </div>
 
-          {(newsItems.length > 0) ? (
-            <div className="mt-8 grid md:grid-cols-3 gap-6">
-              {newsItems.map((n) => {
-                const imageSrc = n.imageKey ? `/api/media/${n.imageKey}` : null;
-                return (
-                  <Link key={n.id} to="/news/$newsId" params={{ newsId: n.id }} className="block group">
-                    <div className="bg-white border border-slate-300 overflow-hidden">
-                      <div className="h-44 bg-slate-200 overflow-hidden">
-                        {imageSrc ? (
-                          <img src={imageSrc} alt={n.title} className="h-full w-full object-cover group-hover:scale-[1.02] transition-transform duration-200" />
-                        ) : (
-                          <div className="h-full w-full bg-[linear-gradient(135deg,#9ca3af_0%,#d1d5db_100%)]" />
-                        )}
-                      </div>
-                      <div className="p-4">
-                        <h4 className="font-bold text-sm text-slate-900 line-clamp-2 min-h-[2.5rem]">{n.title}</h4>
-                        <p className="text-xs text-slate-600 mt-3 line-clamp-4">{n.summary ?? content.emptyNews}</p>
-                        <p className="mt-3 text-xs font-semibold text-[#0b4d82]">{content.readMore}</p>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
+          {newsItems.length > 0 ? (
+            <div className="mt-5 space-y-3">
+              {newsItems.map((item) => (
+                <Link key={item.id} to="/news/$newsId" params={{ newsId: item.id }} className="block rounded-xl border border-border bg-background p-3 hover:border-[hsl(195_56%_33%_/_0.35)] transition-colors">
+                  <h4 className="text-sm font-bold text-foreground line-clamp-2 leading-6">{item.title}</h4>
+                  <p className="mt-2 text-xs text-muted-foreground line-clamp-2 leading-6">{item.summary ?? content.emptyNews}</p>
+                </Link>
+              ))}
             </div>
           ) : (
-            <p className="mt-8 text-sm text-slate-600">{content.emptyNews}</p>
+            <p className="mt-5 text-sm text-muted-foreground">{content.emptyNews}</p>
           )}
         </div>
       </section>
 
-      <section className="bg-[linear-gradient(180deg,#e85d17_0%,#b53a05_100%)] py-5">
-        <div className="max-w-[1020px] mx-auto px-4 flex flex-wrap items-center justify-center gap-4 text-white text-2xl">
-          <p className="text-center">
+      <section className="bg-[linear-gradient(90deg,var(--brand),var(--agri-leaf))] py-6">
+        <div className="max-w-[1120px] mx-auto px-4 flex flex-wrap items-center justify-between gap-4 text-white">
+          <p className="text-lg sm:text-xl font-medium">
             {content.contactStrip} <span className="font-black">{content.contactStripBold}</span>
           </p>
-          <Link to="/contact" className="bg-white text-slate-900 px-10 py-2 text-sm font-bold uppercase tracking-wide rounded-md">
+          <Link to="/contact" className="bg-white text-[hsl(153_41%_12%)] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-[hsl(90_22%_94%)] transition-colors">
             {content.contactStripBtn}
           </Link>
         </div>
       </section>
 
-      <footer className="relative text-slate-200 overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,#111827_0%,#0b1323_55%,#070b14_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_10%,rgba(244,114,21,0.2),transparent_30%),radial-gradient(circle_at_90%_20%,rgba(59,130,246,0.14),transparent_28%)]" />
-
-        <div className="relative max-w-[1020px] mx-auto px-4 py-8 border-b border-white/10">
+      <footer className="bg-[hsl(153_41%_9%)] text-[hsl(148_12%_78%)]">
+        <div className="max-w-[1120px] mx-auto px-4 py-7 border-b border-white/10">
           <div className={`grid md:grid-cols-3 gap-4 text-sm ${isRtl ? 'text-right' : 'text-left'}`}>
-            <div className="flex items-center gap-3"><MapPin className="h-4 w-4 text-amber-400" /> {content.footer.office}: {content.footer.city}</div>
-            <div className="flex items-center gap-3"><Phone className="h-4 w-4 text-amber-400" /> {content.footer.mobile}: +98 21 0000 0000</div>
-            <div className="flex items-center gap-3"><Mail className="h-4 w-4 text-amber-400" /> {content.footer.email}: contact@eikhs.ir</div>
+            <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[var(--wheat-accent)]" /> {content.footer.office}: {content.footer.city}</div>
+            <div className="flex items-center gap-2"><Phone className="h-4 w-4 text-[var(--wheat-accent)]" /> {content.footer.mobile}: +98 21 0000 0000</div>
+            <div className="flex items-center gap-2"><Mail className="h-4 w-4 text-[var(--wheat-accent)]" /> {content.footer.email}: contact@eikhs.ir</div>
           </div>
         </div>
 
-        <div className="relative max-w-[1020px] mx-auto px-4 py-10 grid md:grid-cols-4 gap-8 text-sm">
+        <div className="max-w-[1120px] mx-auto px-4 py-8 grid md:grid-cols-4 gap-8 text-sm">
           <div>
-            <h4 className="font-bold text-white mb-4 uppercase">{content.footer.about}</h4>
-            <p className="text-slate-300 leading-7 text-xs">{content.footer.aboutDesc}</p>
-            <Link to="/about" className="inline-block mt-4 border border-white/25 px-4 py-2 text-xs hover:bg-white/10">{content.readMore}</Link>
+            <h4 className="font-bold text-white mb-3">{content.footer.about}</h4>
+            <p className="text-xs leading-7">{content.footer.aboutDesc}</p>
+            <Link to="/about" className="inline-block mt-4 border border-white/20 px-3 py-2 text-xs hover:bg-white/10">{content.readMore}</Link>
           </div>
 
           <div>
-            <h4 className="font-bold text-white mb-4 uppercase">{content.footer.supplies}</h4>
-            <ul className="space-y-2 text-xs text-slate-300">
+            <h4 className="font-bold text-white mb-3">{content.footer.supplies}</h4>
+            <ul className="space-y-2 text-xs">
               {footerSupplies.map((item) => (
-                <li key={item}>
-                  <Link to="/catalog" className="hover:text-white">{item}</Link>
-                </li>
+                <li key={item}><Link to="/catalog" className="hover:text-white">{item}</Link></li>
               ))}
             </ul>
           </div>
 
           <div>
-            <h4 className="font-bold text-white mb-4 uppercase">{content.footer.services}</h4>
-            <ul className="space-y-2 text-xs text-slate-300">
+            <h4 className="font-bold text-white mb-3">{content.footer.services}</h4>
+            <ul className="space-y-2 text-xs">
               <li><Link to="/contact" className="hover:text-white">{content.footer.serviceItems[0]}</Link></li>
               <li><Link to="/news" className="hover:text-white">{content.footer.serviceItems[1]}</Link></li>
               <li><Link to="/contact" className="hover:text-white">{content.footer.serviceItems[2]}</Link></li>
@@ -643,12 +802,12 @@ export function HomePage() {
           </div>
 
           <div>
-            <h4 className="font-bold text-white mb-4 uppercase">{content.footer.follow}</h4>
+            <h4 className="font-bold text-white mb-3">{content.footer.follow}</h4>
             <div className="flex items-center gap-2 text-slate-100 mb-4">
-              <a className="h-8 w-8 rounded-full border border-white/25 flex items-center justify-center hover:bg-white/10" href="#" aria-label="facebook">
+              <a className="h-8 w-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10" href="#" aria-label="facebook">
                 <Facebook className="h-4 w-4" />
               </a>
-              <a className="h-8 w-8 rounded-full border border-white/25 flex items-center justify-center hover:bg-white/10" href="#" aria-label="linkedin">
+              <a className="h-8 w-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10" href="#" aria-label="linkedin">
                 <Linkedin className="h-4 w-4" />
               </a>
             </div>
@@ -656,7 +815,7 @@ export function HomePage() {
           </div>
         </div>
 
-        <div className="relative max-w-[1020px] mx-auto px-4 pb-6 text-xs text-slate-400 border-t border-white/10 pt-4 text-center">
+        <div className="max-w-[1120px] mx-auto px-4 pb-6 text-xs text-[hsl(148_10%_62%)] border-t border-white/10 pt-4 text-center">
           © {new Date().getFullYear()} {officialBrandNameFa}
         </div>
       </footer>

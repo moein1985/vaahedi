@@ -92,18 +92,18 @@ function AdminAdminsPage() {
   return (
     <div className="p-6 space-y-6" dir="rtl">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">مدیریت ادمین ها</h1>
-        <p className="text-gray-500 text-sm mt-1">
+        <h1 className="text-2xl font-bold text-foreground">مدیریت ادمین ها</h1>
+        <p className="text-muted-foreground text-sm mt-1">
           ساخت، ویرایش و حذف ادمین های کارشناس، ناظر رسانه ای و تحلیلگر بازرگانی
         </p>
       </div>
 
-      <form onSubmit={handleCreateAdmin} className="bg-white border rounded-xl p-4 grid grid-cols-1 md:grid-cols-5 gap-3">
+      <form onSubmit={handleCreateAdmin} className="bg-card border border-border rounded-xl p-4 grid grid-cols-1 md:grid-cols-5 gap-3">
         <input
           value={userCode}
           onChange={(e) => setUserCode(e.target.value)}
           placeholder="نام کاربری (userCode)"
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+          className="border border-input rounded-lg px-3 py-2 text-sm"
           required
         />
         <input
@@ -111,28 +111,28 @@ function AdminAdminsPage() {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="رمز عبور"
           type="password"
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+          className="border border-input rounded-lg px-3 py-2 text-sm"
           required
         />
         <input
           value={mobile}
           onChange={(e) => setMobile(e.target.value)}
           placeholder="شماره همراه"
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+          className="border border-input rounded-lg px-3 py-2 text-sm"
           required
         />
         <input
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="ایمیل (اختیاری)"
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+          className="border border-input rounded-lg px-3 py-2 text-sm"
         />
         <select
           value={adminRole}
           onChange={(e) => setAdminRole(e.target.value as (typeof MANAGEABLE_ROLES)[number])}
           aria-label="نقش ادمین جدید"
           title="نقش ادمین جدید"
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+          className="border border-input rounded-lg px-3 py-2 text-sm"
         >
           <option value="EXPERT">کارشناس</option>
           <option value="MEDIA_SUPERVISOR">ناظر رسانه ای</option>
@@ -140,19 +140,19 @@ function AdminAdminsPage() {
         </select>
         <button
           type="submit"
-          className="md:col-span-5 bg-blue-600 text-white rounded-lg px-4 py-2 text-sm hover:bg-blue-700 disabled:opacity-60"
+          className="md:col-span-5 bg-[var(--agri-primary)] text-white rounded-lg px-4 py-2 text-sm hover:bg-[var(--agri-leaf)] disabled:opacity-60"
           disabled={createAdmin.isPending}
         >
           {createAdmin.isPending ? 'در حال ایجاد...' : 'ایجاد ادمین'}
         </button>
       </form>
 
-      <div className="bg-white border rounded-xl overflow-hidden">
+      <div className="bg-card border border-border rounded-xl overflow-hidden">
         {isLoading ? (
-          <div className="text-center py-12 text-gray-400">در حال بارگذاری...</div>
+          <div className="text-center py-12 text-muted-foreground/70">در حال بارگذاری...</div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-600">
+            <thead className="bg-muted/60 text-muted-foreground">
               <tr>
                 <th className="px-4 py-3 text-right">نام کاربری</th>
                 <th className="px-4 py-3 text-right">موبایل</th>
@@ -163,7 +163,7 @@ function AdminAdminsPage() {
             </thead>
             <tbody>
               {(data ?? []).map((item) => (
-                <tr key={item.id} className="border-t border-gray-100">
+                <tr key={item.id} className="border-t border-border/60">
                   <td className="px-4 py-3">{item.user.userCode}</td>
                   <td className="px-4 py-3">{item.user.mobile}</td>
                   <td className="px-4 py-3">
@@ -180,7 +180,7 @@ function AdminAdminsPage() {
                         }}
                         aria-label={`تغییر نقش ادمین ${item.user.userCode}`}
                         title={`تغییر نقش ادمین ${item.user.userCode}`}
-                        className="border border-gray-300 rounded-lg px-2 py-1 text-xs"
+                        className="border border-input rounded-lg px-2 py-1 text-xs"
                       >
                         <option value="EXPERT">کارشناس</option>
                         <option value="MEDIA_SUPERVISOR">ناظر رسانه ای</option>
@@ -191,7 +191,7 @@ function AdminAdminsPage() {
                   <td className="px-4 py-3">{item.user.status}</td>
                   <td className="px-4 py-3">
                     {item.adminRole === 'SUPER_ADMIN' ? (
-                      <span className="text-gray-400">غیرقابل حذف</span>
+                      <span className="text-muted-foreground/70">غیرقابل حذف</span>
                     ) : (
                       <button
                         onClick={() => {

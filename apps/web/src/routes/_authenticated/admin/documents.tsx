@@ -21,51 +21,51 @@ function AdminDocumentsPage() {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">تایید مدارک</h1>
-        <p className="text-gray-500 text-sm mt-1">مدارک در انتظار بررسی</p>
+        <h1 className="text-2xl font-bold text-foreground">تایید مدارک</h1>
+        <p className="text-muted-foreground text-sm mt-1">مدارک در انتظار بررسی</p>
       </div>
 
       {isLoading ? (
-        <div className="text-center py-16 text-gray-400">بارگذاری...</div>
+        <div className="text-center py-16 text-muted-foreground/70">بارگذاری...</div>
       ) : !data?.items?.length ? (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-muted-foreground">
           <div className="text-4xl mb-3">OK</div>
           <p>همه مدارک بررسی شده اند</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+        <div className="bg-card rounded-xl border border-border overflow-hidden">
           <div className="overflow-x-auto">
           <table className="w-full text-sm min-w-[600px]">
-            <thead className="bg-gray-50">
+            <thead className="bg-muted/60">
               <tr>
-                <th className="text-right px-4 py-3 font-medium text-gray-700">کاربر</th>
-                <th className="text-right px-4 py-3 font-medium text-gray-700">نوع مدرک</th>
-                <th className="text-right px-4 py-3 font-medium text-gray-700">فایل</th>
-                <th className="text-right px-4 py-3 font-medium text-gray-700">تاریخ</th>
-                <th className="px-4 py-3 font-medium text-gray-700">عملیات</th>
+                <th className="text-right px-4 py-3 font-medium text-foreground">کاربر</th>
+                <th className="text-right px-4 py-3 font-medium text-foreground">نوع مدرک</th>
+                <th className="text-right px-4 py-3 font-medium text-foreground">فایل</th>
+                <th className="text-right px-4 py-3 font-medium text-foreground">تاریخ</th>
+                <th className="px-4 py-3 font-medium text-foreground">عملیات</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-border/60">
               {data.items.map((doc) => (
-                <tr key={doc.id} className="hover:bg-gray-50">
+                <tr key={doc.id} className="hover:bg-muted/50">
                   <td className="px-4 py-3">
-                    <div className="font-medium text-gray-900">
+                    <div className="font-medium text-foreground">
                       {doc.profile?.companyName ?? 'ناشناس'}
                     </div>
-                    <div className="text-xs text-gray-400" dir="ltr">{doc.profile?.user?.mobile}</div>
+                    <div className="text-xs text-muted-foreground/70" dir="ltr">{doc.profile?.user?.mobile}</div>
                   </td>
-                  <td className="px-4 py-3 text-gray-700">{doc.type}</td>
+                  <td className="px-4 py-3 text-foreground">{doc.type}</td>
                   <td className="px-4 py-3">
                     <a
                       href={`/api/files/${doc.fileKey}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-blue-600 text-xs hover:underline"
+                      className="text-[var(--data-blue)] text-xs hover:text-[var(--agri-primary)] hover:underline"
                     >
                       {doc.fileName ?? 'مشاهده فایل'}
                     </a>
                   </td>
-                  <td className="px-4 py-3 text-gray-500 text-xs">
+                  <td className="px-4 py-3 text-muted-foreground text-xs">
                     {new Date(doc.createdAt).toLocaleDateString('fa-IR')}
                   </td>
                   <td className="px-4 py-3">

@@ -317,7 +317,7 @@ function ProfilePage() {
   };
 
   if (isLoading) {
-    return <div className="flex items-center justify-center h-64 text-gray-400">در حال بارگذاری...</div>;
+    return <div className="flex items-center justify-center h-64 text-muted-foreground/70">در حال بارگذاری...</div>;
   }
 
   const STATUS_LABELS: Record<string, string> = {
@@ -330,7 +330,7 @@ function ProfilePage() {
     ACTIVE: 'bg-green-100 text-green-700 border-green-200',
     PENDING: 'bg-amber-100 text-amber-700 border-amber-200',
     SUSPENDED: 'bg-red-100 text-red-700 border-red-200',
-    REJECTED: 'bg-gray-100 text-gray-600 border-gray-200',
+    REJECTED: 'bg-muted/70 text-muted-foreground border-border',
   };
   const userStatus = data?.user.status ?? 'PENDING';
 
@@ -351,13 +351,13 @@ function ProfilePage() {
       <div className="mb-6">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">پروفایل کاربری</h1>
+            <h1 className="text-2xl font-bold text-foreground">پروفایل کاربری</h1>
             <div className="flex items-center gap-3 mt-2 flex-wrap">
-              <span className="text-sm text-gray-500 font-mono" dir="ltr">
+              <span className="text-sm text-muted-foreground font-mono" dir="ltr">
                 {data?.user.mobile}
               </span>
               {data?.user.userCode && (
-                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full border border-blue-200">
+                <span className="text-xs bg-[hsl(195_56%_33%_/_0.12)] text-[var(--data-blue)] px-2 py-0.5 rounded-full border border-[hsl(195_36%_76%)]">
                   کد: {data.user.userCode}
                 </span>
               )}
@@ -367,17 +367,17 @@ function ProfilePage() {
             </div>
           </div>
           {data?.profile?.companyName && (
-            <div className="flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-xl px-4 py-2">
-              <Building2 className="h-4 w-4 text-blue-500" />
-              <span className="text-sm font-medium text-blue-800">{data.profile.companyName}</span>
+            <div className="flex items-center gap-2 bg-[hsl(195_56%_33%_/_0.12)] border border-[hsl(195_36%_76%)] rounded-xl px-4 py-2">
+              <Building2 className="h-4 w-4 text-[var(--data-blue)]" />
+              <span className="text-sm font-medium text-[var(--data-blue)]">{data.profile.companyName}</span>
             </div>
           )}
         </div>
 
         {/* Completion Progress */}
-        <div className="mt-5 bg-white rounded-xl border border-gray-100 p-4">
+        <div className="mt-5 bg-card rounded-xl border border-border p-4">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-semibold text-gray-700">تکمیل پروفایل</p>
+            <p className="text-sm font-semibold text-foreground">تکمیل پروفایل</p>
             <span className={`text-sm font-bold ${completionPercent === 100 ? 'text-green-600' : 'text-amber-600'}`}>
               {completionPercent}%
             </span>
@@ -390,7 +390,7 @@ function ProfilePage() {
                 <div
                   key={step.key}
                   className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs ${
-                    done ? 'bg-green-50 text-green-700' : 'bg-gray-50 text-gray-500'
+                    done ? 'bg-green-50 text-green-700' : 'bg-muted/50 text-muted-foreground'
                   }`}
                 >
                   {done
@@ -412,17 +412,17 @@ function ProfilePage() {
 
       <form onSubmit={handleSubmit(onSubmitProfile)} className="space-y-6">
         {/* نوع فعالیت */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <h2 className="font-semibold text-gray-800 mb-4 text-sm uppercase tracking-wide text-gray-500">
+        <div className="bg-card rounded-xl border border-border p-5">
+          <h2 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wide text-muted-foreground">
             نوع فعالیت
           </h2>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               {FORM_LABELS.profile.role} <span className="text-red-500">*</span>
             </label>
             <select
               {...register('role')}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-input rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--data-blue)]"
             >
               {Object.entries(ROLE_LABELS).map(([val, label]) => (
                 <option key={val} value={val}>{label}</option>
@@ -432,30 +432,30 @@ function ProfilePage() {
         </div>
 
         {/* اطلاعات شرکت */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <h2 className="font-semibold text-gray-800 mb-4">اطلاعات شرکت / واحد</h2>
+        <div className="bg-card rounded-xl border border-border p-5">
+          <h2 className="font-semibold text-foreground mb-4">اطلاعات شرکت / واحد</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.companyName}</label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.companyName}</label>
               <input
                 {...register('companyName')}
                 placeholder={FORM_PLACEHOLDERS.profile.companyName}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-input rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--data-blue)]"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.unitName}</label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.unitName}</label>
               <input
                 {...register('unitName')}
                 placeholder={FORM_PLACEHOLDERS.profile.unitName}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-input rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--data-blue)]"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.unitType}</label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.unitType}</label>
               <select
                 {...register('unitType')}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-input rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--data-blue)]"
               >
                 <option value="">{FORM_LABELS.selectPlaceholder}</option>
                 <option value="COMPANY">شرکتی</option>
@@ -467,35 +467,35 @@ function ProfilePage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.guildCode}</label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.guildCode}</label>
               <input
                 {...register('guildCode')}
                 placeholder={FORM_PLACEHOLDERS.profile.guildCode}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-input rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--data-blue)]"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.businessId}</label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.businessId}</label>
               <input
                 {...register('businessId')}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-input rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--data-blue)]"
               />
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.producedGoods}</label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.producedGoods}</label>
               <input
                 {...register('producedGoods')}
                 placeholder={FORM_PLACEHOLDERS.profile.producedGoods}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-input rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--data-blue)]"
               />
-              <p className="text-[11px] text-gray-400 mt-0.5">{FORM_HINTS.profile.producedGoods}</p>
+              <p className="text-[11px] text-muted-foreground/70 mt-0.5">{FORM_HINTS.profile.producedGoods}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.productIdNumber}</label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.productIdNumber}</label>
               <input
                 {...register('productIdNumber')}
                 placeholder={FORM_PLACEHOLDERS.profile.productIdNumber}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-input rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--data-blue)]"
                 dir="ltr"
               />
             </div>
@@ -503,59 +503,59 @@ function ProfilePage() {
               <input
                 type="checkbox"
                 {...register('singleProduct')}
-                className="rounded text-blue-600"
+                className="rounded text-[var(--data-blue)]"
               />
-              <label className="text-sm text-gray-700">{FORM_LABELS.profile.singleProduct}</label>
+              <label className="text-sm text-foreground">{FORM_LABELS.profile.singleProduct}</label>
             </div>
           </div>
         </div>
 
         {/* اطلاعات تماس */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <h2 className="font-semibold text-gray-800 mb-4">اطلاعات تماس</h2>
+        <div className="bg-card rounded-xl border border-border p-5">
+          <h2 className="font-semibold text-foreground mb-4">اطلاعات تماس</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.phone}</label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.phone}</label>
               <Input
                 {...register('phone')}
                 className="w-full"
                 placeholder={FORM_PLACEHOLDERS.profile.phone}
                 dir="ltr"
               />
-              <p className="text-[11px] text-gray-400 mt-0.5">{FORM_HINTS.profile.phone}</p>
+              <p className="text-[11px] text-muted-foreground/70 mt-0.5">{FORM_HINTS.profile.phone}</p>
               {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.fax}</label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.fax}</label>
               <Input
                 {...register('fax')}
                 className="w-full"
                 placeholder={FORM_PLACEHOLDERS.profile.fax}
                 dir="ltr"
               />
-              <p className="text-[11px] text-gray-400 mt-0.5">{FORM_HINTS.profile.fax}</p>
+              <p className="text-[11px] text-muted-foreground/70 mt-0.5">{FORM_HINTS.profile.fax}</p>
               {errors.fax && <p className="text-red-500 text-xs mt-1">{errors.fax.message}</p>}
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.website}</label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.website}</label>
               <Input
                 {...register('website')}
                 className="w-full"
                 placeholder={FORM_PLACEHOLDERS.profile.website}
                 dir="ltr"
               />
-              <p className="text-[11px] text-gray-400 mt-0.5">{FORM_HINTS.profile.website}</p>
+              <p className="text-[11px] text-muted-foreground/70 mt-0.5">{FORM_HINTS.profile.website}</p>
               {errors.website && <p className="text-red-500 text-xs mt-1">{errors.website.message}</p>}
             </div>
           </div>
         </div>
 
         {/* آدرس */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <h2 className="font-semibold text-gray-800 mb-4">آدرس <span className="text-red-500">*</span></h2>
+        <div className="bg-card rounded-xl border border-border p-5">
+          <h2 className="font-semibold text-foreground mb-4">آدرس <span className="text-red-500">*</span></h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.province} <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.province} <span className="text-red-500">*</span></label>
               <Input
                 {...register('address.province')}
                 placeholder={FORM_PLACEHOLDERS.profile.province}
@@ -564,7 +564,7 @@ function ProfilePage() {
               {errors.address?.province && <p className="text-red-500 text-xs mt-1">{errors.address.province.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.city} <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.city} <span className="text-red-500">*</span></label>
               <Input
                 {...register('address.city')}
                 placeholder={FORM_PLACEHOLDERS.profile.city}
@@ -573,17 +573,17 @@ function ProfilePage() {
               {errors.address?.city && <p className="text-red-500 text-xs mt-1">{errors.address.city.message}</p>}
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.addressLine} <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.addressLine} <span className="text-red-500">*</span></label>
               <textarea
                 {...register('address.addressLine')}
                 rows={2}
                 placeholder={FORM_PLACEHOLDERS.profile.addressLine}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-input rounded-lg px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[var(--data-blue)]"
               />
               {errors.address?.addressLine && <p className="text-red-500 text-xs mt-1">{errors.address.addressLine.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.postalCode} <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.postalCode} <span className="text-red-500">*</span></label>
               <Input
                 {...register('address.postalCode')}
                 maxLength={10}
@@ -591,18 +591,18 @@ function ProfilePage() {
                 className="w-full"
                 dir="ltr"
               />
-              <p className="text-[11px] text-gray-400 mt-0.5">{FORM_HINTS.profile.postalCode}</p>
+              <p className="text-[11px] text-muted-foreground/70 mt-0.5">{FORM_HINTS.profile.postalCode}</p>
               {errors.address?.postalCode && <p className="text-red-500 text-xs mt-1">{errors.address.postalCode.message}</p>}
             </div>
           </div>
         </div>
 
         {/* فعالیت تجاری */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <h2 className="font-semibold text-gray-800 mb-4">اطلاعات تجاری</h2>
+        <div className="bg-card rounded-xl border border-border p-5">
+          <h2 className="font-semibold text-foreground mb-4">اطلاعات تجاری</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.activityType}</label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.activityType}</label>
               <Input
                 {...register('activityType')}
                 placeholder={FORM_PLACEHOLDERS.profile.activityType}
@@ -610,10 +610,10 @@ function ProfilePage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.commodityGroup}</label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.commodityGroup}</label>
               <select
                 {...register('commodityGroup')}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-input rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--data-blue)]"
               >
                 <option value="">{FORM_LABELS.selectPlaceholder}</option>
                 {Object.entries(COMMODITY_LABELS).map(([val, label]) => (
@@ -622,7 +622,7 @@ function ProfilePage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.position}</label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.position}</label>
               <Input
                 {...register('position')}
                 placeholder={FORM_PLACEHOLDERS.profile.position}
@@ -630,7 +630,7 @@ function ProfilePage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.experienceYears}</label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.experienceYears}</label>
               <Input
                 type="number"
                 {...register('experienceYears')}
@@ -642,17 +642,17 @@ function ProfilePage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.passportNumber}</label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.passportNumber}</label>
               <Input
                 {...register('passportNumber')}
                 placeholder={FORM_PLACEHOLDERS.profile.passportNumber}
                 className="w-full"
                 dir="ltr"
               />
-              <p className="text-[11px] text-gray-400 mt-0.5">{FORM_HINTS.profile.passportNumber}</p>
+              <p className="text-[11px] text-muted-foreground/70 mt-0.5">{FORM_HINTS.profile.passportNumber}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.profile.passportExpiryDate}</label>
+              <label className="block text-sm font-medium text-foreground mb-1">{FORM_LABELS.profile.passportExpiryDate}</label>
               <Input
                 type="date"
                 {...register('passportExpiryDate')}
@@ -660,24 +660,24 @@ function ProfilePage() {
                 className="w-full"
                 dir="ltr"
               />
-              <p className="text-[11px] text-gray-400 mt-0.5">{FORM_HINTS.profile.passportExpiryDate}</p>
+              <p className="text-[11px] text-muted-foreground/70 mt-0.5">{FORM_HINTS.profile.passportExpiryDate}</p>
               {errors.passportExpiryDate && <p className="text-red-500 text-xs mt-1">{errors.passportExpiryDate.message}</p>}
             </div>
           </div>
         </div>
 
         {/* فیلدهای تخصصی کشاورزی */}
-        <div className="bg-white rounded-xl border border-green-100 p-5">
-          <h2 className="font-semibold text-gray-800 mb-1">اطلاعات تخصصی کشاورزی</h2>
-          <p className="text-xs text-gray-500 mb-4">اگر در حوزه کشاورزی فعالیت می‌کنید این اطلاعات را تکمیل کنید</p>
+        <div className="bg-card rounded-xl border border-[hsl(148_40%_74%)] p-5">
+          <h2 className="font-semibold text-foreground mb-1">اطلاعات تخصصی کشاورزی</h2>
+          <p className="text-xs text-muted-foreground mb-4">اگر در حوزه کشاورزی فعالیت می‌کنید این اطلاعات را تکمیل کنید</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">دسته‌بندی‌های شغلی</label>
+              <label className="block text-sm font-medium text-foreground mb-1">دسته‌بندی‌های شغلی</label>
               <select
                 {...register('occupationCategoryIds')}
                 multiple
                 size={8}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full border border-input rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--agri-primary)]"
               >
                 {(occupationCategories ?? []).filter(c => !c.parentId).map((parent) => (
                   <optgroup key={parent.id} label={parent.nameFa}>
@@ -688,10 +688,10 @@ function ProfilePage() {
                   </optgroup>
                 ))}
               </select>
-              <p className="text-[11px] text-gray-400 mt-0.5">چند گزینه را همزمان انتخاب کنید (در دسکتاپ با Ctrl یا Shift)</p>
+              <p className="text-[11px] text-muted-foreground/70 mt-0.5">چند گزینه را همزمان انتخاب کنید (در دسکتاپ با Ctrl یا Shift)</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">مساحت زمین کشاورزی (هکتار)</label>
+              <label className="block text-sm font-medium text-foreground mb-1">مساحت زمین کشاورزی (هکتار)</label>
               <Input
                 type="number"
                 {...register('farmingAreaHectares')}
@@ -703,10 +703,10 @@ function ProfilePage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">نوع آبیاری</label>
+              <label className="block text-sm font-medium text-foreground mb-1">نوع آبیاری</label>
               <select
                 {...register('irrigationType')}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full border border-input rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--agri-primary)]"
               >
                 <option value="">انتخاب کنید...</option>
                 <option value="آبی">آبی (آبیاری)</option>
@@ -715,19 +715,19 @@ function ProfilePage() {
               </select>
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">محصولات اصلی</label>
+              <label className="block text-sm font-medium text-foreground mb-1">محصولات اصلی</label>
               <Input
                 {...register('mainCropsInput')}
                 placeholder="مثال: گندم، ذرت، سیب (با ویرگول جدا کنید)"
                 className="w-full"
               />
-              <p className="text-[11px] text-gray-400 mt-0.5">محصولات را با ویرگول از هم جدا کنید</p>
+              <p className="text-[11px] text-muted-foreground/70 mt-0.5">محصولات را با ویرگول از هم جدا کنید</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">جهت تجاری</label>
+              <label className="block text-sm font-medium text-foreground mb-1">جهت تجاری</label>
               <select
                 {...register('tradeDirection')}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full border border-input rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--agri-primary)]"
               >
                 <option value="">انتخاب کنید...</option>
                 <option value="صادراتی">صادراتی</option>
@@ -740,11 +740,11 @@ function ProfilePage() {
         </div>
 
         {/* مجوزها */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <h2 className="font-semibold text-gray-800 mb-4">
+        <div className="bg-card rounded-xl border border-border p-5">
+          <h2 className="font-semibold text-foreground mb-4">
             {FORM_LABELS.profile.licenseTypes} <span className="text-red-500">*</span>
           </h2>
-          <p className="text-xs text-gray-500 mb-3">حداقل یک مورد انتخاب کنید</p>
+          <p className="text-xs text-muted-foreground mb-3">حداقل یک مورد انتخاب کنید</p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
             {Object.entries(DOC_TYPE_LABELS).map(([val, label]) => (
               <label key={val} className="flex items-center gap-2 cursor-pointer">
@@ -752,9 +752,9 @@ function ProfilePage() {
                   type="checkbox"
                   checked={selectedDocs.includes(val as DocumentType)}
                   onChange={() => toggleDoc(val as DocumentType)}
-                  className="rounded text-blue-600"
+                  className="rounded text-[var(--data-blue)]"
                 />
-                <span className="text-sm text-gray-700">{label}</span>
+                <span className="text-sm text-foreground">{label}</span>
               </label>
             ))}
           </div>
@@ -764,13 +764,13 @@ function ProfilePage() {
         </div>
 
         {/* معرفی */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <h2 className="font-semibold text-gray-800 mb-4">{FORM_LABELS.profile.description}</h2>
+        <div className="bg-card rounded-xl border border-border p-5">
+          <h2 className="font-semibold text-foreground mb-4">{FORM_LABELS.profile.description}</h2>
           <textarea
             {...register('description')}
             rows={4}
             placeholder={FORM_PLACEHOLDERS.profile.description}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-input rounded-lg px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[var(--data-blue)]"
           />
         </div>
 
@@ -780,7 +780,7 @@ function ProfilePage() {
           <button
             type="submit"
             disabled={upsert.isPending || !isDirty}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+            className="bg-[var(--agri-primary)] text-white px-6 py-3 rounded-lg text-sm font-medium hover:bg-[var(--agri-leaf)] disabled:opacity-50"
           >
             {upsert.isPending ? 'در حال ذخیره...' : 'ذخیره تغییرات'}
           </button>
@@ -788,10 +788,10 @@ function ProfilePage() {
       </form>
 
       {/* ── Document Upload Section ───────────────────────────────────────── */}
-      <div className="mt-8 bg-white rounded-xl border border-gray-100 p-5">
-        <h2 className="font-semibold text-gray-800 mb-1">آپلود مدارک</h2>
-        <p className="text-xs text-gray-500 mb-4">فایل‌های PDF، تصویر یا اسناد مجوزها را آپلود کنید</p>
-        <p className="text-xs text-gray-500 mb-4">حداکثر حجم فایل: ۲۰ مگابایت</p>
+      <div className="mt-8 bg-card rounded-xl border border-border p-5">
+        <h2 className="font-semibold text-foreground mb-1">آپلود مدارک</h2>
+        <p className="text-xs text-muted-foreground mb-4">فایل‌های PDF، تصویر یا اسناد مجوزها را آپلود کنید</p>
+        <p className="text-xs text-muted-foreground mb-4">حداکثر حجم فایل: ۲۰ مگابایت</p>
 
         <div className="flex gap-3 items-end flex-wrap mb-4">
           <div className="flex-1 min-w-48">
@@ -836,13 +836,13 @@ function ProfilePage() {
         {/* Uploaded docs list */}
         {myDocs && myDocs.length > 0 ? (
           <div className="space-y-2">
-            <p className="text-xs text-gray-500 font-medium">مدارک آپلود شده:</p>
+            <p className="text-xs text-muted-foreground font-medium">مدارک آپلود شده:</p>
             {myDocs.map((doc) => (
-              <div key={doc.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <div key={doc.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
                 <span className="text-lg">📄</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-800 truncate">{doc.fileName}</p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-sm font-medium text-foreground truncate">{doc.fileName}</p>
+                  <p className="text-xs text-muted-foreground/70">
                     {DOC_TYPE_LABELS[doc.type] ?? doc.type} ·{' '}
                     {new Date(doc.createdAt).toLocaleDateString('fa-IR')}
                   </p>
@@ -862,9 +862,10 @@ function ProfilePage() {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-gray-400 text-center py-4">هنوز مدرکی آپلود نشده است</p>
+          <p className="text-sm text-muted-foreground/70 text-center py-4">هنوز مدرکی آپلود نشده است</p>
         )}
       </div>
     </div>
   );
 }
+

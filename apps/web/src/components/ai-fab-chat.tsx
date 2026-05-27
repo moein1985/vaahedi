@@ -17,7 +17,7 @@ type AiMessage = {
 };
 
 const QUICK_PROMPTS = [
-  'برای بهبود RFQ های فعال من چه اقدامی اولویت دارد؟',
+  'برای بهبود درخواست های فعال من چه اقدامی اولویت دارد؟',
   'با توجه به حوزه فعالیتم، چه بازار هدفی پیشنهاد می دهی؟',
   'برای افزایش نرخ پاسخ پیام ها چه کنم؟',
 ];
@@ -52,7 +52,7 @@ export function AiFabChat({ enabled = true }: AiFabChatProps) {
   async function ensureConversation(): Promise<string | null> {
     if (conversationId) return conversationId;
     try {
-      const conv = await createConversation.mutateAsync({ title: 'گفتگوی سریع با AI' });
+      const conv = await createConversation.mutateAsync({ title: 'گفتگوی سریع مشاور کشاورزی' });
       setConversationId(conv.id);
       return conv.id;
     } catch {
@@ -101,7 +101,7 @@ export function AiFabChat({ enabled = true }: AiFabChatProps) {
             onClick={handleOpen}
             size="lg"
             className="rounded-full h-14 w-14 p-0 shadow-xl"
-            aria-label="چت سریع با AI"
+            aria-label="چت سریع با مشاور هوشمند"
           >
             <MessageCircle className="h-6 w-6" />
           </Button>
@@ -141,8 +141,8 @@ export function AiFabChat({ enabled = true }: AiFabChatProps) {
 
             <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-white">
               {messages.length === 0 && !loading && (
-                <div className="text-xs text-muted-foreground leading-6 bg-violet-50 border border-violet-100 rounded-lg p-3">
-                  سوالت را بپرس. پاسخ ها با توجه به حوزه فعالیت و خدمات فعال حساب تو شخصی سازی می شوند.
+                <div className="text-xs text-muted-foreground leading-6 bg-green-50 border border-green-100 rounded-lg p-3">
+                  سوالت را بپرس. پاسخ ها با توجه به حوزه فعالیت و خدمات فعال حساب تو شخصی سازی می شود.
                 </div>
               )}
 
@@ -153,7 +153,7 @@ export function AiFabChat({ enabled = true }: AiFabChatProps) {
                     <div
                       className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-7 whitespace-pre-line ${
                         isUser
-                          ? 'bg-blue-50 border border-blue-100 text-gray-800'
+                          ? 'bg-green-50 border border-green-100 text-gray-800'
                           : 'bg-gray-100 border border-gray-200 text-gray-900'
                       }`}
                     >

@@ -21,8 +21,8 @@ const MONTH_COLORS = [
   'bg-orange-200 text-orange-900', // 6 - شهریور
   'bg-amber-100 text-amber-800',   // 7 - مهر
   'bg-amber-200 text-amber-900',   // 8 - آبان
-  'bg-blue-100 text-blue-800',     // 9 - آذر
-  'bg-blue-200 text-blue-900',     // 10 - دی
+  'bg-[hsl(var(--data-blue)/0.16)] text-[var(--data-blue)]',      // 9 - آذر
+  'bg-[hsl(var(--data-blue)/0.24)] text-[var(--agri-primary)]',   // 10 - دی
   'bg-indigo-100 text-indigo-800', // 11 - بهمن
   'bg-indigo-200 text-indigo-900', // 12 - اسفند
 ];
@@ -61,9 +61,9 @@ function HarvestCalendarPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-1">
           <Wheat className="h-5 w-5 text-emerald-600" />
-          <h1 className="text-xl font-bold text-gray-900">تقویم برداشت محصولات کشاورزی</h1>
+          <h1 className="text-xl font-bold text-foreground">تقویم برداشت محصولات کشاورزی</h1>
         </div>
-        <p className="text-sm text-gray-500">فصل برداشت محصولات کشاورزی در استان‌های مختلف ایران</p>
+        <p className="text-sm text-muted-foreground">فصل برداشت محصولات کشاورزی در استان‌های مختلف ایران</p>
       </div>
 
       {/* Disclaimer */}
@@ -76,7 +76,7 @@ function HarvestCalendarPage() {
 
       {/* Month selector */}
       <div className="mb-5">
-        <p className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1">
+        <p className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1">
           <Calendar className="h-3.5 w-3.5" />
           فیلتر بر اساس ماه
         </p>
@@ -85,8 +85,8 @@ function HarvestCalendarPage() {
             onClick={() => { setSelectedMonth(undefined); setPage(1); }}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               selectedMonth === undefined
-                ? 'bg-gray-800 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ? 'bg-foreground text-background'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >
             همه ماه‌ها
@@ -109,16 +109,16 @@ function HarvestCalendarPage() {
 
       {/* Province filter */}
       <div className="mb-5 flex items-center gap-3">
-        <Filter className="h-4 w-4 text-gray-400 shrink-0" />
+        <Filter className="h-4 w-4 text-muted-foreground/70 shrink-0" />
         <input
           type="text"
           value={province}
           onChange={(e) => { setProvince(e.target.value); setPage(1); }}
           placeholder="فیلتر استان (مثال: خراسان رضوی)"
-          className="border border-gray-200 rounded-lg px-3 py-2 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-emerald-300"
+          className="border border-border rounded-lg px-3 py-2 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-emerald-300"
         />
         {province && (
-          <button onClick={() => { setProvince(''); setPage(1); }} className="text-xs text-gray-400 hover:text-gray-600">
+          <button onClick={() => { setProvince(''); setPage(1); }} className="text-xs text-muted-foreground/70 hover:text-foreground">
             پاک کردن
           </button>
         )}
@@ -126,7 +126,7 @@ function HarvestCalendarPage() {
 
       {/* Results count */}
       {!isLoading && data && (
-        <p className="text-xs text-gray-400 mb-4">
+        <p className="text-xs text-muted-foreground/70 mb-4">
           {data.total} محصول یافت شد
           {selectedMonth && ` برای ماه ${MONTH_NAMES[selectedMonth - 1]}`}
           {province && ` در استان ${province}`}
@@ -137,23 +137,23 @@ function HarvestCalendarPage() {
       {isLoading ? (
         <div className="grid sm:grid-cols-2 gap-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="animate-pulse bg-gray-100 rounded-xl h-32" />
+            <div key={i} className="animate-pulse bg-muted rounded-xl h-32" />
           ))}
         </div>
       ) : data?.items?.length === 0 ? (
         <div className="text-center py-16">
-          <Wheat className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-sm text-gray-500">برای این بازه زمانی یا استان اطلاعاتی ثبت نشده است.</p>
+          <Wheat className="h-12 w-12 text-muted-foreground/40 mx-auto mb-3" />
+          <p className="text-sm text-muted-foreground">برای این بازه زمانی یا استان اطلاعاتی ثبت نشده است.</p>
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 gap-4">
           {data?.items?.map((item) => (
-            <div key={item.id} className="bg-white border border-gray-100 rounded-xl p-4 hover:border-emerald-200 transition-colors">
+            <div key={item.id} className="bg-card border border-border rounded-xl p-4 hover:border-emerald-200 transition-colors">
               <div className="flex items-start justify-between gap-3 mb-2">
                 <div>
-                  <h3 className="font-semibold text-gray-900 text-sm">{item.cropNameFa}</h3>
+                  <h3 className="font-semibold text-foreground text-sm">{item.cropNameFa}</h3>
                   {item.cropNameEn && (
-                    <p className="text-xs text-gray-400 dir-ltr">{item.cropNameEn}</p>
+                    <p className="text-xs text-muted-foreground/70 dir-ltr">{item.cropNameEn}</p>
                   )}
                 </div>
                 <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${MONTH_COLORS[(item.harvestStartMonth - 1) % 12]}`}>
@@ -164,16 +164,16 @@ function HarvestCalendarPage() {
 
               <div className="space-y-1">
                 {item.province && (
-                  <p className="text-xs text-gray-500 flex items-center gap-1">
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
                     <MapPin className="h-3 w-3" />
                     {item.province}
                   </p>
                 )}
                 {item.variety && (
-                  <p className="text-xs text-gray-500">🌱 رقم: {item.variety}</p>
+                  <p className="text-xs text-muted-foreground">🌱 رقم: {item.variety}</p>
                 )}
                 {item.description && (
-                  <p className="text-xs text-gray-400 line-clamp-2 mt-1">{item.description}</p>
+                  <p className="text-xs text-muted-foreground/70 line-clamp-2 mt-1">{item.description}</p>
                 )}
               </div>
 
@@ -186,7 +186,7 @@ function HarvestCalendarPage() {
                     <div
                       key={m}
                       title={MONTH_NAMES[idx]}
-                      className={`h-1.5 flex-1 rounded-full ${inRange ? 'bg-emerald-500' : 'bg-gray-100'}`}
+                      className={`h-1.5 flex-1 rounded-full ${inRange ? 'bg-emerald-500' : 'bg-muted'}`}
                     />
                   );
                 })}
@@ -203,16 +203,16 @@ function HarvestCalendarPage() {
             title="صفحه قبل"
             disabled={page <= 1}
             onClick={() => setPage((p) => p - 1)}
-            className="p-2 rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
+            className="p-2 rounded-lg border border-border disabled:opacity-40 hover:bg-muted/60"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
-          <span className="text-sm text-gray-600">صفحه {page} از {totalPages}</span>
+          <span className="text-sm text-muted-foreground">صفحه {page} از {totalPages}</span>
           <button
             title="صفحه بعد"
             disabled={page >= totalPages}
             onClick={() => setPage((p) => p + 1)}
-            className="p-2 rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
+            className="p-2 rounded-lg border border-border disabled:opacity-40 hover:bg-muted/60"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>

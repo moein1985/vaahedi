@@ -57,8 +57,8 @@ function ProductsPage() {
     <div className="p-6" dir="rtl">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">کالاهای من</h1>
-          <p className="text-muted-foreground text-sm mt-1">مدیریت کالاها برای نمایش در Marketplace</p>
+          <h1 className="text-2xl font-bold text-foreground">محصولات من</h1>
+          <p className="text-muted-foreground text-sm mt-1">مدیریت محصولات برای نمایش در بازار محصولات</p>
         </div>
         <Button asChild>
           <Link to="/products/new">+ کالای جدید</Link>
@@ -185,7 +185,7 @@ function ProductsPage() {
                       rel="noopener noreferrer"
                       className="flex-1 flex items-center justify-center text-xs h-8 px-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors text-muted-foreground"
                     >
-                      مشاهده در Marketplace
+                      مشاهده در بازار محصولات
                     </a>
                     <Button asChild size="sm" variant="outline" className="flex-1 text-xs">
                       <Link to="/products/new">

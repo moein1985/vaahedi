@@ -19,7 +19,7 @@ function ProductDetailPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[var(--brand)]"></div>
       </div>
     )
   }
@@ -30,7 +30,7 @@ function ProductDetailPage() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">محصول یافت نشد</h2>
           <p className="text-gray-600">محصول مورد نظر وجود ندارد یا هنوز تأیید نشده است.</p>
-          <Link to="/catalog" className="mt-4 inline-block text-blue-600 hover:underline">بازگشت به کاتالوگ</Link>
+          <Link to="/catalog" className="mt-4 inline-block text-[var(--data-blue)] hover:underline">بازگشت به کاتالوگ</Link>
         </div>
       </div>
     )
@@ -88,7 +88,7 @@ function ProductDetailPage() {
                   key={image.id}
                   onClick={() => setSelectedImage(index)}
                   className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 ${
-                    selectedImage === index ? 'border-[var(--brand-amber)]' : 'border-border'
+                    selectedImage === index ? 'border-[var(--brand)]' : 'border-border'
                   }`}
                 >
                   <img
@@ -124,7 +124,7 @@ function ProductDetailPage() {
                 params={{ userCode: product.user.userCode }}
                 className="flex items-center space-x-3 hover:bg-background p-2 rounded-lg transition-colors"
               >
-                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--brand-amber)]">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--brand)]">
                   <span className="text-white font-medium">
                     {product.user.userCode.charAt(0).toUpperCase()}
                   </span>
@@ -195,7 +195,7 @@ function ProductDetailPage() {
           {/* Action Button */}
           <div className="pt-4">
             <button
-              className="w-full py-3 px-6 rounded-lg font-medium transition-opacity hover:opacity-90 text-white bg-[linear-gradient(135deg,hsl(38_95%_52%),hsl(30_85%_40%))]"
+              className="w-full py-3 px-6 rounded-lg font-medium transition-opacity hover:opacity-90 text-white bg-[linear-gradient(135deg,var(--agri-leaf),var(--brand))]"
             >
               ارسال درخواست خرید
             </button>

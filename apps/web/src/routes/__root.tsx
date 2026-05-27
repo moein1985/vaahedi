@@ -10,7 +10,7 @@ function NotFoundPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center" dir="rtl">
       <div className="text-center px-4">
-        <p className="text-7xl font-black text-blue-600 mb-4">۴۰۴</p>
+        <p className="text-7xl font-black text-[var(--brand)] mb-4">۴۰۴</p>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">صفحه پیدا نشد</h1>
         <p className="text-gray-500 mb-8">متأسفانه صفحه‌ای که دنبالش هستید وجود ندارد یا جابجا شده.</p>
         <div className="flex gap-3 justify-center">

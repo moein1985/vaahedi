@@ -20,7 +20,7 @@ const STATUS_COLORS: Record<string, string> = {
   PENDING: 'bg-yellow-100 text-yellow-800',
   ACTIVE: 'bg-green-100 text-green-800',
   SUSPENDED: 'bg-red-100 text-red-800',
-  REJECTED: 'bg-gray-100 text-gray-600',
+  REJECTED: 'bg-muted text-muted-foreground',
 };
 
 function AdminUsersPage() {
@@ -49,8 +49,8 @@ function AdminUsersPage() {
     <div className="p-6" dir="rtl">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">مدیریت کاربران</h1>
-          <p className="text-gray-500 text-sm mt-1">لیست کلیه کاربران سیستم</p>
+          <h1 className="text-2xl font-bold text-foreground">مدیریت کاربران</h1>
+          <p className="text-muted-foreground text-sm mt-1">لیست کلیه کاربران سیستم</p>
         </div>
         <div className="flex flex-wrap gap-2 sm:gap-3">
           <select
@@ -58,7 +58,7 @@ function AdminUsersPage() {
             title="فیلتر وضعیت کاربران"
             value={statusFilter}
             onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-input rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--data-blue)]"
           >
             <option value="">همه وضعیت‌ها</option>
             {Object.entries(STATUS_LABELS).map(([value, label]) => (
@@ -70,44 +70,44 @@ function AdminUsersPage() {
             placeholder="جستجو..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-48 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-input rounded-lg px-3 py-2 text-sm w-48 focus:outline-none focus:ring-2 focus:ring-[var(--data-blue)]"
             dir="rtl"
           />
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <div className="bg-card rounded-xl border border-border overflow-hidden">
         {isLoading ? (
-          <div className="text-center py-16 text-gray-400">در حال بارگذاری...</div>
+          <div className="text-center py-16 text-muted-foreground/70">در حال بارگذاری...</div>
         ) : (
           <div className="overflow-x-auto">
           <table className="w-full text-sm min-w-[600px]">
-            <thead className="bg-gray-50">
+            <thead className="bg-muted/60">
               <tr>
-                <th className="text-right px-4 py-3 font-medium text-gray-700">موبایل</th>
-                <th className="text-right px-4 py-3 font-medium text-gray-700">نام شرکت</th>
-                <th className="text-right px-4 py-3 font-medium text-gray-700">تاریخ ثبت</th>
-                <th className="px-4 py-3 font-medium text-gray-700">وضعیت</th>
-                <th className="px-4 py-3 font-medium text-gray-700">تغییر وضعیت</th>
+                <th className="text-right px-4 py-3 font-medium text-foreground">موبایل</th>
+                <th className="text-right px-4 py-3 font-medium text-foreground">نام شرکت</th>
+                <th className="text-right px-4 py-3 font-medium text-foreground">تاریخ ثبت</th>
+                <th className="px-4 py-3 font-medium text-foreground">وضعیت</th>
+                <th className="px-4 py-3 font-medium text-foreground">تغییر وضعیت</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-border/60">
               {(data?.items ?? []).map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50">
+                <tr key={user.id} className="hover:bg-muted/50">
                   <td className="px-4 py-3 font-mono text-sm" dir="ltr">
-                    <Link to="/admin/users/$userId" params={{ userId: user.id }} className="text-blue-600 hover:text-blue-800">
+                    <Link to="/admin/users/$userId" params={{ userId: user.id }} className="text-[var(--data-blue)] hover:text-[var(--agri-primary)]">
                       {user.mobile}
                     </Link>
                   </td>
-                  <td className="px-4 py-3 text-gray-700">
+                  <td className="px-4 py-3 text-foreground">
                     {user.profile?.companyName ?? user.profile?.unitName ?? '—'}
                   </td>
-                  <td className="px-4 py-3 text-gray-500 text-xs">
+                  <td className="px-4 py-3 text-muted-foreground text-xs">
                     {new Date(user.createdAt).toLocaleDateString('fa-IR')}
                   </td>
                   <td className="px-4 py-3">
                     <span
-                      className={`text-xs px-2 py-1 rounded-full font-medium ${STATUS_COLORS[user.status] ?? 'bg-gray-100 text-gray-600'}`}
+                      className={`text-xs px-2 py-1 rounded-full font-medium ${STATUS_COLORS[user.status] ?? 'bg-muted text-muted-foreground'}`}
                     >
                       {STATUS_LABELS[user.status] ?? user.status}
                     </span>
@@ -129,7 +129,7 @@ function AdminUsersPage() {
                         }
                         updateStatus.mutate({ userId: user.id, status: newStatus });
                       }}
-                      className="text-xs border border-gray-200 rounded px-2 py-1 focus:outline-none"
+                      className="text-xs border border-border rounded px-2 py-1 focus:outline-none"
                     >
                       {Object.values(UserStatus).map((s) => (
                         <option key={s} value={s}>{STATUS_LABELS[s]}</option>
@@ -149,17 +149,17 @@ function AdminUsersPage() {
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-3 py-1.5 text-sm border rounded-lg disabled:opacity-40 hover:bg-gray-50"
+            className="px-3 py-1.5 text-sm border border-border rounded-lg disabled:opacity-40 hover:bg-muted/50"
           >
             قبلی
           </button>
-          <span className="px-3 py-1.5 text-sm text-gray-600">
+          <span className="px-3 py-1.5 text-sm text-muted-foreground">
             {page} / {data.pages}
           </span>
           <button
             onClick={() => setPage((p) => Math.min(data.pages, p + 1))}
             disabled={page === data.pages}
-            className="px-3 py-1.5 text-sm border rounded-lg disabled:opacity-40 hover:bg-gray-50"
+            className="px-3 py-1.5 text-sm border border-border rounded-lg disabled:opacity-40 hover:bg-muted/50"
           >
             بعدی
           </button>

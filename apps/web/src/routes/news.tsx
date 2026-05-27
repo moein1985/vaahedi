@@ -29,12 +29,12 @@ function NewsPage() {
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link to="/" className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-[var(--brand)] text-white flex items-center justify-center font-black text-sm">ت</div>
-              <span className="font-black text-foreground">تجارت هوشمند</span>
+              <div className="h-8 w-8 rounded-lg bg-[var(--brand)] text-white flex items-center justify-center font-black text-sm">ک</div>
+              <span className="font-black text-foreground">ذینفعان کشاورزی</span>
             </Link>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" asChild><Link to="/catalog">کاتالوگ</Link></Button>
+            <Button variant="ghost" asChild><Link to="/catalog">بازار محصولات</Link></Button>
             <Button variant="ghost" asChild><Link to="/auth/login">ورود</Link></Button>
           </div>
         </div>
@@ -73,7 +73,7 @@ function NewsPage() {
                   <Card className="h-full hover:shadow-md transition-shadow cursor-pointer">
                     <CardContent className="p-5">
                       {item.category && (
-                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full mb-2 inline-block">
+                        <span className="text-xs bg-[hsl(195_56%_33%_/_0.12)] text-[var(--data-blue)] px-2 py-0.5 rounded-full mb-2 inline-block">
                           {item.category}
                         </span>
                       )}

@@ -36,7 +36,7 @@ function DownloadsPage() {
     <div className="p-6" dir="rtl">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">دانلودها</h1>
-        <p className="text-gray-500 text-sm mt-1">مرکز اسناد و دانلودهای مورد نیاز برای فعالیت در Marketplace و RFQ</p>
+        <p className="text-gray-500 text-sm mt-1">مرکز اسناد و دانلودهای مورد نیاز برای فعالیت در بازار محصولات و درخواست ها</p>
       </div>
 
       {/* فیلتر دسته‌بندی */}

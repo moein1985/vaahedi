@@ -4,11 +4,9 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { trpc } from '../../../trpc.js';
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card.js';
 import { Input } from '../../../components/ui/input.js';
 import { Button } from '../../../components/ui/button.js';
 import { Badge } from '../../../components/ui/badge.js';
-import { cn } from '../../../lib/utils.js';
 
 export const Route = createFileRoute('/_authenticated/support/')({
   component: SupportPage,
@@ -33,11 +31,6 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 const STATUS_LABELS: Record<string, string> = {
   OPEN: 'باز', IN_PROGRESS: 'در حال بررسی', RESOLVED: 'حل‌شده', CLOSED: 'بسته',
-};
-
-const STATUS_COLORS: Record<string, string> = {
-  OPEN: 'bg-blue-100 text-blue-800', IN_PROGRESS: 'bg-yellow-100 text-yellow-800',
-  RESOLVED: 'bg-green-100 text-green-800', CLOSED: 'bg-gray-100 text-gray-600',
 };
 
 function SupportPage() {
@@ -94,18 +87,18 @@ function SupportPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">پشتیبانی</h1>
-          <p className="text-gray-500 text-sm mt-1">مرکز پشتیبانی برای پیگیری درخواست های تجاری و فنی</p>
+          <h1 className="text-2xl font-bold text-foreground">پشتیبانی</h1>
+          <p className="text-muted-foreground text-sm mt-1">مرکز پشتیبانی برای پیگیری درخواست های تجاری و فنی</p>
         </div>
         <Button onClick={() => setShowCreate(true)}>+ تیکت جدید</Button>
       </div>
 
       {showCreate && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-lg">
-            <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+          <div className="bg-card rounded-2xl border border-border w-full max-w-lg">
+            <div className="p-5 border-b border-border flex items-center justify-between">
               <h2 className="text-lg font-bold">ثبت تیکت پشتیبانی</h2>
-              <button onClick={() => setShowCreate(false)} className="text-gray-400 text-xl">×</button>
+              <button onClick={() => setShowCreate(false)} className="text-muted-foreground hover:text-foreground text-xl">×</button>
             </div>
             <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="p-5 space-y-4">
               <div>
@@ -145,17 +138,17 @@ function SupportPage() {
       )}
 
       <div className="grid grid-cols-3 gap-4 h-[calc(100vh-12rem)]">
-        <div className="col-span-1 bg-white border border-gray-100 rounded-xl overflow-y-auto">
+        <div className="col-span-1 bg-card border border-border rounded-xl overflow-y-auto">
           {!tickets.length ? (
-            <div className="p-4 text-center text-gray-400 text-sm">
+            <div className="p-4 text-center text-muted-foreground text-sm">
               <div className="text-3xl mb-2">🎫</div>
               <p>تیکتی وجود ندارد</p>
             </div>
           ) : tickets.map((t) => (
             <button key={t.id} onClick={() => setActiveTicketId(t.id)}
-              className={`w-full text-right p-4 border-b border-gray-50 hover:bg-gray-50 ${activeTicketId === t.id ? 'bg-blue-50' : ''}`}>
+              className={`w-full text-right p-4 border-b border-border/70 hover:bg-accent transition-colors ${activeTicketId === t.id ? 'bg-[hsl(195_56%_33%_/_0.12)]' : ''}`}>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium text-gray-900 truncate">{t.subject}</span>
+                <span className="text-sm font-medium text-foreground truncate">{t.subject}</span>
                 <Badge variant={
                 t.status === 'OPEN' ? 'blue' :
                 t.status === 'IN_PROGRESS' ? 'warning' :
@@ -165,21 +158,21 @@ function SupportPage() {
                 {STATUS_LABELS[t.status]}
               </Badge>
               </div>
-              <p className="text-xs text-gray-400">{new Date(t.createdAt).toLocaleDateString('fa-IR')}</p>
+              <p className="text-xs text-muted-foreground/70">{new Date(t.createdAt).toLocaleDateString('fa-IR')}</p>
             </button>
           ))}
         </div>
 
-        <div className="col-span-2 bg-white border border-gray-100 rounded-xl flex flex-col overflow-hidden">
+        <div className="col-span-2 bg-card border border-border rounded-xl flex flex-col overflow-hidden">
           {!activeTicketId ? (
-            <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">یک تیکت را انتخاب کنید</div>
+            <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm">یک تیکت را انتخاب کنید</div>
           ) : !selectedTicket ? (
-            <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">بارگذاری...</div>
+            <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm">بارگذاری...</div>
           ) : (
             <>
-              <div className="p-4 border-b border-gray-50 flex items-center justify-between">
+              <div className="p-4 border-b border-border/70 flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold text-gray-900">{selectedTicket.subject}</h3>
+                  <h3 className="font-semibold text-foreground">{selectedTicket.subject}</h3>
                   <Badge variant={
                     selectedTicket.status === 'OPEN' ? 'blue' :
                     selectedTicket.status === 'IN_PROGRESS' ? 'warning' :
@@ -190,7 +183,7 @@ function SupportPage() {
                   </Badge>
                 </div>
                 {selectedTicket.status !== 'CLOSED' && selectedTicket.status !== 'RESOLVED' && (
-                  <Button variant="outline" size="sm" onClick={() => closeTicket.mutate({ ticketId: selectedTicket.id })} className="text-red-600">
+                  <Button variant="outline" size="sm" onClick={() => closeTicket.mutate({ ticketId: selectedTicket.id })} className="text-[var(--error-red)] border-[hsl(2_52%_50%_/_0.25)] hover:bg-[hsl(2_52%_50%_/_0.08)]">
                     بستن تیکت
                   </Button>
                 )}
@@ -199,9 +192,9 @@ function SupportPage() {
                 {ticketDetail?.messages?.map((msg) => (
                   <div key={msg.id} className={`flex ${msg.senderType === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[70%] rounded-xl px-4 py-2.5 text-sm ${
-                      msg.senderType === 'user' ? 'bg-blue-600 text-white rounded-br-sm' : 'bg-gray-100 text-gray-900 rounded-bl-sm'}`}>
+                      msg.senderType === 'user' ? 'bg-[var(--agri-primary)] text-white rounded-br-sm' : 'bg-muted text-foreground rounded-bl-sm'}`}>
                       <p>{msg.content}</p>
-                      <p className={`text-xs mt-1 ${msg.senderType === 'user' ? 'text-blue-200' : 'text-gray-400'}`}>
+                      <p className={`text-xs mt-1 ${msg.senderType === 'user' ? 'text-white/70' : 'text-muted-foreground/70'}`}>
                         {msg.senderType === 'admin' && 'پشتیبانی · '}
                         {new Date(msg.createdAt).toLocaleString('fa-IR')}
                       </p>
@@ -210,11 +203,11 @@ function SupportPage() {
                 ))}
               </div>
               {selectedTicket.status !== 'CLOSED' && selectedTicket.status !== 'RESOLVED' && (
-                <div className="p-4 border-t border-gray-50">
+                <div className="p-4 border-t border-border/70">
                   <form onSubmit={replyForm.handleSubmit(onReplySubmit)} className="flex gap-2">
                     <Input {...replyForm.register('message')} className="flex-1" placeholder="پاسخ خود را بنویسید ..." />
                     <button type="submit" disabled={sendMessage.isPending}
-                      className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-40">ارسال</button>
+                      className="px-4 py-2 bg-[var(--agri-primary)] text-white text-sm rounded-lg hover:bg-[var(--agri-leaf)] disabled:opacity-40">ارسال</button>
                   </form>
                 </div>
               )}

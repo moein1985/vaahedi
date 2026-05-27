@@ -21,10 +21,10 @@ const INSIGHT_TYPE_LABELS: Record<string, string> = {
 
 const INSIGHT_TYPE_COLORS: Record<string, string> = {
   price: 'bg-yellow-100 text-yellow-800',
-  demand: 'bg-blue-100 text-blue-800',
+  demand: 'bg-[hsl(195_56%_33%_/_0.12)] text-[var(--data-blue)]',
   supply: 'bg-green-100 text-green-800',
   trend: 'bg-purple-100 text-purple-800',
-  regulation: 'bg-gray-100 text-gray-700',
+  regulation: 'bg-muted text-muted-foreground',
 };
 
 type InsightType = 'price' | 'demand' | 'supply' | 'trend' | 'regulation';
@@ -121,9 +121,9 @@ function AdminMarketPage() {
       {confirmDialog}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <TrendingUp className="h-6 w-6 text-blue-600" />
+          <TrendingUp className="h-6 w-6 text-[var(--data-blue)]" />
           <h1 className="text-xl font-bold">مدیریت تحلیل بازار</h1>
-          {data && <span className="text-sm text-gray-400">({data.total} تحلیل)</span>}
+          {data && <span className="text-sm text-muted-foreground/70">({data.total} تحلیل)</span>}
         </div>
         <Button size="sm" onClick={() => { resetForm(); setShowForm(true); }}>
           <Plus className="h-4 w-4 ml-1" />
@@ -133,7 +133,7 @@ function AdminMarketPage() {
 
       {/* فرم */}
       {showForm && (
-        <div className="bg-white border rounded-xl p-5 mb-6">
+        <div className="bg-card border border-border rounded-xl p-5 mb-6">
           <h2 className="font-semibold mb-4">{editingId ? 'ویرایش تحلیل' : 'تحلیل جدید'}</h2>
           <form onSubmit={(e) => { void handleSubmit(e); }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="col-span-full">
@@ -169,7 +169,7 @@ function AdminMarketPage() {
                 title="نوع تحلیل"
                 value={form.insightType}
                 onChange={(e) => setForm((f) => ({ ...f, insightType: e.target.value as InsightType }))}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm"
+                className="w-full border border-input rounded-lg px-3 py-2.5 text-sm"
               >
                 {Object.entries(INSIGHT_TYPE_LABELS).map(([val, label]) => (
                   <option key={val} value={val}>{label}</option>
@@ -194,7 +194,7 @@ function AdminMarketPage() {
                 rows={5}
                 required
                 placeholder="متن تحلیل بازار را وارد کنید"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-y"
+                className="w-full border border-input rounded-lg px-3 py-2 text-sm resize-y"
               />
             </div>
             <div>
@@ -239,28 +239,28 @@ function AdminMarketPage() {
 
       {/* لیست */}
       {isLoading ? (
-        <div className="text-center py-16 text-gray-400">در حال بارگذاری...</div>
+        <div className="text-center py-16 text-muted-foreground/70">در حال بارگذاری...</div>
       ) : (
         <div className="space-y-3">
           {(data?.items ?? []).map((item) => (
-            <div key={item.id} className="bg-white border rounded-xl p-4 hover:shadow-sm transition-shadow">
+            <div key={item.id} className="bg-card border border-border rounded-xl p-4 hover:shadow-sm transition-shadow">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <h3 className="font-semibold text-gray-900">{item.title}</h3>
+                    <h3 className="font-semibold text-foreground">{item.title}</h3>
                     <span className={`text-xs px-2 py-0.5 rounded-full ${INSIGHT_TYPE_COLORS[item.insightType] ?? ''}`}>
                       {INSIGHT_TYPE_LABELS[item.insightType] ?? item.insightType}
                     </span>
-                    <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{item.commodityFa}</span>
+                    <span className="text-xs text-[var(--data-blue)] bg-[hsl(195_56%_33%_/_0.12)] px-2 py-0.5 rounded-full">{item.commodityFa}</span>
                     {item.isPublished ? (
                       <Badge variant="green" className="text-xs">منتشر</Badge>
                     ) : (
                       <Badge variant="secondary" className="text-xs">پیش‌نویس</Badge>
                     )}
                   </div>
-                  <p className="text-sm text-gray-500 line-clamp-2">{item.content}</p>
+                  <p className="text-sm text-muted-foreground line-clamp-2">{item.content}</p>
                   {item.publishedAt && (
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-muted-foreground/70 mt-1">
                       انتشار: {new Date(item.publishedAt).toLocaleDateString('fa-IR')}
                     </p>
                   )}
@@ -270,11 +270,11 @@ function AdminMarketPage() {
                   <button
                     onClick={() => void publishMut.mutateAsync({ id: item.id, isPublished: !item.isPublished })}
                     title={item.isPublished ? 'تبدیل به پیش‌نویس' : 'انتشار'}
-                    className={`p-1.5 rounded-lg transition-colors ${item.isPublished ? 'text-green-600 hover:bg-green-50' : 'text-gray-400 hover:bg-gray-100'}`}
+                    className={`p-1.5 rounded-lg transition-colors ${item.isPublished ? 'text-green-600 hover:bg-green-50' : 'text-muted-foreground/70 hover:bg-muted'}`}
                   >
                     {item.isPublished ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                   </button>
-                  <button title="ویرایش" onClick={() => startEdit(item)} className="p-1.5 text-blue-500 hover:text-blue-700 rounded-lg hover:bg-blue-50">
+                  <button title="ویرایش" onClick={() => startEdit(item)} className="p-1.5 text-[var(--data-blue)] hover:text-[var(--agri-primary)] rounded-lg hover:bg-[hsl(195_56%_33%_/_0.12)]">
                     <Pencil className="h-4 w-4" />
                   </button>
                   <button title="حذف" onClick={() => void handleDelete(item.id, item.title)} className="p-1.5 text-red-400 hover:text-red-600 rounded-lg hover:bg-red-50">
@@ -285,7 +285,7 @@ function AdminMarketPage() {
             </div>
           ))}
           {!data?.items.length && (
-            <div className="text-center py-16 text-gray-400">
+            <div className="text-center py-16 text-muted-foreground/70">
               <TrendingUp className="h-12 w-12 mx-auto mb-3 opacity-30" />
               تحلیلی ثبت نشده
             </div>
@@ -299,7 +299,7 @@ function AdminMarketPage() {
           <button title="صفحه قبل" disabled={page === 1} onClick={() => setPage(p => p - 1)} className="p-2 rounded-lg border disabled:opacity-40">
             <ChevronRight className="h-4 w-4" />
           </button>
-          <span className="text-sm text-gray-600">صفحه {page} از {totalPages}</span>
+          <span className="text-sm text-muted-foreground">صفحه {page} از {totalPages}</span>
           <button title="صفحه بعد" disabled={page === totalPages} onClick={() => setPage(p => p + 1)} className="p-2 rounded-lg border disabled:opacity-40">
             <ChevronLeft className="h-4 w-4" />
           </button>

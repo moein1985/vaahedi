@@ -175,12 +175,12 @@ function TradePage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">RFQ و درخواست‌های تجاری</h1>
-          <p className="text-gray-500 text-sm mt-1">ثبت و پیگیری درخواست‌های خرید و فروش (محصولات کشاورزی و سایر کالاها)</p>
+          <h1 className="text-2xl font-bold text-foreground">درخواست ها و فرصت های همکاری</h1>
+          <p className="text-muted-foreground text-sm mt-1">ثبت و پیگیری درخواست های خرید، فروش و همکاری در حوزه کشاورزی</p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={() => setShowAnalysisForm(true)} variant="outline">تحلیل RFQ</Button>
-          <Button onClick={() => setShowForm(true)}>+ RFQ جدید</Button>
+          <Button onClick={() => setShowAnalysisForm(true)} variant="outline">تحلیل درخواست</Button>
+          <Button onClick={() => setShowForm(true)}>+ درخواست جدید</Button>
         </div>
       </div>
 
@@ -188,10 +188,10 @@ function TradePage() {
       {stats && (
         <div className="grid grid-cols-4 gap-3 mb-6">
           {[
-            { label: 'کل', value: stats.total, color: 'bg-gray-50 text-gray-700', onClick: () => setStatusFilter('ALL') },
+            { label: 'کل', value: stats.total, color: 'bg-muted text-[var(--soil-neutral)]', onClick: () => setStatusFilter('ALL') },
             { label: 'در انتظار', value: stats.pending, color: 'bg-amber-50 text-amber-700', onClick: () => setStatusFilter('PENDING') },
             { label: 'تطابق یافته', value: stats.matched, color: 'bg-green-50 text-green-700', onClick: () => setStatusFilter('MATCHED') },
-            { label: 'در مذاکره', value: stats.inNegotiation, color: 'bg-blue-50 text-blue-700', onClick: () => setStatusFilter('IN_NEGOTIATION') },
+            { label: 'در مذاکره', value: stats.inNegotiation, color: 'bg-[hsl(195_56%_33%_/_0.12)] text-[var(--data-blue)]', onClick: () => setStatusFilter('IN_NEGOTIATION') },
           ].map(({ label, value, color, onClick }) => (
             <button
               key={label}
@@ -207,23 +207,23 @@ function TradePage() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
-        <button onClick={() => setShowForm(true)} className="text-right bg-white border border-gray-200 hover:border-blue-300 rounded-xl p-4 transition-colors">
-          <p className="font-semibold text-gray-900">ثبت RFQ خرید یا فروش</p>
-          <p className="text-xs text-gray-500 mt-1">نوع درخواست، مقدار، مبدا تامین (مزرعه / شرکت / تعاونی) و قیمت هدف را سریع ثبت کنید.</p>
+        <button onClick={() => setShowForm(true)} className="text-right bg-card border border-border hover:border-[hsl(148_40%_74%)] rounded-xl p-4 transition-colors">
+          <p className="font-semibold text-foreground">ثبت درخواست خرید یا فروش</p>
+          <p className="text-xs text-muted-foreground mt-1">نوع درخواست، مقدار، مبدا تامین (مزرعه / شرکت / تعاونی) و قیمت هدف را سریع ثبت کنید.</p>
         </button>
-        <button onClick={() => setShowAnalysisForm(true)} className="text-right bg-white border border-gray-200 hover:border-violet-300 rounded-xl p-4 transition-colors">
-          <p className="font-semibold text-gray-900">درخواست تحلیل بازرگانی</p>
-          <p className="text-xs text-gray-500 mt-1">برای تصمیم بهتر روی RFQ، تحلیل بازار و مشاوره هدفمند بگیرید.</p>
+        <button onClick={() => setShowAnalysisForm(true)} className="text-right bg-card border border-border hover:border-[hsl(195_36%_76%)] rounded-xl p-4 transition-colors">
+          <p className="font-semibold text-foreground">درخواست تحلیل بازرگانی</p>
+          <p className="text-xs text-muted-foreground mt-1">برای تصمیم بهتر روی درخواست ها، تحلیل بازار و مشاوره هدفمند بگیرید.</p>
         </button>
-        <a href="/catalog" target="_blank" rel="noopener noreferrer" className="bg-white border border-gray-200 hover:border-emerald-300 rounded-xl p-4 transition-colors">
-          <p className="font-semibold text-gray-900">مرور Marketplace</p>
-          <p className="text-xs text-gray-500 mt-1">قبل از ثبت RFQ، کالاهای فعال بازار را بررسی کنید.</p>
+        <a href="/catalog" target="_blank" rel="noopener noreferrer" className="bg-card border border-border hover:border-[hsl(148_40%_74%)] rounded-xl p-4 transition-colors">
+          <p className="font-semibold text-foreground">مرور بازار محصولات</p>
+          <p className="text-xs text-muted-foreground mt-1">قبل از ثبت درخواست، کالاهای فعال بازار را بررسی کنید.</p>
         </a>
       </div>
 
       {/* Filters */}
       <div className="flex items-center gap-3 mb-4 flex-wrap">
-        <div className="flex items-center gap-1 text-xs text-gray-500">
+        <div className="flex items-center gap-1 text-xs text-muted-foreground">
           <Filter className="h-3.5 w-3.5" />
           فیلتر:
         </div>
@@ -232,7 +232,7 @@ function TradePage() {
             <button
               key={f}
               onClick={() => { setTypeFilter(f); setPage(1); }}
-              className={`rounded-lg px-3 py-1.5 text-xs border transition-colors ${typeFilter === f ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'}`}
+              className={`rounded-lg px-3 py-1.5 text-xs border transition-colors ${typeFilter === f ? 'bg-[var(--agri-primary)] text-white border-[var(--agri-primary)]' : 'bg-card text-muted-foreground border-border hover:border-[hsl(148_40%_74%)]'}`}
             >
               {{ ALL: 'همه', BUY: 'خرید', SELL: 'فروش' }[f]}
             </button>
@@ -243,7 +243,7 @@ function TradePage() {
             <button
               key={f}
               onClick={() => { setStatusFilter(f); setPage(1); }}
-              className={`rounded-lg px-3 py-1.5 text-xs border transition-colors ${statusFilter === f ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'}`}
+              className={`rounded-lg px-3 py-1.5 text-xs border transition-colors ${statusFilter === f ? 'bg-[var(--agri-primary)] text-white border-[var(--agri-primary)]' : 'bg-card text-muted-foreground border-border hover:border-[hsl(148_40%_74%)]'}`}
             >
               {{ ALL: 'همه وضعیت', PENDING: 'در انتظار', MATCHED: 'تطابق', IN_NEGOTIATION: 'مذاکره', COMPLETED: 'تکمیل' }[f]}
             </button>
@@ -254,25 +254,25 @@ function TradePage() {
       {/* Analysis Request Modal */}
       {showAnalysisForm && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl">
+          <div className="bg-card rounded-2xl p-6 w-full max-w-lg shadow-2xl border border-border">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-bold text-gray-900">درخواست تحلیل بازرگانی</h2>
-              <button onClick={() => { setShowAnalysisForm(false); analysisReset(); }} className="text-gray-400 hover:text-gray-600 text-xl leading-none">✕</button>
+              <h2 className="text-lg font-bold text-foreground">درخواست تحلیل بازرگانی</h2>
+              <button onClick={() => { setShowAnalysisForm(false); analysisReset(); }} className="text-muted-foreground hover:text-foreground text-xl leading-none">✕</button>
             </div>
 
             <form onSubmit={analysisHandleSubmit((d) => analysisReq.mutate(d as any))} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">موضوع تحلیل <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-medium text-[var(--soil-neutral)] mb-1">موضوع تحلیل <span className="text-red-500">*</span></label>
                 <Input {...analysisRegister('subject')} placeholder="مثال: بررسی بازار فولاد ترکیه" />
                 {analysisErrors.subject && <p className="text-red-500 text-xs mt-1">{analysisErrors.subject.message}</p>}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">دسته‌بندی مشاوره</label>
+                  <label className="block text-sm font-medium text-[var(--soil-neutral)] mb-1">دسته‌بندی مشاوره</label>
                   <select
                     {...analysisRegister('consultationCategory')}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-input rounded-lg px-3 py-2.5 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring"
                   >
                     <option value="">انتخاب کنید</option>
                     {Object.entries(CONSULTATION_LABELS).map(([val, label]) => (
@@ -281,10 +281,10 @@ function TradePage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">گروه کالایی</label>
+                  <label className="block text-sm font-medium text-[var(--soil-neutral)] mb-1">گروه کالایی</label>
                   <select
                     {...analysisRegister('commodityGroup')}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-input rounded-lg px-3 py-2.5 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring"
                   >
                     <option value="">انتخاب کنید</option>
                     {Object.entries(COMMODITY_LABELS).map(([val, label]) => (
@@ -295,13 +295,13 @@ function TradePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">بازار هدف</label>
+                <label className="block text-sm font-medium text-[var(--soil-neutral)] mb-1">بازار هدف</label>
                 <Input {...analysisRegister('targetMarket')} placeholder="مثال: ترکیه، عراق، امارات" />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">شرح درخواست <span className="text-red-500">*</span></label>
-                <textarea {...analysisRegister('description')} rows={4} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="توضیحات کامل درباره نیاز تحلیلی خود..." />
+                <label className="block text-sm font-medium text-[var(--soil-neutral)] mb-1">شرح درخواست <span className="text-red-500">*</span></label>
+                <textarea {...analysisRegister('description')} rows={4} className="w-full border border-input rounded-lg px-3 py-2.5 text-sm bg-background resize-none focus:outline-none focus:ring-2 focus:ring-ring" placeholder="توضیحات کامل درباره نیاز تحلیلی خود..." />
                 {analysisErrors.description && <p className="text-red-500 text-xs mt-1">{analysisErrors.description.message}</p>}
               </div>
 
@@ -320,12 +320,12 @@ function TradePage() {
       {/* New Request Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl">
+          <div className="bg-card rounded-2xl p-6 w-full max-w-lg shadow-2xl border border-border">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-bold text-gray-900">ثبت RFQ جدید (درخواست تجاری جدید)</h2>
+              <h2 className="text-lg font-bold text-foreground">ثبت درخواست جدید</h2>
               <button
                 onClick={() => { setShowForm(false); reset(); }}
-                className="text-gray-400 hover:text-gray-600 text-xl leading-none"
+                className="text-muted-foreground hover:text-foreground text-xl leading-none"
               >
                 ✕
               </button>
@@ -336,10 +336,10 @@ function TradePage() {
               createReq.mutate(payload as any);
             })} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">نوع RFQ</label>
+                <label className="block text-sm font-medium text-[var(--soil-neutral)] mb-1">نوع درخواست</label>
                 <select
                   {...register('type')}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-input bg-background rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                   <option value={TradeType.BUY}>خرید</option>
                   <option value={TradeType.SELL}>فروش</option>
@@ -347,7 +347,7 @@ function TradePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[var(--soil-neutral)] mb-1">
                   {FORM_LABELS.trade.productNameFa} <span className="text-red-500">*</span>
                 </label>
                 <Input
@@ -362,7 +362,7 @@ function TradePage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[var(--soil-neutral)] mb-1">
                     {FORM_LABELS.trade.serviceCode} <span className="text-red-500">*</span>
                   </label>
                   <Input
@@ -375,12 +375,12 @@ function TradePage() {
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[var(--soil-neutral)] mb-1">
                     {FORM_LABELS.trade.supplySourceType} <span className="text-red-500">*</span>
                   </label>
                   <select
                     {...register('supplySourceType')}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-input bg-background rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                   >
                     <option value="COMPANY">شرکت</option>
                     <option value="FACTORY">کارخانه</option>
@@ -391,7 +391,7 @@ function TradePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[var(--soil-neutral)] mb-1">
                   {FORM_LABELS.trade.supplySourceName} <span className="text-red-500">*</span>
                 </label>
                 <Input
@@ -405,10 +405,10 @@ function TradePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.trade.commodityGroup}</label>
+                <label className="block text-sm font-medium text-[var(--soil-neutral)] mb-1">{FORM_LABELS.trade.commodityGroup}</label>
                 <select
                   {...register('commodityGroup')}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-input bg-background rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                   <option value="">-- انتخاب گروه کالایی (اختیاری) --</option>
                   {Object.entries(COMMODITY_LABELS).map(([val, label]) => (
@@ -419,7 +419,7 @@ function TradePage() {
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[var(--soil-neutral)] mb-1">
                     {FORM_LABELS.trade.quantity} <span className="text-red-500">*</span>
                   </label>
                   <Input
@@ -433,12 +433,12 @@ function TradePage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[var(--soil-neutral)] mb-1">
                     {FORM_LABELS.trade.quantityUnit} <span className="text-red-500">*</span>
                   </label>
                   <select
                     {...register('quantityUnit')}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-input bg-background rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                   >
                     {Object.entries(QUANTITY_UNIT_LABELS).map(([val, label]) => (
                       <option key={val} value={val}>{label}</option>
@@ -447,10 +447,10 @@ function TradePage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.trade.currency}</label>
+                  <label className="block text-sm font-medium text-[var(--soil-neutral)] mb-1">{FORM_LABELS.trade.currency}</label>
                   <select
                     {...register('currency')}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-input bg-background rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                   >
                     {Object.entries(CURRENCY_LABELS).map(([val, label]) => (
                       <option key={val} value={val}>{label}</option>
@@ -460,7 +460,7 @@ function TradePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.trade.targetPrice}</label>
+                <label className="block text-sm font-medium text-[var(--soil-neutral)] mb-1">{FORM_LABELS.trade.targetPrice}</label>
                 <Input
                   {...register('targetPrice')}
                   className="w-full"
@@ -469,7 +469,7 @@ function TradePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.trade.deliveryLocation}</label>
+                <label className="block text-sm font-medium text-[var(--soil-neutral)] mb-1">{FORM_LABELS.trade.deliveryLocation}</label>
                 <Input
                   {...register('deliveryLocation')}
                   className="w-full"
@@ -478,7 +478,7 @@ function TradePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{FORM_LABELS.trade.notes}</label>
+                <label className="block text-sm font-medium text-[var(--soil-neutral)] mb-1">{FORM_LABELS.trade.notes}</label>
                 <textarea
                   {...register('notes')}
                   rows={3}
@@ -492,7 +492,7 @@ function TradePage() {
 
               <div className="flex gap-3 pt-2">
                 <Button type="submit" className="flex-1" loading={createReq.isPending}>
-                  ثبت درخواست (RFQ)
+                  ثبت درخواست
                 </Button>
                 <Button variant="secondary" type="button" onClick={() => { setShowForm(false); reset(); }}>
                   انصراف
@@ -509,15 +509,15 @@ function TradePage() {
           {[1, 2, 3].map((i) => <Skeleton key={i} className="h-28 w-full" />)}
         </div>
       ) : items.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
+        <div className="text-center py-16 text-muted-foreground/70">
           <div className="text-5xl mb-3">📋</div>
           {(data?.pagination.total ?? 0) === 0 && typeFilter === 'ALL' && statusFilter === 'ALL' ? (
             <>
-              <p className="mb-4 text-gray-500">هنوز RFQ ثبت نشده</p>
-              <Button onClick={() => setShowForm(true)}>اولین RFQ را ثبت کنید</Button>
+              <p className="mb-4 text-muted-foreground">هنوز درخواستی ثبت نشده</p>
+              <Button onClick={() => setShowForm(true)}>اولین درخواست را ثبت کنید</Button>
             </>
           ) : (
-            <p className="text-gray-500">با فیلتر فعلی موردی یافت نشد</p>
+            <p className="text-muted-foreground">با فیلتر فعلی موردی یافت نشد</p>
           )}
         </div>
       ) : (
@@ -538,27 +538,27 @@ function TradePage() {
                             : <><ArrowUpCircle className="h-3 w-3 ml-1 inline" />فروش</>
                           }
                         </Badge>
-                        <h3 className="font-semibold text-gray-900 truncate">
+                        <h3 className="font-semibold text-foreground truncate">
                           {item.productNameFa ?? item.product?.nameFa ?? '—'}
                         </h3>
                       </div>
-                      <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-gray-500 mt-1">
-                        <span>مقدار: <span className="font-medium text-gray-700">{String(item.quantity ?? '').replace(/\s*undefined\s*/g, '').trim() || '—'}</span></span>
+                      <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-muted-foreground mt-1">
+                        <span>مقدار: <span className="font-medium text-[var(--soil-neutral)]">{String(item.quantity ?? '').replace(/\s*undefined\s*/g, '').trim() || '—'}</span></span>
                         {item.targetPrice && (
-                          <span>قیمت هدف: <span className="font-medium text-gray-700">{item.targetPrice} {CURRENCY_LABELS[item.currency] ?? item.currency}</span></span>
+                          <span>قیمت هدف: <span className="font-medium text-[var(--soil-neutral)]">{item.targetPrice} {CURRENCY_LABELS[item.currency] ?? item.currency}</span></span>
                         )}
                         {item.deliveryLocation && <span>تحویل: {item.deliveryLocation}</span>}
-                        <span className="text-gray-400">{new Date(item.createdAt).toLocaleDateString('fa-IR')}</span>
+                        <span className="text-muted-foreground/70">{new Date(item.createdAt).toLocaleDateString('fa-IR')}</span>
                       </div>
                       {item.notes && (
-                        <p className="text-xs text-gray-400 mt-1 line-clamp-1">{item.notes}</p>
+                        <p className="text-xs text-muted-foreground/70 mt-1 line-clamp-1">{item.notes}</p>
                       )}
                     </div>
                     {/* Right: detail link */}
                     <Link
                       to="/trade/$id"
                       params={{ id: item.id }}
-                      className="shrink-0 flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium"
+                      className="shrink-0 flex items-center gap-1 text-xs text-[var(--data-blue)] hover:text-[var(--agri-primary)] font-medium"
                     >
                       جزئیات
                       <ChevronLeft className="h-3.5 w-3.5" />
@@ -577,14 +577,14 @@ function TradePage() {
                             <div className={cn(
                               'flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs transition-colors',
                               done && 'text-green-700',
-                              active && 'bg-blue-50 text-blue-700 font-semibold',
-                              !done && !active && 'text-gray-300',
+                              active && 'bg-[hsl(148_62%_24%_/_0.12)] text-[var(--agri-primary)] font-semibold',
+                              !done && !active && 'text-muted-foreground/40',
                             )}>
                               <Icon className="h-3.5 w-3.5 shrink-0" />
                               <span className="hidden sm:inline">{s.label}</span>
                             </div>
                             {idx < PIPELINE_STEPS.length - 1 && (
-                              <div className={cn('flex-1 h-px mx-1', done ? 'bg-green-300' : 'bg-gray-200')} />
+                              <div className={cn('flex-1 h-px mx-1', done ? 'bg-green-300' : 'bg-border')} />
                             )}
                           </div>
                         );
@@ -608,7 +608,7 @@ function TradePage() {
           <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>
             قبلی
           </Button>
-          <span className="px-3 py-1.5 text-sm text-gray-600">صفحه {page}</span>
+          <span className="px-3 py-1.5 text-sm text-muted-foreground">صفحه {page}</span>
           <Button variant="outline" size="sm" onClick={() => setPage((p) => p + 1)} disabled={items.length < (data?.pagination.limit ?? 15)}>
             بعدی
           </Button>

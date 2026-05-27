@@ -119,10 +119,11 @@ function CreateAdModal({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="ad-title" className="block text-sm font-medium text-gray-700 mb-1">
               عنوان تبلیغات
             </label>
             <input
+              id="ad-title"
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
@@ -132,10 +133,11 @@ function CreateAdModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="ad-description" className="block text-sm font-medium text-gray-700 mb-1">
               توضیحات
             </label>
             <textarea
+              id="ad-description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className="input-field"
@@ -144,10 +146,11 @@ function CreateAdModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="ad-type" className="block text-sm font-medium text-gray-700 mb-1">
               نوع تبلیغات
             </label>
             <select
+              id="ad-type"
               value={formData.adType}
               onChange={(e) => setFormData({ ...formData, adType: e.target.value as any })}
               className="input-field"
@@ -159,10 +162,11 @@ function CreateAdModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="ad-target-url" className="block text-sm font-medium text-gray-700 mb-1">
               لینک مقصد (اختیاری)
             </label>
             <input
+              id="ad-target-url"
               type="url"
               value={formData.targetUrl}
               onChange={(e) => setFormData({ ...formData, targetUrl: e.target.value })}

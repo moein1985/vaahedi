@@ -23,10 +23,10 @@ function StatCard({
   return (
     <Link
       to={href as '/admin/users'}
-      className="block bg-white border rounded-xl p-5 hover:shadow-md transition-shadow"
+      className="block bg-card border border-border rounded-xl p-5 hover:shadow-md transition-shadow"
     >
       <div className={`text-3xl font-bold mb-1 ${color}`}>{value ?? '—'}</div>
-      <div className="text-sm text-gray-500">{label}</div>
+      <div className="text-sm text-muted-foreground">{label}</div>
     </Link>
   );
 }
@@ -37,12 +37,12 @@ function AdminDashboardPage() {
   return (
     <div className="p-6" dir="rtl">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">پنل مدیریت</h1>
-        <p className="text-gray-500 text-sm mt-1">خلاصه وضعیت سیستم</p>
+        <h1 className="text-2xl font-bold text-foreground">پنل مدیریت</h1>
+        <p className="text-muted-foreground text-sm mt-1">خلاصه وضعیت سیستم</p>
       </div>
 
       {isLoading ? (
-        <div className="text-center py-16 text-gray-400">در حال بارگذاری...</div>
+        <div className="text-center py-16 text-muted-foreground/70">در حال بارگذاری...</div>
       ) : (
         <>
           {/* آمار کلی */}
@@ -51,7 +51,7 @@ function AdminDashboardPage() {
               label="کاربران فعال"
               value={data?.users.active}
               href="/admin/users"
-              color="text-blue-600"
+              color="text-[var(--data-blue)]"
             />
             <StatCard
               label="بررسی مدارک"
@@ -75,7 +75,7 @@ function AdminDashboardPage() {
 
           {/* آمار بخش کشاورزی */}
           <div className="mb-8">
-            <h2 className="text-sm font-semibold text-emerald-800 mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-[var(--agri-primary)] mb-3 flex items-center gap-2">
               🌾 <span>بخش کشاورزی</span>
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -110,23 +110,23 @@ function AdminDashboardPage() {
 
       {/* نمودارها */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white border rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">آمار کاربران</h3>
+        <div className="bg-card border border-border rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">آمار کاربران</h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">کل کاربران</span>
-              <span className="text-lg font-semibold text-blue-600">{data?.users.total}</span>
+              <span className="text-sm text-muted-foreground">کل کاربران</span>
+              <span className="text-lg font-semibold text-[var(--data-blue)]">{data?.users.total}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">کاربران فعال</span>
+              <span className="text-sm text-muted-foreground">کاربران فعال</span>
               <span className="text-lg font-semibold text-green-600">{data?.users.active}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">در انتظار تایید</span>
+              <span className="text-sm text-muted-foreground">در انتظار تایید</span>
               <span className="text-lg font-semibold text-orange-600">{data?.users.pending}</span>
             </div>
             <progress
-              className="w-full h-2 mt-4 overflow-hidden rounded-full [&::-webkit-progress-bar]:bg-gray-200 [&::-webkit-progress-value]:bg-blue-600 [&::-moz-progress-bar]:bg-blue-600"
+              className="w-full h-2 mt-4 overflow-hidden rounded-full [&::-webkit-progress-bar]:bg-muted [&::-webkit-progress-value]:bg-[var(--data-blue)] [&::-moz-progress-bar]:bg-[var(--data-blue)]"
               value={data?.users.active ?? 0}
               max={data?.users.total || 1}
               aria-label="نسبت کاربران فعال"
@@ -134,23 +134,23 @@ function AdminDashboardPage() {
           </div>
         </div>
 
-        <div className="bg-white border rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">آمار محصولات</h3>
+        <div className="bg-card border border-border rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">آمار محصولات</h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">کل محصولات</span>
-              <span className="text-lg font-semibold text-blue-600">{data?.products.total}</span>
+              <span className="text-sm text-muted-foreground">کل محصولات</span>
+              <span className="text-lg font-semibold text-[var(--data-blue)]">{data?.products.total}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">در انتظار تایید</span>
+              <span className="text-sm text-muted-foreground">در انتظار تایید</span>
               <span className="text-lg font-semibold text-orange-600">{data?.products.pending}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">تایید شده</span>
+              <span className="text-sm text-muted-foreground">تایید شده</span>
               <span className="text-lg font-semibold text-green-600">{(data?.products.total ?? 0) - (data?.products.pending ?? 0)}</span>
             </div>
             <progress
-              className="w-full h-2 mt-4 overflow-hidden rounded-full [&::-webkit-progress-bar]:bg-gray-200 [&::-webkit-progress-value]:bg-green-600 [&::-moz-progress-bar]:bg-green-600"
+              className="w-full h-2 mt-4 overflow-hidden rounded-full [&::-webkit-progress-bar]:bg-muted [&::-webkit-progress-value]:bg-[var(--agri-primary)] [&::-moz-progress-bar]:bg-[var(--agri-primary)]"
               value={(data?.products.total ?? 0) - (data?.products.pending ?? 0)}
               max={data?.products.total || 1}
               aria-label="نسبت محصولات تایید شده"
@@ -175,10 +175,10 @@ function AdminDashboardPage() {
           <Link
             key={item.href}
             to={item.href as '/admin/users'}
-            className="bg-white border border-gray-100 rounded-xl p-4 text-center hover:border-blue-200 hover:bg-blue-50 transition-colors"
+            className="bg-card border border-border rounded-xl p-4 text-center hover:border-[hsl(195_36%_76%)] hover:bg-[hsl(195_56%_33%_/_0.12)] transition-colors"
           >
             <div className="text-3xl mb-2">{item.icon}</div>
-            <div className="text-sm font-medium text-gray-700">{item.label}</div>
+            <div className="text-sm font-medium text-foreground">{item.label}</div>
           </Link>
         ))}
       </div>

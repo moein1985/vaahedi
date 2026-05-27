@@ -26,8 +26,8 @@ function CircularsPage() {
   return (
     <div className="p-6" dir="rtl">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">بخشنامه‌ها و دستورالعمل‌ها</h1>
-        <p className="text-gray-500 text-sm mt-1">مرجع بخشنامه های تجاری و گمرکی برای تصمیم گیری در RFQ و Marketplace</p>
+        <h1 className="text-2xl font-bold text-foreground">بخشنامه‌ها و دستورالعمل‌ها</h1>
+        <p className="text-muted-foreground text-sm mt-1">مرجع بخشنامه های تجاری و گمرکی برای تصمیم گیری در درخواست ها و بازار محصولات</p>
       </div>
 
       <div className="relative mb-6">
@@ -38,31 +38,31 @@ function CircularsPage() {
           placeholder="جستجو در بخشنامه‌ها ..."
           className="pr-10"
         />
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/70">🔍</span>
       </div>
 
       {isLoading ? (
-        <div className="text-center py-16 text-gray-400">در حال بارگذاری...</div>
+        <div className="text-center py-16 text-muted-foreground/70">در حال بارگذاری...</div>
       ) : !data?.items?.length ? (
-        <div className="text-center py-12 text-gray-500">بخشنامه‌ای یافت نشد</div>
+        <div className="text-center py-12 text-muted-foreground">بخشنامه‌ای یافت نشد</div>
       ) : (
         <div className="space-y-3">
           {data.items.map((c) => (
-            <div key={c.id} className="bg-white border border-gray-100 rounded-xl p-4">
+            <div key={c.id} className="bg-card border border-border rounded-xl p-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
-                  <h3 className="font-medium text-gray-900 mb-1">{c.title}</h3>
+                  <h3 className="font-medium text-foreground mb-1">{c.title}</h3>
                   {c.summary && (
-                    <p className="text-sm text-gray-500 leading-relaxed">{c.summary}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{c.summary}</p>
                   )}
                   <div className="flex items-center gap-3 mt-2">
                     {c.publishedAt && (
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-muted-foreground/70">
                         {new Date(c.publishedAt).toLocaleDateString('fa-IR')}
                       </span>
                     )}
                     {c.tags?.length > 0 && c.tags.map((tag: string) => (
-                      <span key={tag} className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">
+                      <span key={tag} className="text-xs bg-[hsl(var(--data-blue)/0.16)] text-[var(--data-blue)] px-2 py-0.5 rounded-full">
                         {tag}
                       </span>
                     ))}

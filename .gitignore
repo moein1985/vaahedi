@@ -66,5 +66,9 @@ uploads/
 dist.zip
 
 # ─── Temp / one-off SQL scripts ──────────────────────
+temp/
 reset_pw.sql
 check_*.sql
+
+# ─── Local design references ─────────────────────────
+docs/new vision/The website from which the UI idea was taken/

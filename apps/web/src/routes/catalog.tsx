@@ -54,15 +54,15 @@ function CatalogPage() {
 
   const copy = {
     fa: {
-      title: 'Marketplace محصولات کشاورزی',
+      title: 'بازار محصولات کشاورزی',
       titleSeo: 'کاتالوگ محصولات | سامانه ذینفعان حوزه کشاورزی',
       descriptionSeo: 'جستجو و مشاهده محصولات کشاورزی ، دامی و غذایی تولیدکنندگان و بازرگانان حوزه کشاورزی',
-      heroTitle: 'Marketplace هوشمند صادرات و واردات محصولات کشاورزی',
+      heroTitle: 'بازار هوشمند محصولات کشاورزی',
       heroDesc: 'محصولات کشاورزی را بر اساس گروه کالایی، منشا، کد HS و نام جستجو کنید و سریع به جزئیات کامل هر مورد دسترسی پیدا کنید.',
       searchPlaceholder: 'جستجو محصول، کد HS، نام...',
       searchBtn: 'جستجو',
-      catalogLabel: 'Catalog',
-      filtersTitle: 'فیلترهای کلیدی Marketplace',
+      catalogLabel: 'بازار',
+      filtersTitle: 'فیلترهای کلیدی بازار محصولات',
       commodityGroup: 'گروه کالایی',
       origin: 'منشأ کالا',
       all: 'همه',
@@ -217,7 +217,7 @@ function CatalogPage() {
         <meta property="og:type" content="website" />
         <link rel="canonical" href="https://your-domain.ir/catalog" />
       </Helmet>
-      <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_35%)] overflow-x-hidden" dir={isRtl ? 'rtl' : 'ltr'}>
+      <div className="min-h-screen bg-[linear-gradient(180deg,var(--field-mist)_0%,#ffffff_38%)] overflow-x-hidden" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Header */}
       <header className="bg-white/95 border-b border-gray-200 sticky top-0 z-10 backdrop-blur">
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-wrap lg:flex-nowrap items-center justify-between gap-3">
@@ -251,12 +251,12 @@ function CatalogPage() {
       {/* Hero */}
       <section className="max-w-6xl mx-auto px-4 pt-8 pb-6">
         <div
-          className="rounded-2xl overflow-hidden p-6 lg:p-8 text-white relative bg-[radial-gradient(circle_at_52%_56%,rgba(255,217,99,0.82),rgba(245,132,31,0.5)_30%,rgba(19,19,19,0.94)_70%),linear-gradient(180deg,rgba(197,99,10,0.62),rgba(9,18,33,0.92))]"
+          className="rounded-2xl overflow-hidden p-6 lg:p-8 text-white relative bg-[radial-gradient(circle_at_52%_56%,hsl(139_50%_42%_/_0.78),hsl(148_62%_24%_/_0.52)_30%,hsl(153_41%_9%)_70%),linear-gradient(180deg,hsl(148_56%_26%_/_0.64),hsl(153_41%_9%_/_0.92))]"
         >
           <div className="relative z-10">
-            <p className="text-[11px] tracking-[0.16em] text-amber-200/80">GLOBAL TRADE PRODUCTS</p>
+            <p className="text-[11px] tracking-[0.16em] text-[hsl(90_22%_88%_/_0.86)]">AGRICULTURE MARKET DATA</p>
             <h1 className="text-2xl lg:text-3xl font-black mt-2 text-[hsl(0_0%_95%)]">{content.heroTitle}</h1>
-            <p className="text-sm mt-3 max-w-3xl leading-7 text-[hsl(215_20%_75%)]">
+            <p className="text-sm mt-3 max-w-3xl leading-7 text-[hsl(148_14%_80%)]">
               {content.heroDesc}
             </p>
           </div>
@@ -349,7 +349,7 @@ function CatalogPage() {
           {(commodityGroup || origin || search) && (
             <div className="mb-4 flex flex-wrap items-center gap-2">
               {search && (
-                <span className="px-3 py-1 rounded-full text-xs bg-blue-50 text-blue-700 border border-blue-100">{content.activeSearch}: {search}</span>
+                <span className="px-3 py-1 rounded-full text-xs bg-[hsl(195_56%_33%_/_0.12)] text-[var(--data-blue)] border border-[hsl(195_56%_33%_/_0.24)]">{content.activeSearch}: {search}</span>
               )}
               {commodityGroup && (
                 <span className="px-3 py-1 rounded-full text-xs bg-slate-100 text-slate-700 border border-slate-200">
@@ -379,7 +379,7 @@ function CatalogPage() {
                   return (
                   <Link key={product.id} to="/catalog/$productId" params={{ productId: product.id }} className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 block">
                     {/* Product image or placeholder */}
-                    <div className="h-40 bg-gradient-to-br from-blue-50 via-slate-100 to-cyan-50 flex items-center justify-center text-4xl overflow-hidden">
+                    <div className="h-40 bg-gradient-to-br from-[hsl(146_22%_90%)] via-[hsl(90_18%_94%)] to-[hsl(195_38%_90%)] flex items-center justify-center text-4xl overflow-hidden">
                       {mainImage ? (
                         <img src={`/api/media/${mainImage}`} alt={product.nameFa} className="w-full h-full object-cover" />
                       ) : (
@@ -391,7 +391,7 @@ function CatalogPage() {
                       <p className="text-xs text-gray-400 mb-2 truncate" dir="ltr">{product.nameEn}</p>
                       <div className="flex items-center gap-2 flex-wrap">
                         {product.commodityGroup && (
-                          <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">
+                          <span className="text-xs bg-[hsl(195_56%_33%_/_0.12)] text-[var(--data-blue)] px-2 py-0.5 rounded-full">
                             {commodityLabels[product.commodityGroup as keyof typeof commodityLabels] ?? product.commodityGroup}
                           </span>
                         )}
@@ -406,7 +406,7 @@ function CatalogPage() {
                       )}
                       <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
                         <span className="text-xs text-gray-400">{product.user?.userCode}</span>
-                        <span className="text-xs text-blue-600 font-medium">
+                        <span className="text-xs text-[var(--data-blue)] font-medium">
                           {content.details} {isRtl ? '‹' : '›'}
                         </span>
                       </div>

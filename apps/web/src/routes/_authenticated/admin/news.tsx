@@ -129,8 +129,8 @@ function AdminNewsPage() {
     <div className="p-6 max-w-4xl" dir="rtl">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">مدیریت اخبار</h1>
-          <p className="text-sm text-gray-500 mt-1">ایجاد، ویرایش و حذف اخبار</p>
+          <h1 className="text-2xl font-bold text-foreground">مدیریت اخبار</h1>
+          <p className="text-sm text-muted-foreground mt-1">ایجاد، ویرایش و حذف اخبار</p>
         </div>
         <button
           onClick={() => { showForm ? (setShowForm(false), resetForm()) : setShowForm(true); }}
@@ -142,8 +142,8 @@ function AdminNewsPage() {
 
       {/* Create/Edit Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-xl p-5 mb-6 space-y-4">
-          <h2 className="font-semibold text-gray-800 border-b border-gray-100 pb-3">
+        <form onSubmit={handleSubmit} className="bg-card border border-border rounded-xl p-5 mb-6 space-y-4">
+          <h2 className="font-semibold text-foreground border-b border-border pb-3">
             {editingId ? 'ویرایش خبر' : 'خبر جدید'}
           </h2>
 
@@ -217,9 +217,9 @@ function AdminNewsPage() {
             <label className="label-text">برچسب‌ها</label>
             <div className="flex gap-2 flex-wrap mb-2">
               {form.tags.map((t) => (
-                <span key={t} className="flex items-center gap-1 bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">
+                <span key={t} className="flex items-center gap-1 bg-[hsl(195_56%_33%_/_0.12)] text-[var(--data-blue)] text-xs px-2 py-1 rounded-full">
                   {t}
-                  <button type="button" onClick={() => setForm((f) => ({ ...f, tags: f.tags.filter((x) => x !== t) }))} className="text-blue-400 hover:text-blue-700">×</button>
+                  <button type="button" onClick={() => setForm((f) => ({ ...f, tags: f.tags.filter((x) => x !== t) }))} className="text-[var(--data-blue)]/70 hover:text-[var(--agri-primary)]">×</button>
                 </span>
               ))}
             </div>
@@ -257,12 +257,12 @@ function AdminNewsPage() {
           </div>
 
           {/* Published checkbox */}
-          <label className="flex items-center gap-2 text-sm text-gray-700">
+          <label className="flex items-center gap-2 text-sm text-foreground">
             <input
               type="checkbox"
               checked={form.isPublished}
               onChange={(e) => setForm((f) => ({ ...f, isPublished: e.target.checked }))}
-              className="rounded text-blue-600"
+              className="rounded text-[var(--data-blue)]"
             />
             انتشار فوری
           </label>
@@ -284,20 +284,20 @@ function AdminNewsPage() {
 
       {/* List */}
       {isLoading ? (
-        <div className="text-center py-16 text-gray-400">در حال بارگذاری...</div>
+        <div className="text-center py-16 text-muted-foreground/70">در حال بارگذاری...</div>
       ) : !data?.items?.length ? (
-        <div className="text-center py-12 bg-white rounded-xl border border-gray-100">
-          <p className="text-gray-500">هیچ خبری ثبت نشده است</p>
+        <div className="text-center py-12 bg-card rounded-xl border border-border">
+          <p className="text-muted-foreground">هیچ خبری ثبت نشده است</p>
           <button onClick={() => setShowForm(true)} className="btn-primary mt-4">اولین خبر را ایجاد کنید</button>
         </div>
       ) : (
         <div className="space-y-3">
           {data.items.map((item) => (
-            <div key={item.id} className="bg-white border border-gray-100 rounded-xl p-4">
+            <div key={item.id} className="bg-card border border-border rounded-xl p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-semibold text-gray-900 truncate">{item.title}</h3>
+                    <h3 className="font-semibold text-foreground truncate">{item.title}</h3>
                     {item.isPublished ? (
                       <Badge variant="green" className="text-xs">منتشر شده</Badge>
                     ) : (
@@ -308,9 +308,9 @@ function AdminNewsPage() {
                     )}
                   </div>
                   {item.summary && (
-                    <p className="text-sm text-gray-500 truncate">{item.summary}</p>
+                    <p className="text-sm text-muted-foreground truncate">{item.summary}</p>
                   )}
-                  <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
+                  <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground/70">
                     {item.sourceName && <span>منبع: {item.sourceName}</span>}
                     <span dir="ltr">{new Date(item.createdAt).toLocaleDateString('fa-IR')}</span>
                   </div>
@@ -318,7 +318,7 @@ function AdminNewsPage() {
                 <div className="flex items-center gap-1 shrink-0">
                   <button
                     onClick={() => startEdit(item)}
-                    className="text-blue-600 hover:bg-blue-50 p-2 rounded-lg text-sm"
+                    className="text-[var(--data-blue)] hover:bg-[hsl(195_56%_33%_/_0.12)] p-2 rounded-lg text-sm"
                   >
                     ✏️
                   </button>
@@ -348,7 +348,7 @@ function AdminNewsPage() {
           >
             قبلی
           </button>
-          <span className="flex items-center px-4 text-sm text-gray-500">
+          <span className="flex items-center px-4 text-sm text-muted-foreground">
             {page} / {data.pages}
           </span>
           <button

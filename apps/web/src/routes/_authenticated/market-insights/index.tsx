@@ -16,7 +16,7 @@ const INSIGHT_TYPE_LABELS: Record<string, string> = {
 };
 
 const INSIGHT_TYPE_COLORS: Record<string, string> = {
-  price:      'bg-blue-100 text-blue-800',
+  price:      'bg-[hsl(195_56%_33%_/_0.12)] text-[var(--data-blue)]',
   demand:     'bg-green-100 text-green-800',
   supply:     'bg-amber-100 text-amber-800',
   trend:      'bg-purple-100 text-purple-800',
@@ -44,10 +44,10 @@ function MarketInsightsPage() {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-1">
-          <TrendingUp className="h-5 w-5 text-cyan-600" />
-          <h1 className="text-xl font-bold text-gray-900">تحلیل بازار کشاورزی</h1>
+          <TrendingUp className="h-5 w-5 text-[var(--data-blue)]" />
+          <h1 className="text-xl font-bold text-foreground">تحلیل بازار کشاورزی</h1>
         </div>
-        <p className="text-sm text-gray-500">تحلیل قیمت، عرضه، تقاضا و روند بازار محصولات کشاورزی</p>
+        <p className="text-sm text-muted-foreground">تحلیل قیمت، عرضه، تقاضا و روند بازار محصولات کشاورزی</p>
       </div>
 
       {/* Disclaimer */}
@@ -61,12 +61,12 @@ function MarketInsightsPage() {
       {/* Filters */}
       <div className="mb-5 flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-gray-400 shrink-0" />
+          <Filter className="h-4 w-4 text-muted-foreground/70 shrink-0" />
           <select
             title="نوع تحلیل"
             value={insightType}
             onChange={(e) => { setInsightType(e.target.value); setPage(1); }}
-            className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-300"
+            className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--data-blue)]"
           >
             <option value="">همه انواع</option>
             {Object.entries(INSIGHT_TYPE_LABELS).map(([val, label]) => (
@@ -79,12 +79,12 @@ function MarketInsightsPage() {
           value={commodity}
           onChange={(e) => { setCommodity(e.target.value); setPage(1); }}
           placeholder="جستجو بر اساس محصول..."
-          className="border border-gray-200 rounded-lg px-3 py-2 text-sm w-52 focus:outline-none focus:ring-2 focus:ring-cyan-300"
+          className="border border-border rounded-lg px-3 py-2 text-sm w-52 focus:outline-none focus:ring-2 focus:ring-[var(--data-blue)]"
         />
         {(insightType || commodity) && (
           <button
             onClick={() => { setInsightType(''); setCommodity(''); setPage(1); }}
-            className="text-xs text-gray-400 hover:text-gray-600"
+            className="text-xs text-muted-foreground/70 hover:text-foreground"
           >
             پاک کردن فیلترها
           </button>
@@ -99,7 +99,7 @@ function MarketInsightsPage() {
             onClick={() => { setInsightType(insightType === val ? '' : val); setPage(1); }}
             className={`px-3 py-1 rounded-full text-xs font-medium transition-all border ${
               insightType === val
-                ? 'border-cyan-500 bg-cyan-600 text-white'
+                ? 'border-[var(--data-blue)] bg-[var(--data-blue)] text-white'
                 : `${INSIGHT_TYPE_COLORS[val]} border-transparent hover:border-current`
             }`}
           >
@@ -110,29 +110,29 @@ function MarketInsightsPage() {
 
       {/* Results */}
       {!isLoading && data && (
-        <p className="text-xs text-gray-400 mb-4">{data.total} تحلیل یافت شد</p>
+        <p className="text-xs text-muted-foreground/70 mb-4">{data.total} تحلیل یافت شد</p>
       )}
 
       {isLoading ? (
         <div className="space-y-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="animate-pulse bg-gray-100 rounded-xl h-28" />
+            <div key={i} className="animate-pulse bg-muted rounded-xl h-28" />
           ))}
         </div>
       ) : data?.items?.length === 0 ? (
         <div className="text-center py-16">
-          <TrendingUp className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-sm text-gray-500">تحلیلی برای این فیلترها یافت نشد.</p>
+          <TrendingUp className="h-12 w-12 text-muted-foreground/40 mx-auto mb-3" />
+          <p className="text-sm text-muted-foreground">تحلیلی برای این فیلترها یافت نشد.</p>
         </div>
       ) : (
         <div className="space-y-4">
           {data?.items?.map((item) => {
             const isExpanded = expandedId === item.id;
-            const typeColor = INSIGHT_TYPE_COLORS[item.insightType] ?? 'bg-gray-100 text-gray-600';
+            const typeColor = INSIGHT_TYPE_COLORS[item.insightType] ?? 'bg-muted text-muted-foreground';
             const typeLabel = INSIGHT_TYPE_LABELS[item.insightType] ?? item.insightType;
 
             return (
-              <div key={item.id} className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-cyan-200 transition-colors">
+              <div key={item.id} className="bg-card border border-border rounded-xl overflow-hidden hover:border-[hsl(195_36%_76%)] transition-colors">
                 <div
                   className="p-4 cursor-pointer"
                   onClick={() => setExpandedId(isExpanded ? null : item.id)}
@@ -143,14 +143,14 @@ function MarketInsightsPage() {
                         <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${typeColor}`}>
                           {typeLabel}
                         </span>
-                        <span className="text-xs text-gray-500 font-medium">{item.commodityFa}</span>
+                        <span className="text-xs text-muted-foreground font-medium">{item.commodityFa}</span>
                         {item.commodityEn && (
-                          <span className="text-xs text-gray-400" dir="ltr">{item.commodityEn}</span>
+                          <span className="text-xs text-muted-foreground/70" dir="ltr">{item.commodityEn}</span>
                         )}
                       </div>
-                      <h3 className="font-semibold text-gray-900 text-sm leading-snug">{item.title}</h3>
+                      <h3 className="font-semibold text-foreground text-sm leading-snug">{item.title}</h3>
                     </div>
-                    <div className="text-xs text-gray-400 shrink-0 text-left">
+                    <div className="text-xs text-muted-foreground/70 shrink-0 text-left">
                       {item.dataDate && (
                         <p>{new Date(item.dataDate).toLocaleDateString('fa-IR')}</p>
                       )}
@@ -161,9 +161,9 @@ function MarketInsightsPage() {
                   {/* Tags */}
                   {item.tags?.length > 0 && (
                     <div className="flex items-center gap-1 mt-2 flex-wrap">
-                      <Tag className="h-3 w-3 text-gray-300" />
+                      <Tag className="h-3 w-3 text-muted-foreground/40" />
                       {item.tags.map((tag: string) => (
-                        <span key={tag} className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">
+                        <span key={tag} className="text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded">
                           {tag}
                         </span>
                       ))}
@@ -173,21 +173,21 @@ function MarketInsightsPage() {
 
                 {/* Expanded content */}
                 {isExpanded && (
-                  <div className="px-4 pb-4 border-t border-gray-50">
-                    <p className="text-sm text-gray-700 leading-relaxed mt-3 whitespace-pre-wrap">{item.content}</p>
+                  <div className="px-4 pb-4 border-t border-border/70">
+                    <p className="text-sm text-foreground leading-relaxed mt-3 whitespace-pre-wrap">{item.content}</p>
                     {item.sourceUrl && (
                       <a
                         href={item.sourceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-3 flex items-center gap-1 text-xs text-cyan-600 hover:text-cyan-800"
+                        className="mt-3 flex items-center gap-1 text-xs text-[var(--data-blue)] hover:text-[var(--agri-primary)]"
                       >
                         <ExternalLink className="h-3 w-3" />
                         منبع اطلاعات
                       </a>
                     )}
                     {item.publishedAt && (
-                      <p className="mt-2 text-[11px] text-gray-400">
+                      <p className="mt-2 text-[11px] text-muted-foreground/70">
                         تاریخ انتشار: {new Date(item.publishedAt).toLocaleDateString('fa-IR')}
                       </p>
                     )}
@@ -206,16 +206,16 @@ function MarketInsightsPage() {
             title="صفحه قبل"
             disabled={page <= 1}
             onClick={() => setPage((p) => p - 1)}
-            className="p-2 rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
+            className="p-2 rounded-lg border border-border disabled:opacity-40 hover:bg-muted/50"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
-          <span className="text-sm text-gray-600">صفحه {page} از {totalPages}</span>
+          <span className="text-sm text-muted-foreground">صفحه {page} از {totalPages}</span>
           <button
             title="صفحه بعد"
             disabled={page >= totalPages}
             onClick={() => setPage((p) => p + 1)}
-            className="p-2 rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
+            className="p-2 rounded-lg border border-border disabled:opacity-40 hover:bg-muted/50"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>

@@ -84,10 +84,10 @@ function StatusBadge({ status }: { status: string }) {
 function DocCard({ doc }: { doc: any }) {
   const isAgri = AGRI_DOC_TYPES.has(doc.type);
   return (
-    <div className={`flex items-start justify-between gap-3 p-4 rounded-xl border ${isAgri ? 'border-green-200 bg-green-50/30' : 'border-gray-100 bg-white'}`}>
+    <div className={`flex items-start justify-between gap-3 p-4 rounded-xl border ${isAgri ? 'border-green-200 bg-green-50/30' : 'border-border bg-card'}`}>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-medium text-sm text-gray-900">
+          <span className="font-medium text-sm text-foreground">
             {DOC_TYPE_LABELS[doc.type] ?? doc.type}
           </span>
           {isAgri && (
@@ -98,7 +98,7 @@ function DocCard({ doc }: { doc: any }) {
         </div>
         <div className="mt-1 flex items-center gap-3 flex-wrap">
           <StatusBadge status={doc.verificationStatus ?? VerificationStatus.PENDING} />
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-muted-foreground/70">
             {new Date(doc.createdAt).toLocaleDateString('fa-IR')}
           </span>
         </div>
@@ -112,7 +112,7 @@ function DocCard({ doc }: { doc: any }) {
         href={`/api/files/${doc.fileKey}`}
         target="_blank"
         rel="noreferrer"
-        className="flex-shrink-0 flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700"
+        className="flex-shrink-0 flex items-center gap-1 text-xs text-[var(--data-blue)] hover:text-[var(--agri-primary)]"
       >
         مشاهده
         <ExternalLink className="w-3 h-3" />
@@ -137,8 +137,8 @@ function LicensesPage() {
     <div className="p-6" dir="rtl">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">مجوزها و مدارک من</h1>
-          <p className="text-gray-500 text-sm mt-1">وضعیت مدارک و مجوزهای آپلود شده شما</p>
+          <h1 className="text-2xl font-bold text-foreground">مجوزها و مدارک من</h1>
+          <p className="text-muted-foreground text-sm mt-1">وضعیت مدارک و مجوزهای آپلود شده شما</p>
         </div>
         <Link to="/profile">
           <Button size="sm" className="gap-2">
@@ -167,12 +167,12 @@ function LicensesPage() {
       )}
 
       {isLoading ? (
-        <div className="text-center py-16 text-gray-400">بارگذاری...</div>
+        <div className="text-center py-16 text-muted-foreground/70">بارگذاری...</div>
       ) : docs.length === 0 ? (
         <Card>
           <CardContent className="py-16 text-center">
             <div className="text-4xl mb-3">📋</div>
-            <p className="text-gray-500 mb-4">هنوز مدرکی آپلود نشده است</p>
+            <p className="text-muted-foreground mb-4">هنوز مدرکی آپلود نشده است</p>
             <Link to="/profile">
               <Button size="sm" className="gap-2">
                 <Upload className="w-4 h-4" />
@@ -220,9 +220,9 @@ function LicensesPage() {
       )}
 
       {/* راهنما */}
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-800" dir="rtl">
+      <div className="mt-6 p-4 bg-[hsl(195_56%_33%_/_0.12)] border border-[hsl(195_36%_76%)] rounded-xl text-sm text-[var(--data-blue)]" dir="rtl">
         <p className="font-medium mb-1">راهنما:</p>
-        <ul className="space-y-1 text-xs text-blue-700 list-disc list-inside">
+        <ul className="space-y-1 text-xs text-[var(--data-blue)] list-disc list-inside">
           <li>مدارک پس از آپلود توسط کارشناسان ما بررسی می‌شوند (معمولاً ۱–۳ روز کاری)</li>
           <li>مدارک تایید شده برای صادرات، تجارت و دریافت خدمات ویژه استفاده می‌شود</li>
           <li>در صورت رد مدرک، علت رد در همین صفحه نمایش داده می‌شود</li>

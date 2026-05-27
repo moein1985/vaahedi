@@ -33,93 +33,105 @@
 /* ─── Design Tokens (مقادیر با hsl کامل برای Tailwind v4) ───────────────────── */
 @layer base {
   :root {
-    --background:              hsl(0 0% 100%);
-    --foreground:              hsl(224 71.4% 4.1%);
+    --background:              hsl(90 33% 98%);
+    --foreground:              hsl(153 23% 15%);
 
     --card:                    hsl(0 0% 100%);
-    --card-foreground:         hsl(224 71.4% 4.1%);
+    --card-foreground:         hsl(153 23% 15%);
 
     --popover:                 hsl(0 0% 100%);
-    --popover-foreground:      hsl(224 71.4% 4.1%);
+    --popover-foreground:      hsl(153 23% 15%);
 
-    --primary:                 hsl(220.9 39.3% 11%);
-    --primary-foreground:      hsl(210 20% 98%);
+    --primary:                 hsl(148 62% 24%);
+    --primary-foreground:      hsl(0 0% 100%);
 
-    --secondary:               hsl(220 14.3% 95.9%);
-    --secondary-foreground:    hsl(220.9 39.3% 11%);
+    --secondary:               hsl(90 26% 95%);
+    --secondary-foreground:    hsl(153 23% 16%);
 
-    --muted:                   hsl(220 14.3% 95.9%);
-    --muted-foreground:        hsl(220 8.9% 46.1%);
+    --muted:                   hsl(90 22% 94%);
+    --muted-foreground:        hsl(37 12% 35%);
 
-    --accent:                  hsl(220 14.3% 95.9%);
-    --accent-foreground:       hsl(220.9 39.3% 11%);
+    --accent:                  hsl(146 28% 93%);
+    --accent-foreground:       hsl(153 30% 20%);
 
-    --destructive:             hsl(0 84.2% 60.2%);
-    --destructive-foreground:  hsl(210 20% 98%);
+    --destructive:             hsl(2 52% 50%);
+    --destructive-foreground:  hsl(0 0% 100%);
 
-    --border:                  hsl(220 13% 91%);
-    --input:                   hsl(220 13% 91%);
-    --ring:                    hsl(224 71.4% 4.1%);
-    --ring-shadow:             hsl(224 71.4% 4.1% / 0.2);
+    --border:                  hsl(90 14% 88%);
+    --input:                   hsl(90 14% 88%);
+    --ring:                    hsl(195 56% 33%);
+    --ring-shadow:             hsl(195 56% 33% / 0.2);
 
     --radius: 0.5rem;
 
-    /* ─── برند وهدی — آبی */
-    --brand:                   hsl(217 91% 40%);
+    /* ─── Agri palette */
+    --agri-primary:            hsl(148 62% 24%);
+    --agri-leaf:               hsl(139 50% 37%);
+    --forest-deep:             hsl(153 41% 9%);
+    --field-mist:              hsl(90 33% 97%);
+    --soil-neutral:            hsl(37 12% 33%);
+    --wheat-accent:            hsl(40 62% 57%);
+    --data-blue:               hsl(195 56% 33%);
+    --error-red:               hsl(2 52% 50%);
+
+    /* ─── backward-compatible brand aliases */
+    --brand:                   var(--agri-primary);
     --brand-foreground:        hsl(0 0% 100%);
-    --brand-light:             hsl(214 100% 97%);
+    --brand-light:             hsl(142 46% 94%);
 
-    /* ─── برند amber/gold از لندینگ */
-    --brand-amber:             hsl(38 95% 52%);
-    --brand-amber-light:       hsl(40 100% 96%);
-    --brand-amber-dark:        hsl(30 85% 28%);
-
-    /* ─── sidebar dark */
-    --sidebar-bg:              hsl(222 47% 9%);
-    --sidebar-bg-hover:        hsl(222 40% 14%);
-    --sidebar-text:            hsl(215 20% 65%);
+    --sidebar-bg:              var(--forest-deep);
+    --sidebar-bg-hover:        hsl(153 34% 14%);
+    --sidebar-text:            hsl(148 12% 74%);
     --sidebar-text-active:     hsl(0 0% 100%);
-    --sidebar-active-bg:       hsl(38 95% 52% / 0.12);
-    --sidebar-active-border:   hsl(38 95% 52%);
-    --sidebar-border:          hsl(222 35% 16%);
+    --sidebar-active-bg:       hsl(139 50% 37% / 0.18);
+    --sidebar-active-border:   hsl(139 50% 37%);
+    --sidebar-border:          hsl(153 28% 18%);
 
     --font-persian: 'Vazirmatn', system-ui, sans-serif;
   }
 
   .dark {
-    --background:              hsl(224 71.4% 4.1%);
-    --foreground:              hsl(210 20% 98%);
-    --card:                    hsl(224 71.4% 4.1%);
-    --card-foreground:         hsl(210 20% 98%);
-    --popover:                 hsl(224 71.4% 4.1%);
-    --popover-foreground:      hsl(210 20% 98%);
-    --primary:                 hsl(210 20% 98%);
-    --primary-foreground:      hsl(220.9 39.3% 11%);
-    --secondary:               hsl(215 27.9% 16.9%);
-    --secondary-foreground:    hsl(210 20% 98%);
-    --muted:                   hsl(215 27.9% 16.9%);
-    --muted-foreground:        hsl(217.9 10.6% 64.9%);
-    --accent:                  hsl(215 27.9% 16.9%);
-    --accent-foreground:       hsl(210 20% 98%);
-    --destructive:             hsl(0 62.8% 30.6%);
-    --destructive-foreground:  hsl(210 20% 98%);
-    --border:                  hsl(215 27.9% 16.9%);
-    --input:                   hsl(215 27.9% 16.9%);
-    --ring:                    hsl(216 12.2% 83.9%);
-    --ring-shadow:             hsl(216 12.2% 83.9% / 0.2);
-    --brand:                   hsl(217 91% 60%);
-    --brand-foreground:        hsl(224 71.4% 4.1%);
-    --brand-light:             hsl(217 30% 15%);
-    --brand-amber:             hsl(38 95% 52%);
-    --brand-amber-light:       hsl(40 80% 20%);
-    --brand-amber-dark:        hsl(30 85% 28%);
-    --sidebar-bg:              hsl(222 47% 7%);
-    --sidebar-bg-hover:        hsl(222 40% 12%);
-    --sidebar-text:            hsl(215 20% 60%);
+    --background:              hsl(153 24% 8%);
+    --foreground:              hsl(90 22% 94%);
+    --card:                    hsl(153 20% 10%);
+    --card-foreground:         hsl(90 22% 94%);
+    --popover:                 hsl(153 20% 10%);
+    --popover-foreground:      hsl(90 22% 94%);
+    --primary:                 hsl(139 52% 46%);
+    --primary-foreground:      hsl(153 45% 10%);
+    --secondary:               hsl(153 15% 16%);
+    --secondary-foreground:    hsl(90 18% 90%);
+    --muted:                   hsl(153 15% 16%);
+    --muted-foreground:        hsl(148 12% 68%);
+    --accent:                  hsl(153 22% 18%);
+    --accent-foreground:       hsl(90 22% 94%);
+    --destructive:             hsl(2 50% 45%);
+    --destructive-foreground:  hsl(0 0% 100%);
+    --border:                  hsl(153 14% 20%);
+    --input:                   hsl(153 14% 20%);
+    --ring:                    hsl(195 55% 55%);
+    --ring-shadow:             hsl(195 55% 55% / 0.25);
+
+    --agri-primary:            hsl(139 52% 46%);
+    --agri-leaf:               hsl(139 48% 52%);
+    --forest-deep:             hsl(153 30% 7%);
+    --field-mist:              hsl(153 22% 14%);
+    --soil-neutral:            hsl(38 14% 70%);
+    --wheat-accent:            hsl(40 62% 57%);
+    --data-blue:               hsl(195 55% 55%);
+    --error-red:               hsl(2 50% 54%);
+
+    --brand:                   var(--agri-primary);
+    --brand-foreground:        hsl(153 45% 10%);
+    --brand-light:             hsl(153 22% 18%);
+
+    --sidebar-bg:              var(--forest-deep);
+    --sidebar-bg-hover:        hsl(153 28% 11%);
+    --sidebar-text:            hsl(148 10% 70%);
     --sidebar-text-active:     hsl(0 0% 100%);
-    --sidebar-active-bg:       hsl(38 95% 52% / 0.12);
-    --sidebar-active-border:   hsl(38 95% 52%);
-    --sidebar-border:          hsl(222 35% 14%);
+    --sidebar-active-bg:       hsl(139 48% 44% / 0.22);
+    --sidebar-active-border:   hsl(139 48% 52%);
+    --sidebar-border:          hsl(153 22% 16%);
   }
 
   * {
@@ -164,7 +176,7 @@
   .field-error {
     @apply text-xs mt-1.5 flex items-center gap-1.5 px-2 py-1 rounded-md;
     color: var(--destructive);
-    background-color: hsl(0 84.2% 60.2% / 0.07);
+    background-color: hsl(2 52% 50% / 0.08);
   }
 
   .btn-primary {
@@ -174,7 +186,7 @@
     background-color: var(--brand);
     color: var(--brand-foreground);
   }
-  .btn-primary:hover:not(:disabled) { opacity: 0.9; }
+  .btn-primary:hover:not(:disabled) { background-color: var(--agri-leaf); }
 
   .btn-secondary {
     @apply px-4 py-2.5 rounded-lg text-sm font-medium transition-all
@@ -183,13 +195,14 @@
     color: var(--foreground);
     border: 1px solid var(--border);
   }
-  .btn-secondary:hover { background-color: var(--muted); }
+  .btn-secondary:hover { background-color: var(--accent); }
 
   .card {
-    @apply rounded-xl shadow-sm;
+    @apply rounded-lg;
     background-color: var(--card);
     color: var(--card-foreground);
     border: 1px solid var(--border);
+    box-shadow: 0 1px 2px hsl(153 20% 12% / 0.06);
   }
 
   .skeleton {

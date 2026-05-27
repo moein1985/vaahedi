@@ -116,8 +116,8 @@
 ## مشخصات سند و قرارداد
 | مورد | مقدار |
 |---|---|
-| نسخه سند | 1.0 |
-| تاریخ به روزرسانی | 2026-05-26 |
+| نسخه سند | 1.1 |
+| تاریخ به روزرسانی | 2026-05-27 |
 | وضعیت | آماده برنامه ریزی و شروع پیاده سازی |
 | شماره قرارداد | WEB1405002 |
 | جمع ساعت برنامه نویسی برای برنامه نویس سینیور | 1310 ساعت |
@@ -135,11 +135,63 @@
   - readiness probe مبتنی بر DB + Redis + MinIO
   - تنظیم healthcheck کانتینر API روی `/ready`
 
+## راهنمای تحویل به GitHub Copilot / GPT 5.3 Codex
+این بخش برای زمانی است که این فایل در یک چت جدید به یک coding agent داده می شود. اگر این سند به تنهایی به agent داده شد، ابتدا همین بخش باید مبنای شروع کار باشد.
+
+### هدف فوری برای agent
+- این پروژه قبلا با نام «تاجر هوشمند» روی branch اصلی توسعه یافته و اکنون روی branch `feature/jahad-agri-roadmap` برای نسخه کشاورزی ادامه پیدا می کند.
+- هدف مرحله فعلی، پیاده سازی کنترل شده همین roadmap روی کد موجود است، نه بازنویسی کامل محصول.
+- اگر کاربر مشخصا درباره rebrand یا UI/UX صحبت کرد، سند مکمل `docs/new vision/jahad-agri-rebrand-ui-ux-roadmap.md` باید قبل از هر تغییر UI خوانده شود.
+- اولویت rebrand فعلی طبق تصمیم کاربر: پاکسازی متن های UI + ایمیل + AI + metadata، سپس تغییر theme و بازطراحی صفحه به صفحه.
+
+### واقعیت های قطعی repo
+- مسیر workspace: `c:\Users\Moein\Documents\Codes\Vaahedi`
+- stack وب واقعی: React + Vite + TanStack Router + TanStack Query + TypeScript + tRPC Client + Tailwind CSS v4
+- stack سرور: Node.js + tRPC + Prisma + PostgreSQL
+- package وب در `apps/web` است و build آن با `npm run -w apps/web build` اجرا می شود.
+- package سرور در `apps/server` است و build آن با `npm run -w apps/server build` اجرا می شود.
+- مسیرهای generated مانند `apps/web/src/routeTree.gen.ts` و فایل metadata مثل `apps/web/tsconfig.tsbuildinfo` ممکن است با build تغییر کنند؛ قبل از commit یا گزارش نهایی، diff آن ها جداگانه بررسی شود.
+
+### سندها و منابعی که باید دیده شوند
+| فایل/منبع | کاربرد |
+|---|---|
+| `docs/new vision/jahad-agri-implementation-roadmap.md` | مرجع اصلی دامنه، فازبندی و MVP |
+| `docs/new vision/jahad-agri-rebrand-ui-ux-roadmap.md` | مرجع پاکسازی برند، واژگان، UI/UX و الهام از Tridge |
+| `docs/new vision/jahad-agri-priority-kickoff.md` | وضعیت اجرایی، کارهای انجام شده و gapهای واقعی |
+| `https://www.tridge.com/` | benchmark الهام UI؛ فقط برای الگو، نه کپی متن/کد/دارایی |
+
+### قواعد مهم هنگام پیاده سازی
+- قبل از تغییر، `git status --short` بررسی شود و تغییرات موجود کاربر revert نشود.
+- تغییرات باید مرحله ای، کوچک و قابل build باشند.
+- در MVP، enumها و مدل های داخلی مانند `UserRole.TRADER`، `TradeRequest`، `tradeRouter` و URLهای تثبیت شده مثل `/rfq` بدون تصمیم جداگانه rename نشوند؛ فعلا labelهای UI عوض شوند.
+- پوشه دانلودشده Tridge برای پیاده سازی لازم نیست و نباید وارد GitHub شود؛ benchmark باید از خود سایت یا خلاصه ثبت شده در سند rebrand گرفته شود.
+- مسیر `temp/` و فایل های backup/deploy محلی نباید وارد commit شوند.
+- استفاده از عبارت «جهاد کشاورزی» در title و متن های رسمی باید با احتیاط انجام شود؛ تا وقتی تایید حقوقی/برندی روشن نیست، عبارت امن تر «حوزه کشاورزی» ترجیح دارد.
+- لوگوی فعلی در `docs/new vision/logo/Gemini_Generated_Image_t2wnp6t2wnp6t2wn.png` دارایی ارائه شده کاربر است، اما از نظر سند rebrand می تواند placeholder باشد و برای release نهایی نیازمند تایید است.
+
+### ترتیب پیشنهادی شروع برای agent
+1. وضعیت workspace و خطاهای فعلی را بررسی کند.
+2. اگر وظیفه rebrand است، از فاز 1 سند `jahad-agri-rebrand-ui-ux-roadmap.md` شروع کند: metadata، auth، layout، صفحات عمومی، AI prompt و email templates.
+3. پس از هر دسته تغییر، حداقل `npm run -w apps/web build` اجرا شود؛ اگر server تغییر کرد، `npm run -w apps/server build` هم اجرا شود.
+4. بعد از پاکسازی مرحله اول، جست وجوی legacy اجرا شود:
+
+```bash
+rg "تاجر هوشمند|تجارت هوشمند|مرکز تجارت متمرکز|سامانه تجارت ایرانیان|Smart Trader|smart trader|Marketplace|RFQ" apps packages e2e
+```
+
+5. موارد باقی مانده باید به سه گروه تقسیم شوند: قابل پاکسازی فوری، internal/generated و نیازمند تصمیم جداگانه.
+
+### معیار خروجی قابل قبول agent
+- تغییرات دقیق با توضیح فایل های درگیر گزارش شود.
+- buildها و تست های اجرا شده با نتیجه pass/fail گزارش شوند.
+- اگر به دلیل نبود DB، Docker یا env تستی اجرا نشد، علت دقیق گفته شود.
+- هیچ commit یا branch جدیدی ساخته نشود مگر کاربر صریحا درخواست کند.
+
 ## هدف سند
 این سند به عنوان نقشه راه اجرایی پروژه تهیه شده تا مبنای شروع پیاده سازی، کنترل دامنه، برنامه ریزی فازها، اولویت بندی بک لاگ و تعریف معیارهای پذیرش باشد. هدف این سند صرفا توصیف ایده نیست، بلکه تبدیل ایده به مسیر اجرایی قابل اجرا در همین ریپو و روی زیرساخت واقعی است.
 
 ## خروجی نهایی مورد انتظار
-- یک وب اپ عملیاتی برای ذینفعان کشاورزی بر پایه Next.js + tRPC + Node.js + PostgreSQL
+- یک وب اپ عملیاتی برای ذینفعان کشاورزی بر پایه React + Vite + TanStack Router + tRPC + Node.js + PostgreSQL
 - یک backend پایدار با قرارداد API شفاف برای توسعه مرحله ای قابلیت ها
 - پنل مدیریتی برای مدیریت taxonomy، مجوزها، محتوا و عملیات پایه
 - جریان اعتبارسنجی اولیه متقاضیان با امکان بازبینی و تغییر وضعیت
@@ -171,9 +223,12 @@
 ## معماری کلان
 
 ### وب
-- Next.js App Router
+- React + Vite
+- TanStack Router
+- TanStack Query
 - TypeScript
 - tRPC Client
+- Tailwind CSS v4
 - صفحات عمومی + پنل مدیریتی
 
 ### سرور
@@ -193,6 +248,7 @@
 - مسیر Mobile Native برای فاز بعد آماده نگه داشته می شود و وابسته به قرارداد API پایدار خواهد بود.
 
 ## واقعیت فنی محصول فعلی (As-Is)
+- وب اپ فعلی با React، Vite، TanStack Router، TanStack Query، Tailwind CSS v4 و tRPC Client پیاده سازی شده است؛ بنابراین برنامه اجرای UI باید با همین stack پیش برود، نه Next.js App Router.
 - پروژه فعلی در همین monorepo ماژول های `profile`، `product`، `trade`، `chat`، `services`، `admin`، `support`، `notification` و `news` را دارد.
 - در `packages/shared` و `packages/db` مدل ها و enumهای پایه مانند `UserRole`، `DocumentType`، `VerificationStatus` و `CommodityGroup` از قبل موجود هستند.
 - جریان تایید مدارک و وضعیت بازبینی در پنل ادمین و shared schemaها وجود دارد و باید توسعه یابد، نه اینکه با سیستم موازی جایگزین شود.

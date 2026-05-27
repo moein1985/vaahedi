@@ -106,7 +106,7 @@ function HarvestCalendarPage() {
             {(selectedMonth !== undefined || selectedProvince) && (
               <button
                 onClick={() => { setSelectedMonth(undefined); setSelectedProvince(''); setPage(1); }}
-                className="text-sm text-blue-600 underline"
+                className="text-sm text-[var(--data-blue)] underline"
               >
                 پاک کردن فیلتر
               </button>
@@ -152,7 +152,7 @@ function HarvestCalendarPage() {
                   {/* استان */}
                   {item.province && (
                     <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                      <MapPin className="h-4 w-4 text-blue-400" />
+                      <MapPin className="h-4 w-4 text-[var(--data-blue)]" />
                       <span>{item.province}</span>
                     </div>
                   )}
@@ -177,7 +177,7 @@ function HarvestCalendarPage() {
                                 ? 'bg-green-600'
                                 : 'bg-green-300'
                               : isCurrent
-                              ? 'bg-gray-300 ring-1 ring-blue-400'
+                              ? 'bg-gray-300 ring-1 ring-[var(--data-blue)]'
                               : 'bg-gray-100'
                           }`}
                         />

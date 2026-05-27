@@ -16,11 +16,11 @@ const INSIGHT_TYPE_LABELS: Record<string, string> = {
 };
 
 const INSIGHT_TYPE_COLORS: Record<string, string> = {
-  price: 'bg-yellow-100 text-yellow-800',
-  demand: 'bg-blue-100 text-blue-800',
-  supply: 'bg-green-100 text-green-800',
-  trend: 'bg-purple-100 text-purple-800',
-  regulation: 'bg-gray-100 text-gray-700',
+  price: 'bg-[hsl(40_62%_57%_/_0.2)] text-[hsl(35_48%_33%)]',
+  demand: 'bg-[hsl(195_56%_33%_/_0.14)] text-[var(--data-blue)]',
+  supply: 'bg-[hsl(139_50%_37%_/_0.14)] text-[var(--agri-leaf)]',
+  trend: 'bg-[hsl(146_22%_90%)] text-[var(--brand)]',
+  regulation: 'bg-muted text-muted-foreground',
 };
 
 function MarketInsightsPage() {
@@ -50,13 +50,13 @@ function MarketInsightsPage() {
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
       {/* هدر */}
-      <div className="bg-gradient-to-l from-blue-700 to-blue-500 text-white py-10 px-6">
+      <div className="bg-gradient-to-l from-[var(--brand)] to-[var(--forest-deep)] text-white py-10 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-3 mb-2">
             <TrendingUp className="h-7 w-7" />
             <h1 className="text-2xl font-bold">تحلیل بازار کشاورزی</h1>
           </div>
-          <p className="text-blue-100 text-sm">
+          <p className="text-[hsl(148_14%_80%)] text-sm">
             اطلاعات نمایشی — تحلیل قیمت، عرضه، تقاضا و روندهای بازار محصولات کشاورزی
           </p>
           <div className="mt-2 inline-flex items-center gap-1.5 bg-yellow-400 text-yellow-900 text-xs px-3 py-1 rounded-full font-medium">
@@ -116,7 +116,7 @@ function MarketInsightsPage() {
             {(insightType || commodity) && (
               <button
                 onClick={() => { setInsightType(undefined); setCommodity(''); setPage(1); }}
-                className="text-sm text-blue-600 underline"
+                className="text-sm text-[var(--data-blue)] underline"
               >
                 پاک کردن
               </button>
@@ -143,7 +143,7 @@ function MarketInsightsPage() {
                     <span className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${INSIGHT_TYPE_COLORS[item.insightType] ?? 'bg-gray-100 text-gray-700'}`}>
                       {INSIGHT_TYPE_LABELS[item.insightType] ?? item.insightType}
                     </span>
-                    <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                    <span className="text-xs text-[var(--data-blue)] bg-[hsl(195_56%_33%_/_0.12)] px-2 py-0.5 rounded-full">
                       {item.commodityFa}
                     </span>
                   </div>
@@ -171,7 +171,7 @@ function MarketInsightsPage() {
                         href={item.sourceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-xs text-blue-500 hover:underline"
+                        className="flex items-center gap-1 text-xs text-[var(--data-blue)] hover:underline"
                       >
                         <ExternalLink className="h-3 w-3" />
                         منبع

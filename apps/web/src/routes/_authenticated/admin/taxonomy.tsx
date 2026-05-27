@@ -110,7 +110,7 @@ function AdminTaxonomyPage() {
       {confirmDialog}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <TreePine className="h-6 w-6 text-green-600" />
+          <TreePine className="h-6 w-6 text-[var(--agri-primary)]" />
           <h1 className="text-xl font-bold">مدیریت دسته‌بندی شغلی</h1>
         </div>
         <Button size="sm" onClick={() => { resetForm(); setShowForm(true); }}>
@@ -121,7 +121,7 @@ function AdminTaxonomyPage() {
 
       {/* فرم */}
       {showForm && (
-        <div className="bg-white border rounded-xl p-5 mb-6">
+        <div className="bg-card border border-border rounded-xl p-5 mb-6">
           <h2 className="font-semibold mb-4">{editingId ? 'ویرایش دسته‌بندی' : 'دسته‌بندی جدید'}</h2>
           <form onSubmit={(e) => { void handleSubmit(e); }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -158,7 +158,7 @@ function AdminTaxonomyPage() {
                 title="دسته والد"
                 value={form.parentId}
                 onChange={(e) => setForm((f) => ({ ...f, parentId: e.target.value }))}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm"
+                className="w-full border border-input rounded-lg px-3 py-2.5 text-sm"
               >
                 <option value="">بدون والد (ریشه)</option>
                 {roots.map((r) => (
@@ -205,11 +205,11 @@ function AdminTaxonomyPage() {
 
       {/* لیست */}
       {isLoading ? (
-        <div className="text-center py-16 text-gray-400">در حال بارگذاری...</div>
+        <div className="text-center py-16 text-muted-foreground/70">در حال بارگذاری...</div>
       ) : (
-        <div className="bg-white border rounded-xl overflow-hidden">
+        <div className="bg-card border border-border rounded-xl overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-600">
+            <thead className="bg-muted/60 text-muted-foreground">
               <tr>
                 <th className="px-4 py-3 text-right">نام</th>
                 <th className="px-4 py-3 text-right">کد</th>
@@ -223,26 +223,26 @@ function AdminTaxonomyPage() {
                 const children = childMap.get(root.id) ?? [];
                 const expanded = expandedIds.has(root.id);
                 return [
-                  <tr key={root.id} className="border-t border-gray-100 bg-green-50/30">
+                  <tr key={root.id} className="border-t border-border/60 bg-green-50/30">
                     <td className="px-4 py-3 font-medium flex items-center gap-2">
                       {children.length > 0 && (
-                        <button onClick={() => toggleExpand(root.id)} className="text-gray-400">
+                        <button onClick={() => toggleExpand(root.id)} className="text-muted-foreground/70">
                           {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                         </button>
                       )}
                       <span className="font-semibold text-green-800">{root.nameFa}</span>
-                      {root.nameEn && <span className="text-xs text-gray-400" dir="ltr">{root.nameEn}</span>}
+                      {root.nameEn && <span className="text-xs text-muted-foreground/70" dir="ltr">{root.nameEn}</span>}
                     </td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{root.code}</td>
+                    <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{root.code}</td>
                     <td className="px-4 py-3">
                       <Badge variant={root.isActive ? 'green' : 'secondary'} className="text-xs">
                         {root.isActive ? 'فعال' : 'غیرفعال'}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3 text-gray-400">{root.sortOrder}</td>
+                    <td className="px-4 py-3 text-muted-foreground/70">{root.sortOrder}</td>
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
-                        <button onClick={() => startEdit(root)} className="text-blue-500 hover:text-blue-700" title="ویرایش دسته">
+                        <button onClick={() => startEdit(root)} className="text-[var(--data-blue)] hover:text-[var(--agri-primary)]" title="ویرایش دسته">
                           <Pencil className="h-4 w-4" />
                         </button>
                         <button onClick={() => void handleDelete(root.id, root.nameFa)} className="text-red-400 hover:text-red-600" title="حذف دسته">
@@ -252,22 +252,22 @@ function AdminTaxonomyPage() {
                     </td>
                   </tr>,
                   ...(expanded ? children.map((child) => (
-                    <tr key={child.id} className="border-t border-gray-100">
-                      <td className="px-4 py-3 pr-10 text-gray-700">
-                        <span className="mr-2 text-gray-300">└</span>
+                    <tr key={child.id} className="border-t border-border/60">
+                      <td className="px-4 py-3 pr-10 text-foreground">
+                        <span className="mr-2 text-muted-foreground/40">└</span>
                         {child.nameFa}
-                        {child.nameEn && <span className="text-xs text-gray-400 mr-2" dir="ltr">{child.nameEn}</span>}
+                        {child.nameEn && <span className="text-xs text-muted-foreground/70 mr-2" dir="ltr">{child.nameEn}</span>}
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs text-gray-500">{child.code}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{child.code}</td>
                       <td className="px-4 py-3">
                         <Badge variant={child.isActive ? 'green' : 'secondary'} className="text-xs">
                           {child.isActive ? 'فعال' : 'غیرفعال'}
                         </Badge>
                       </td>
-                      <td className="px-4 py-3 text-gray-400">{child.sortOrder}</td>
+                      <td className="px-4 py-3 text-muted-foreground/70">{child.sortOrder}</td>
                       <td className="px-4 py-3">
                         <div className="flex gap-2">
-                          <button onClick={() => startEdit(child)} className="text-blue-500 hover:text-blue-700" title="ویرایش زیر‌دسته">
+                          <button onClick={() => startEdit(child)} className="text-[var(--data-blue)] hover:text-[var(--agri-primary)]" title="ویرایش زیر‌دسته">
                             <Pencil className="h-4 w-4" />
                           </button>
                           <button onClick={() => void handleDelete(child.id, child.nameFa)} className="text-red-400 hover:text-red-600" title="حذف زیر‌دسته">
@@ -281,7 +281,7 @@ function AdminTaxonomyPage() {
               })}
               {roots.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-12 text-center text-gray-400">دسته‌ای ثبت نشده</td>
+                  <td colSpan={5} className="px-4 py-12 text-center text-muted-foreground/70">دسته‌ای ثبت نشده</td>
                 </tr>
               )}
             </tbody>

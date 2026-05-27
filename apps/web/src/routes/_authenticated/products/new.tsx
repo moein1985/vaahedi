@@ -344,10 +344,10 @@ function NewProductPage() {
           </div>
         </div>
 
-        <div className="bg-white border border-gray-100 rounded-xl p-5 mb-6">
-          <h2 className="font-semibold text-gray-900 mb-1">آپلود تصاویر محصول</h2>
-          <p className="text-sm text-gray-500 mb-1">تصاویر، ویدیوی کوتاه یا فایل PDF محصول را آپلود کنید (اختیاری)</p>
-          <p className="text-xs text-gray-500 mb-4">حداکثر حجم هر فایل: ۲۵ مگابایت</p>
+        <div className="bg-card border border-border rounded-xl p-5 mb-6">
+          <h2 className="font-semibold text-foreground mb-1">آپلود تصاویر محصول</h2>
+          <p className="text-sm text-muted-foreground mb-1">تصاویر، ویدیوی کوتاه یا فایل PDF محصول را آپلود کنید (اختیاری)</p>
+          <p className="text-xs text-muted-foreground mb-4">حداکثر حجم هر فایل: ۲۵ مگابایت</p>
 
           <input
             ref={mediaInputRef}
@@ -377,9 +377,9 @@ function NewProductPage() {
                 const isPdf = f.file?.type === 'application/pdf';
                 const isVideo = f.file?.type?.startsWith('video/');
                 return (
-                  <div key={i} className="flex items-start gap-3 p-3 border border-gray-100 rounded-lg bg-white hover:bg-gray-50 transition-colors">
+                  <div key={i} className="flex items-start gap-3 p-3 border border-border rounded-lg bg-card hover:bg-muted/60 transition-colors">
                     {/* Preview/Icon */}
-                    <div className="shrink-0 w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden">
+                    <div className="shrink-0 w-12 h-12 rounded-lg bg-muted flex items-center justify-center overflow-hidden">
                       {f.preview ? (
                         <img src={f.preview} alt={f.name} className="w-full h-full object-cover" />
                       ) : isPdf ? (
@@ -393,12 +393,12 @@ function NewProductPage() {
 
                     {/* File info */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">{f.name}</p>
+                      <p className="text-sm font-medium text-foreground truncate">{f.name}</p>
                       {f.errorMsg && (
                         <p className="text-xs text-red-600 mt-0.5 line-clamp-2">{f.errorMsg}</p>
                       )}
                       {f.status === 'uploading' && (
-                        <p className="text-xs text-blue-600 mt-0.5">⏳ در حال آپلود...</p>
+                        <p className="text-xs text-[var(--data-blue)] mt-0.5">⏳ در حال آپلود...</p>
                       )}
                     </div>
 
@@ -421,7 +421,7 @@ function NewProductPage() {
                         <button
                           type="button"
                           onClick={() => setMediaFiles((prev) => prev.filter((_, j) => j !== i))}
-                          className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded hover:bg-gray-200"
+                          className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded hover:bg-muted/80"
                         >
                           حذف
                         </button>
@@ -450,7 +450,7 @@ function NewProductPage() {
             ثبت محصول جدید
           </button>
         </div>
-        <p className="text-xs text-gray-500 mt-3">پس از تکمیل آپلود، می توانید محصول جدید ثبت کنید یا به لیست کالاها بروید.</p>
+        <p className="text-xs text-muted-foreground mt-3">پس از تکمیل آپلود، می توانید محصول جدید ثبت کنید یا به لیست کالاها بروید.</p>
       </div>
     );
   }
@@ -458,8 +458,8 @@ function NewProductPage() {
   return (
     <div className="p-6 max-w-2xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">ثبت محصول جدید</h1>
-        <p className="text-gray-500 text-sm mt-1">مشخصات محصول یا کالای خود را وارد کنید</p>
+        <h1 className="text-2xl font-bold text-foreground">ثبت محصول جدید</h1>
+        <p className="text-muted-foreground text-sm mt-1">مشخصات محصول یا کالای خود را وارد کنید</p>
       </div>
 
       {/* Stepper */}
@@ -473,12 +473,12 @@ function NewProductPage() {
             <button
               type="button"
               onClick={() => setStep(n)}
-              className={`shrink-0 w-8 h-8 rounded-full text-sm font-bold flex items-center justify-center transition-colors ${step === n ? 'bg-[var(--brand)] text-white' : step > n ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'}`}
+              className={`shrink-0 w-8 h-8 rounded-full text-sm font-bold flex items-center justify-center transition-colors ${step === n ? 'bg-[var(--brand)] text-white' : step > n ? 'bg-green-500 text-white' : 'bg-muted text-muted-foreground'}`}
             >
               {step > n ? '✓' : n}
             </button>
-            <span className={`text-xs hidden sm:inline ${step === n ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>{label}</span>
-            {i < 2 && <div className={`flex-1 h-0.5 ${step > n ? 'bg-green-400' : 'bg-gray-200'}`} />}
+            <span className={`text-xs hidden sm:inline ${step === n ? 'text-foreground font-medium' : 'text-muted-foreground/70'}`}>{label}</span>
+            {i < 2 && <div className={`flex-1 h-0.5 ${step > n ? 'bg-green-400' : 'bg-muted'}`} />}
           </div>
         ))}
       </div>
@@ -486,11 +486,11 @@ function NewProductPage() {
       <form onSubmit={handleSubmit(onSubmit, onInvalidSubmit)} className="space-y-5">
         {/* Step 1: Product Definition & Classification */}
         <div className={step !== 1 ? 'hidden' : ''}>
-        <div className="bg-white border border-gray-100 rounded-xl p-5">
-          <h2 className="font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-50">تعریف محصول</h2>
+        <div className="bg-card border border-border rounded-xl p-5">
+          <h2 className="font-semibold text-foreground mb-4 pb-3 border-b border-border/60">تعریف محصول</h2>
           
-          <div className="space-y-1 mb-4 pb-3 border-b border-gray-50">
-            <h3 className="text-xs font-semibold text-gray-600 uppercase">شناسایی محصول</h3>
+          <div className="space-y-1 mb-4 pb-3 border-b border-border/60">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase">شناسایی محصول</h3>
           </div>
           <div className="grid grid-cols-2 gap-4 mb-5">
             <div>
@@ -537,7 +537,7 @@ function NewProductPage() {
                 <div>
                   <label className="label-text">رقم / واریته</label>
                   <input className="input-field" placeholder="مثال: پیکتور، لاین ۷، محلی" onChange={() => {}} id="agri-variety" name="agri-variety" />
-                  <p className="text-[11px] text-gray-400 mt-0.5">نام رقم یا واریته محصول</p>
+                  <p className="text-[11px] text-muted-foreground/70 mt-0.5">نام رقم یا واریته محصول</p>
                 </div>
                 <div>
                   <label className="label-text">فصل برداشت</label>
@@ -565,7 +565,7 @@ function NewProductPage() {
                 <div>
                   <label className="label-text">رطوبت (%)</label>
                   <input className="input-field" type="number" min={0} max={100} placeholder="مثال: ۱۲" id="agri-moisture" name="agri-moisture" />
-                  <p className="text-[11px] text-gray-400 mt-0.5">درصد رطوبت محصول در زمان تحویل</p>
+                  <p className="text-[11px] text-muted-foreground/70 mt-0.5">درصد رطوبت محصول در زمان تحویل</p>
                 </div>
               </div>
               <p className="text-[11px] text-emerald-700 mt-3">
@@ -574,20 +574,20 @@ function NewProductPage() {
             </div>
           )}
 
-          <div className="space-y-1 mb-4 pb-3 border-b border-gray-50 mt-6">
-            <h3 className="text-xs font-semibold text-gray-600 uppercase">کدهای دسته‌بندی</h3>
+          <div className="space-y-1 mb-4 pb-3 border-b border-border/60 mt-6">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase">کدهای دسته‌بندی</h3>
           </div>
           <div className="grid grid-cols-2 gap-4 mb-5">
             <div>
               <label className="label-text">کد HS (تعرفه گمرکی) *</label>
               <input {...register('hsCode')} dir="ltr" className="input-field" placeholder="3906100000" />
-              <p className="text-[11px] text-gray-400 mt-0.5">کد ۸ تا ۱۰ رقمی تعرفه گمرکی</p>
+              <p className="text-[11px] text-muted-foreground/70 mt-0.5">کد ۸ تا ۱۰ رقمی تعرفه گمرکی</p>
               {errors.hsCode && <p className="field-error">{errors.hsCode.message}</p>}
             </div>
             <div>
               <label className="label-text">کد ISIC</label>
               <input {...register('isicCode')} dir="ltr" className="input-field" placeholder="2411" />
-              <p className="text-[11px] text-gray-400 mt-0.5">طبقه‌بندی بین‌المللی فعالیت اقتصادی</p>
+              <p className="text-[11px] text-muted-foreground/70 mt-0.5">طبقه‌بندی بین‌المللی فعالیت اقتصادی</p>
             </div>
             <div>
               <label className="label-text">شناسه کالا/خدمت</label>
@@ -599,8 +599,8 @@ function NewProductPage() {
             </div>
           </div>
 
-          <div className="space-y-1 mb-4 pb-3 border-b border-gray-50 mt-6">
-            <h3 className="text-xs font-semibold text-gray-600 uppercase">مشخصات تکنیکی</h3>
+          <div className="space-y-1 mb-4 pb-3 border-b border-border/60 mt-6">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase">مشخصات تکنیکی</h3>
           </div>
           <div className="space-y-4 mb-5">
             <div>
@@ -630,17 +630,17 @@ function NewProductPage() {
 
         {/* Step 2: Delivery & Payment Terms */}
         <div className={step !== 2 ? 'hidden' : ''}>
-        <div className="bg-white border border-gray-100 rounded-xl p-5">
-          <h2 className="font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-50">شرایط تحویل و پرداخت</h2>
+        <div className="bg-card border border-border rounded-xl p-5">
+          <h2 className="font-semibold text-foreground mb-4 pb-3 border-b border-border/60">شرایط تحویل و پرداخت</h2>
 
-          <div className="space-y-1 mb-4 pb-3 border-b border-gray-50">
-            <h3 className="text-xs font-semibold text-gray-600 uppercase">شرایط سفارش</h3>
+          <div className="space-y-1 mb-4 pb-3 border-b border-border/60">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase">شرایط سفارش</h3>
           </div>
           <div className="grid grid-cols-2 gap-4 mb-5">
             <div>
               <label className="label-text">حداقل مقدار سفارش *</label>
               <input {...register('minOrderQuantity')} className="input-field" placeholder="۱۰۰ کیلوگرم" />
-              <p className="text-[11px] text-gray-400 mt-0.5">عدد + واحد (مثلاً: ۱۰۰ کیلوگرم)</p>
+              <p className="text-[11px] text-muted-foreground/70 mt-0.5">عدد + واحد (مثلاً: ۱۰۰ کیلوگرم)</p>
               {errors.minOrderQuantity && <p className="field-error">{errors.minOrderQuantity.message}</p>}
             </div>
             <div>
@@ -650,12 +650,12 @@ function NewProductPage() {
             </div>
           </div>
 
-          <div className="space-y-1 mb-4 pb-3 border-b border-gray-50 mt-6">
-            <h3 className="text-xs font-semibold text-gray-600 uppercase">تحویل</h3>
+          <div className="space-y-1 mb-4 pb-3 border-b border-border/60 mt-6">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase">تحویل</h3>
           </div>
           <div className="grid grid-cols-2 gap-4 mb-5">
             <div>
-              <label className="label-text">شرایط تحویل * <span className="text-xs text-gray-400">(چندانتخاب)</span></label>
+              <label className="label-text">شرایط تحویل * <span className="text-xs text-muted-foreground/70">(چندانتخاب)</span></label>
               <div className="flex flex-col gap-1.5 mt-1">
                 {DELIVERY_OPTIONS.map((o) => (
                   <label key={o.value} className="flex items-center gap-2 text-sm cursor-pointer">
@@ -663,7 +663,7 @@ function NewProductPage() {
                       type="checkbox"
                       value={o.value}
                       {...register('deliveryTerms')}
-                      className="rounded border-gray-300"
+                      className="rounded border-border"
                     />
                     {o.label}
                   </label>
@@ -678,8 +678,8 @@ function NewProductPage() {
             </div>
           </div>
 
-          <div className="space-y-1 mb-4 pb-3 border-b border-gray-50 mt-6">
-            <h3 className="text-xs font-semibold text-gray-600 uppercase">پرداخت</h3>
+          <div className="space-y-1 mb-4 pb-3 border-b border-border/60 mt-6">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase">پرداخت</h3>
           </div>
           <div className="space-y-4 mb-5">
             <div>
@@ -725,11 +725,11 @@ function NewProductPage() {
 
         {/* Step 3: Physical Specs & Packaging */}
         <div className={step !== 3 ? 'hidden' : ''}>
-        <div className="bg-white border border-gray-100 rounded-xl p-5">
-          <h2 className="font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-50">مشخصات فیزیکی و جزئیات</h2>
+        <div className="bg-card border border-border rounded-xl p-5">
+          <h2 className="font-semibold text-foreground mb-4 pb-3 border-b border-border/60">مشخصات فیزیکی و جزئیات</h2>
 
-          <div className="space-y-1 mb-4 pb-3 border-b border-gray-50">
-            <h3 className="text-xs font-semibold text-gray-600 uppercase">توضیحات و بسته‌بندی</h3>
+          <div className="space-y-1 mb-4 pb-3 border-b border-border/60">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase">توضیحات و بسته‌بندی</h3>
           </div>
           <div className="space-y-4 mb-5">
             <div>
@@ -742,7 +742,7 @@ function NewProductPage() {
               />
             </div>
             <div>
-              <label className="label-text">نوع بسته‌بندی <span className="text-xs text-gray-400">(چندانتخاب)</span></label>
+              <label className="label-text">نوع بسته‌بندی <span className="text-xs text-muted-foreground/70">(چندانتخاب)</span></label>
               <div className="flex flex-col gap-1.5 mt-1">
                 {PACKAGING_OPTIONS.map((o) => (
                   <label key={o.value} className="flex items-center gap-2 text-sm cursor-pointer">
@@ -750,7 +750,7 @@ function NewProductPage() {
                       type="checkbox"
                       value={o.value}
                       {...register('packagingType')}
-                      className="rounded border-gray-300"
+                      className="rounded border-border"
                     />
                     {o.label}
                   </label>
@@ -759,8 +759,8 @@ function NewProductPage() {
             </div>
           </div>
 
-          <div className="space-y-1 mb-4 pb-3 border-b border-gray-50 mt-6">
-            <h3 className="text-xs font-semibold text-gray-600 uppercase">ابعاد و وزن</h3>
+          <div className="space-y-1 mb-4 pb-3 border-b border-border/60 mt-6">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase">ابعاد و وزن</h3>
           </div>
           <div className="grid grid-cols-2 gap-4 mb-5">
             <div>
@@ -817,8 +817,8 @@ function NewProductPage() {
             </div>
           </div>
 
-          <div className="space-y-1 mb-4 pb-3 border-b border-gray-50 mt-6">
-            <h3 className="text-xs font-semibold text-gray-600 uppercase">دوره اعتبار</h3>
+          <div className="space-y-1 mb-4 pb-3 border-b border-border/60 mt-6">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase">دوره اعتبار</h3>
           </div>
           <div className="grid grid-cols-2 gap-4 mb-5">
             <div>
@@ -839,7 +839,7 @@ function NewProductPage() {
 
           <div className="flex items-center gap-2 mt-6">
             <input id="inStock" type="checkbox" {...register('isAvailableInStock')} className="h-4 w-4" />
-            <label htmlFor="inStock" className="text-sm text-gray-700">موجود در انبار</label>
+            <label htmlFor="inStock" className="text-sm text-muted-foreground">موجود در انبار</label>
           </div>
         </div>
 
@@ -856,7 +856,7 @@ function NewProductPage() {
             <button
               type="button"
               onClick={() => setStep((s) => s - 1)}
-              className="px-4 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50"
+              className="px-4 py-2 text-sm border border-border rounded-lg hover:bg-muted/60"
             >
               مرحله قبل
             </button>
@@ -885,7 +885,7 @@ function NewProductPage() {
           <button
             type="button"
             onClick={() => navigate({ to: '/products' })}
-            className="px-4 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 mr-auto"
+            className="px-4 py-2 text-sm border border-border rounded-lg hover:bg-muted/60 mr-auto"
           >
             انصراف
           </button>

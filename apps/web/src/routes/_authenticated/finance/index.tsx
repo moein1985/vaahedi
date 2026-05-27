@@ -113,7 +113,7 @@ function FinancePage() {
             label="کل درخواست‌ها"
             value={tradeStats?.total ?? 0}
             icon={BarChart3}
-            color="bg-blue-100 text-blue-600"
+            color="bg-[hsl(195_56%_33%_/_0.12)] text-[var(--data-blue)]"
             loading={loadingStats}
           />
           <PipelineCard
@@ -189,7 +189,7 @@ function FinancePage() {
                   <ArrowUpCircle className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">هنوز درخواست تجاری ثبت نکرده‌اید.</p>
                   <Button asChild size="sm" className="mt-3">
-                    <Link to="/rfq">ایجاد RFQ اول</Link>
+                    <Link to="/rfq">ایجاد اولین درخواست</Link>
                   </Button>
                 </div>
               )}

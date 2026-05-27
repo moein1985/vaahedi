@@ -37,9 +37,9 @@ type NavConfigItem = {
 
 const NAV_MAIN: NavConfigItem[] = [
   { href: '/dashboard',           icon: LayoutDashboard,  label: 'داشبورد' },
-  { href: '/products',            icon: Package,          label: 'کالاها' },
-  { href: '/rfq',                 icon: ArrowLeftRight,   label: 'درخواست ها (RFQ)' },
-  { href: '/catalog',             icon: Globe,            label: 'بازار (Marketplace)', external: true },
+  { href: '/products',            icon: Package,          label: 'محصولات' },
+  { href: '/rfq',                 icon: ArrowLeftRight,   label: 'درخواست ها و فرصت ها' },
+  { href: '/catalog',             icon: Globe,            label: 'بازار محصولات', external: true },
   { href: '/messages',            icon: MessageSquare,    label: 'پیام ها' },
   { href: '/ai-advisor',          icon: Bell,             label: 'مشاور کشاورزی' },
   { href: '/licenses',            icon: BadgeCheck,       label: 'مجوزهای من' },
@@ -73,8 +73,8 @@ const NAV_ADMIN: NavConfigItem[] = [
 
 const MOBILE_NAV: NavConfigItem[] = [
   { href: '/dashboard',  icon: LayoutDashboard, label: 'خانه' },
-  { href: '/products',   icon: Package,         label: 'کالاها' },
-  { href: '/rfq',        icon: ArrowLeftRight,  label: 'RFQ' },
+  { href: '/products',   icon: Package,         label: 'محصولات' },
+  { href: '/rfq',        icon: ArrowLeftRight,  label: 'درخواست ها' },
   { href: '/messages',   icon: MessageSquare,   label: 'پیام ها' },
   { href: '/finance',    icon: BarChart3,       label: 'مالی' },
 ];
@@ -203,14 +203,14 @@ function Sidebar({ isAdmin, adminRole }: { isAdmin: boolean; adminRole?: string 
       {/* Logo */}
       <div className={cn('flex items-center gap-3 px-4 py-5 border-b border-b-[var(--sidebar-border)]', collapsed && 'justify-center px-2')}>
         <div
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-black text-base bg-[linear-gradient(135deg,hsl(38_95%_52%),hsl(30_85%_40%))] text-white"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-black text-base bg-[linear-gradient(135deg,var(--agri-leaf),var(--brand))] text-white"
         >
-          ت
+          ک
         </div>
         {!collapsed && (
           <div>
-            <div className="text-sm font-black text-[hsl(0_0%_95%)]">تجارت هوشمند</div>
-            <div className="text-[10px] text-[var(--sidebar-text)]">سامانه تجارت ایرانیان</div>
+            <div className="text-sm font-black text-[hsl(0_0%_95%)]">ذینفعان کشاورزی</div>
+            <div className="text-[10px] text-[var(--sidebar-text)]">شبکه تخصصی حوزه کشاورزی</div>
           </div>
         )}
       </div>
@@ -226,13 +226,13 @@ function Sidebar({ isAdmin, adminRole }: { isAdmin: boolean; adminRole?: string 
 
       {/* Profile Progress */}
       {!collapsed && completion && !completion.isComplete && (
-        <div className="px-4 py-3 border-t border-t-[var(--sidebar-border)] bg-[hsl(38_95%_52%_/_0.06)]">
+        <div className="px-4 py-3 border-t border-t-[var(--sidebar-border)] bg-[var(--brand-light)]">
           <div className="flex items-center justify-between text-xs mb-1.5 text-[var(--sidebar-text)]">
             <span>تکمیل پروفایل</span>
-            <span className="font-semibold text-[var(--brand-amber)]">{completion.percent}%</span>
+            <span className="font-semibold text-[var(--brand)]">{completion.percent}%</span>
           </div>
           <Progress value={completion.percent} className="h-1.5" />
-          <Link to="/profile" className="text-xs hover:underline mt-1.5 block text-[var(--brand-amber)]">
+          <Link to="/profile" className="text-xs hover:underline mt-1.5 block text-[var(--brand)]">
             تکمیل کنید ←
           </Link>
         </div>
@@ -283,8 +283,8 @@ function TopHeader() {
   return (
     <header className="lg:hidden sticky top-0 z-30 px-4 py-3 flex items-center justify-between bg-[var(--sidebar-bg)] border-b border-b-[var(--sidebar-border)]" dir="rtl">
       <div className="flex items-center gap-2">
-        <div className="h-7 w-7 rounded-lg flex items-center justify-center font-black text-xs bg-[linear-gradient(135deg,hsl(38_95%_52%),hsl(30_85%_40%))] text-white">ت</div>
-        <span className="text-sm font-black text-[hsl(0_0%_95%)]">تجارت هوشمند</span>
+        <div className="h-7 w-7 rounded-lg flex items-center justify-center font-black text-xs bg-[linear-gradient(135deg,var(--agri-leaf),var(--brand))] text-white">ک</div>
+        <span className="text-sm font-black text-[hsl(0_0%_95%)]">ذینفعان کشاورزی</span>
       </div>
       <div className="flex items-center gap-2">
         <Link to="/notifications" className="relative p-2 transition-colors text-[var(--sidebar-text)]" aria-label="اعلان‌ها">
@@ -297,7 +297,7 @@ function TopHeader() {
           <LanguageSwitcher />
         </div>
         <Avatar className="h-8 w-8">
-          <AvatarFallback className="text-xs bg-[var(--sidebar-bg-hover)] text-[var(--brand-amber)]">
+          <AvatarFallback className="text-xs bg-[var(--sidebar-bg-hover)] text-[var(--brand)]">
             {String(user?.userCode ?? '').slice(0, 2)}
           </AvatarFallback>
         </Avatar>
@@ -330,7 +330,7 @@ function MobileNav() {
             to={href as '/dashboard'}
             className={cn(
               'flex-1 flex flex-col items-center justify-center py-2.5 gap-1 text-[10px] font-medium transition-colors',
-              isActive ? 'text-[var(--brand-amber)]' : 'text-[var(--sidebar-text)]'
+              isActive ? 'text-[var(--brand)]' : 'text-[var(--sidebar-text)]'
             )}
           >
             <Icon className="h-5 w-5" />

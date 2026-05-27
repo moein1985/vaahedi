@@ -19,7 +19,7 @@ const NOTIF_TYPE_ICON: Record<string, React.ElementType> = {
 };
 
 const NOTIF_TYPE_LABEL: Record<string, string> = {
-  TRADE_REQUEST_MATCH:  'تطابق RFQ',
+  TRADE_REQUEST_MATCH:  'تطابق درخواست',
   PRODUCT_APPROVED:     'تایید کالا',
   DOCUMENT_VERIFIED:    'تایید مدرک',
   NEW_MESSAGE:          'پیام جدید',
@@ -62,7 +62,7 @@ function NotificationsPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => { setUnreadOnly((v) => !v); setPage(1); }}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs border transition-colors ${unreadOnly ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-white text-gray-600 border-gray-200'}`}
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs border transition-colors ${unreadOnly ? 'bg-[hsl(148_62%_24%_/_0.12)] text-[var(--agri-primary)] border-[hsl(148_40%_74%)]' : 'bg-card text-muted-foreground border-border'}`}
           >
             {unreadOnly ? <Bell className="h-3.5 w-3.5" /> : <BellOff className="h-3.5 w-3.5" />}
             {unreadOnly ? 'خوانده نشده' : 'همه'}
@@ -98,7 +98,7 @@ function NotificationsPage() {
           <p className="text-sm text-muted-foreground">
             {unreadOnly
               ? 'همه اعلان‌ها خوانده شده‌اند'
-              : 'هنگام تغییر وضعیت کالا، مدارک یا RFQ اینجا اطلاع‌رسانی می‌شود'
+              : 'هنگام تغییر وضعیت کالا، مدارک یا درخواست ها اینجا اطلاع رسانی می شود'
             }
           </p>
           {unreadOnly && (
@@ -118,13 +118,13 @@ function NotificationsPage() {
                 onClick={() => !n.isRead && markRead.mutate({ ids: [n.id] })}
                 className={`rounded-xl border p-4 transition-colors cursor-pointer ${
                   n.isRead
-                    ? 'bg-white border-gray-100 hover:border-gray-200'
-                    : 'bg-blue-50/60 border-blue-100 hover:bg-blue-50'
+                    ? 'bg-card border-border/70 hover:border-border'
+                    : 'bg-[hsl(148_62%_24%_/_0.08)] border-[hsl(148_40%_78%)] hover:bg-[hsl(148_62%_24%_/_0.12)]'
                 }`}
               >
                 <div className="flex items-start gap-3">
-                  <div className={`rounded-lg p-2 shrink-0 mt-0.5 ${n.isRead ? 'bg-muted' : 'bg-blue-100'}`}>
-                    <Icon className={`h-4 w-4 ${n.isRead ? 'text-muted-foreground' : 'text-blue-600'}`} />
+                  <div className={`rounded-lg p-2 shrink-0 mt-0.5 ${n.isRead ? 'bg-muted' : 'bg-[hsl(148_62%_24%_/_0.14)]'}`}>
+                    <Icon className={`h-4 w-4 ${n.isRead ? 'text-muted-foreground' : 'text-[var(--agri-primary)]'}`} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5 flex-wrap">
@@ -136,11 +136,11 @@ function NotificationsPage() {
                       {!n.isRead && <Badge variant="blue" className="text-[10px] px-1.5 py-0.5">جدید</Badge>}
                     </div>
                     {n.title && (
-                      <p className={`text-sm font-semibold mb-0.5 ${n.isRead ? 'text-foreground' : 'text-gray-900'}`}>
+                      <p className={`text-sm font-semibold mb-0.5 ${n.isRead ? 'text-foreground' : 'text-foreground'}`}>
                         {n.title}
                       </p>
                     )}
-                    <p className={`text-sm leading-5 ${n.isRead ? 'text-muted-foreground' : 'text-gray-800'}`}>
+                    <p className={`text-sm leading-5 ${n.isRead ? 'text-muted-foreground' : 'text-[var(--soil-neutral)]'}`}>
                       {n.message}
                     </p>
                     <p className="text-xs text-muted-foreground/60 mt-1.5">

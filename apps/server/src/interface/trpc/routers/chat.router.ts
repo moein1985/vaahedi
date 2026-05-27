@@ -3,8 +3,8 @@ import { TRPCError } from '@trpc/server';
 import { router, activeProcedure } from '../trpc.js';
 
 const PLATFORM_SERVICES = [
-  'درخواست ها (RFQ)',
-  'بازار (Marketplace)',
+  'درخواست ها و فرصت ها',
+  'بازار محصولات',
   'پیام ها',
   'AI مشاور',
   'اسناد',

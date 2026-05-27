@@ -114,7 +114,7 @@ function TradeDetailPage() {
         <Button asChild variant="ghost" size="sm" className="-mr-2">
           <Link to="/trade">
             <ArrowRight className="h-4 w-4 ml-1" />
-            لیست RFQ ها
+            لیست درخواست ها
           </Link>
         </Button>
       </div>
@@ -157,14 +157,14 @@ function TradeDetailPage() {
                 return (
                   <div key={s.key} className="flex items-center flex-1">
                     <div className="flex flex-col items-center flex-1">
-                      <div className={`rounded-full p-2 mb-1.5 ${done ? 'bg-green-100 text-green-600' : active ? 'bg-blue-100 text-blue-600' : 'bg-muted text-muted-foreground/40'}`}>
+                      <div className={`rounded-full p-2 mb-1.5 ${done ? 'bg-green-100 text-green-600' : active ? 'bg-[hsl(148_62%_24%_/_0.14)] text-[var(--agri-primary)]' : 'bg-muted text-muted-foreground/40'}`}>
                         <Icon className="h-4 w-4" />
                       </div>
-                      <p className={`text-xs font-medium text-center leading-tight ${active ? 'text-blue-700' : done ? 'text-green-700' : 'text-muted-foreground/50'}`}>
+                      <p className={`text-xs font-medium text-center leading-tight ${active ? 'text-[var(--agri-primary)]' : done ? 'text-green-700' : 'text-muted-foreground/50'}`}>
                         {s.label}
                       </p>
                       {active && (
-                        <p className="text-[10px] text-blue-500 text-center mt-0.5 leading-tight hidden sm:block">{s.desc}</p>
+                        <p className="text-[10px] text-[var(--data-blue)] text-center mt-0.5 leading-tight hidden sm:block">{s.desc}</p>
                       )}
                     </div>
                     {idx < PIPELINE_STEPS.length - 1 && (
@@ -236,7 +236,7 @@ function TradeDetailPage() {
           <Button asChild variant="outline" className="flex-1 sm:flex-none">
             <Link to="/chat">
               <Sparkles className="h-4 w-4 ml-2" />
-              تحلیل AI برای این RFQ
+              تحلیل AI برای این درخواست
             </Link>
           </Button>
         </div>

@@ -41,11 +41,11 @@ function StatCard({
   color?: 'default' | 'blue' | 'green' | 'orange' | 'red';
 }) {
   const iconClasses: Record<string, string> = {
-    default: 'bg-[hsl(220_14%_96%)] text-[hsl(220_9%_46%)]',
-    blue: 'bg-[linear-gradient(135deg,hsl(38_95%_52%_/_0.1),hsl(217_91%_40%_/_0.08))] text-[var(--brand)]',
-    green: 'bg-[hsl(142_60%_50%_/_0.1)] text-[hsl(142_60%_38%)]',
-    orange: 'bg-[hsl(38_95%_52%_/_0.12)] text-[var(--brand-amber)]',
-    red: 'bg-[hsl(0_84%_60%_/_0.1)] text-[hsl(0_84%_55%)]',
+    default: 'bg-[var(--muted)] text-[var(--muted-foreground)]',
+    blue: 'bg-[linear-gradient(135deg,var(--brand-light),hsl(195_56%_33%_/_0.09))] text-[var(--brand)]',
+    green: 'bg-[hsl(139_50%_37%_/_0.12)] text-[var(--agri-leaf)]',
+    orange: 'bg-[hsl(40_62%_57%_/_0.16)] text-[var(--soil-neutral)]',
+    red: 'bg-[hsl(2_52%_50%_/_0.12)] text-[var(--error-red)]',
   };
 
   return (
@@ -106,7 +106,7 @@ export function DashboardPage() {
     unreadOnly: true,
   });
   const { data: latestNews, isLoading: loadingNews } = trpc.news.latest.useQuery({ limit: 3 });
-  const { data: marketplaceData, isLoading: loadingMarketplace } = trpc.product.list.useQuery({
+  const { data: catalogData, isLoading: loadingCatalog } = trpc.product.list.useQuery({
     page: 1,
     limit: 4,
     sortBy: 'createdAt',
@@ -137,7 +137,7 @@ export function DashboardPage() {
 
   if ((productStats?.total ?? 0) === 0) {
     aiSuggestions.push({
-      title: 'اولین کالا را در Marketplace ثبت کنید',
+      title: 'اولین کالا را در بازار محصولات ثبت کنید',
       desc: 'با ثبت حداقل یک کالا، در نتایج جستجو نمایش داده می شوید.',
       to: '/products/new',
     });
@@ -145,8 +145,8 @@ export function DashboardPage() {
 
   if (activeTradeRequests === 0) {
     aiSuggestions.push({
-      title: 'یک RFQ فعال بسازید',
-      desc: 'با ایجاد RFQ، فرصت های جدید تامین یا فروش سریع تر کشف می شود.',
+      title: 'یک درخواست فعال بسازید',
+      desc: 'با ایجاد درخواست، فرصت های جدید تامین یا فروش سریع تر کشف می شود.',
       to: '/rfq',
     });
   }
@@ -171,7 +171,7 @@ export function DashboardPage() {
     <div className="p-5 lg:p-7 space-y-7" dir="rtl">
       {/* Header */}
       <div
-        className="flex items-center justify-between rounded-xl p-5 border bg-[linear-gradient(135deg,hsl(222_47%_9%_/_0.04),hsl(38_95%_52%_/_0.04))] border-[hsl(38_95%_52%_/_0.15)]"
+        className="flex items-center justify-between rounded-xl p-5 border bg-[linear-gradient(135deg,hsl(153_30%_12%_/_0.03),hsl(195_56%_33%_/_0.05))] border-[hsl(139_50%_37%_/_0.24)]"
       >
         <div>
           <h1 className="text-2xl font-bold text-foreground">داشبورد</h1>
@@ -193,14 +193,14 @@ export function DashboardPage() {
 
       {/* Profile Completion Alert */}
       {!loadingCompletion && completion && !completion.isComplete && (
-        <Card className="border border-[var(--brand-amber)] bg-[hsl(38_95%_52%_/_0.05)]">
+        <Card className="border border-[hsl(139_50%_37%_/_0.35)] bg-[hsl(139_50%_37%_/_0.07)]">
           <CardContent className="p-4">
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold mb-1 text-[var(--brand-amber)]">پروفایل شما ناقص است</p>
+                <p className="text-sm font-semibold mb-1 text-[var(--agri-leaf)]">پروفایل شما ناقص است</p>
                 <div className="flex items-center gap-3">
                   <Progress value={completion.percent} className="h-1.5 flex-1 max-w-xs" />
-                  <span className="text-xs font-bold text-[var(--brand-amber)]">{completion.percent}%</span>
+                  <span className="text-xs font-bold text-[var(--agri-leaf)]">{completion.percent}%</span>
                 </div>
               </div>
               <Button asChild size="sm">
@@ -294,12 +294,12 @@ export function DashboardPage() {
             </div>
 
             <div className="pt-1">
-              <p className="text-xs font-semibold text-muted-foreground mb-2">کالاهای تازه در Marketplace</p>
-              {loadingMarketplace ? (
+              <p className="text-xs font-semibold text-muted-foreground mb-2">کالاهای تازه در بازار محصولات</p>
+              {loadingCatalog ? (
                 <Skeleton className="h-10 w-full" />
-              ) : marketplaceData?.data?.length ? (
+              ) : catalogData?.data?.length ? (
                 <div className="flex flex-wrap gap-2">
-                  {marketplaceData.data.slice(0, 3).map((product) => (
+                  {catalogData.data.slice(0, 3).map((product) => (
                     <Badge key={product.id} variant="outline" className="font-normal">
                       {product.nameFa}
                     </Badge>
@@ -318,7 +318,7 @@ export function DashboardPage() {
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-[var(--brand)]" />
-            آخرین فعالیت تجاری
+            آخرین فعالیت درخواست ها
           </h2>
           <Button asChild variant="ghost" size="sm" className="text-xs text-muted-foreground">
             <Link to="/rfq">مشاهده همه</Link>
@@ -354,9 +354,9 @@ export function DashboardPage() {
           <Card>
             <CardContent className="p-5 text-center">
               <ArrowLeftRight className="h-7 w-7 text-muted-foreground/40 mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground mb-3">هنوز درخواست تجاری ایجاد نکرده‌اید.</p>
+              <p className="text-sm text-muted-foreground mb-3">هنوز درخواستی ایجاد نکرده اید.</p>
               <Button asChild size="sm">
-                <Link to="/rfq">ایجاد اولین RFQ</Link>
+                <Link to="/rfq">ایجاد اولین درخواست</Link>
               </Button>
             </CardContent>
           </Card>
@@ -370,10 +370,10 @@ export function DashboardPage() {
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base flex items-center gap-2">
-                <Wheat className="h-4 w-4 text-emerald-600" />
+                <Wheat className="h-4 w-4 text-[var(--agri-leaf)]" />
                 تقویم برداشت
               </CardTitle>
-              <Link to="/harvest" className="text-xs text-emerald-600 hover:underline">
+              <Link to="/harvest" className="text-xs text-[var(--agri-leaf)] hover:underline">
                 مشاهده همه ›
               </Link>
             </div>
@@ -381,7 +381,7 @@ export function DashboardPage() {
           <CardContent className="space-y-2">
             {harvestData?.items?.length ? (
               harvestData.items.map((item) => (
-                <div key={item.id} className="flex items-center justify-between rounded-lg bg-emerald-50 px-3 py-2">
+                <div key={item.id} className="flex items-center justify-between rounded-lg bg-[hsl(139_50%_37%_/_0.1)] px-3 py-2">
                   <div>
                     <p className="text-sm font-medium text-gray-800">{item.cropNameFa}</p>
                     {item.province && (
@@ -390,7 +390,7 @@ export function DashboardPage() {
                       </p>
                     )}
                   </div>
-                  <span className="text-xs bg-white border border-emerald-200 text-emerald-700 px-2 py-0.5 rounded-full">
+                  <span className="text-xs bg-white border border-[hsl(139_50%_37%_/_0.35)] text-[var(--agri-leaf)] px-2 py-0.5 rounded-full">
                     {['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'][item.harvestStartMonth - 1]}
                   </span>
                 </div>
@@ -406,10 +406,10 @@ export function DashboardPage() {
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-cyan-600" />
+                <TrendingUp className="h-4 w-4 text-[var(--data-blue)]" />
                 تحلیل بازار
               </CardTitle>
-              <Link to="/market-insights" className="text-xs text-cyan-600 hover:underline">
+              <Link to="/market-insights" className="text-xs text-[var(--data-blue)] hover:underline">
                 مشاهده همه ›
               </Link>
             </div>
@@ -420,7 +420,7 @@ export function DashboardPage() {
                 <div key={item.id} className="rounded-lg border border-gray-100 px-3 py-2">
                   <div className="flex items-start justify-between gap-2">
                     <p className="text-sm font-medium text-gray-800 line-clamp-1">{item.title}</p>
-                    <span className="text-[10px] bg-cyan-100 text-cyan-700 px-1.5 py-0.5 rounded shrink-0">
+                    <span className="text-[10px] bg-[hsl(195_56%_33%_/_0.14)] text-[var(--data-blue)] px-1.5 py-0.5 rounded shrink-0">
                       {({ price: 'قیمت', demand: 'تقاضا', supply: 'عرضه', trend: 'روند', regulation: 'مقررات' } as Record<string, string>)[item.insightType] ?? item.insightType}
                     </span>
                   </div>
@@ -439,12 +439,12 @@ export function DashboardPage() {
         <h2 className="text-base font-semibold text-foreground mb-3">دسترسی سریع</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {[
-            { href: '/products/new',    icon: Package,        label: 'کالای جدید',   color: 'bg-blue-50 text-blue-600 hover:bg-blue-100' },
-            { href: '/rfq',             icon: ArrowLeftRight, label: 'RFQ جدید',     color: 'bg-green-50 text-green-600 hover:bg-green-100' },
-            { href: '/harvest',         icon: Wheat,          label: 'تقویم برداشت', color: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' },
-            { href: '/market-insights', icon: TrendingUp,     label: 'تحلیل بازار',  color: 'bg-cyan-50 text-cyan-600 hover:bg-cyan-100' },
-            { href: '/messages',        icon: MessageSquare,  label: 'پیام ها',      color: 'bg-orange-50 text-orange-600 hover:bg-orange-100' },
-            { href: '/ai-advisor',      icon: Sparkles,       label: 'مشاور کشاورزی', color: 'bg-purple-50 text-purple-600 hover:bg-purple-100' },
+            { href: '/products/new',    icon: Package,        label: 'کالای جدید',   color: 'bg-[hsl(139_50%_37%_/_0.1)] text-[var(--agri-leaf)] hover:bg-[hsl(139_50%_37%_/_0.16)]' },
+            { href: '/rfq',             icon: ArrowLeftRight, label: 'درخواست جدید',  color: 'bg-[hsl(146_22%_90%)] text-[var(--brand)] hover:bg-[hsl(146_22%_86%)]' },
+            { href: '/harvest',         icon: Wheat,          label: 'تقویم برداشت', color: 'bg-[hsl(139_50%_37%_/_0.1)] text-[var(--agri-leaf)] hover:bg-[hsl(139_50%_37%_/_0.16)]' },
+            { href: '/market-insights', icon: TrendingUp,     label: 'تحلیل بازار',  color: 'bg-[hsl(195_56%_33%_/_0.12)] text-[var(--data-blue)] hover:bg-[hsl(195_56%_33%_/_0.2)]' },
+            { href: '/messages',        icon: MessageSquare,  label: 'پیام ها',      color: 'bg-[hsl(40_62%_57%_/_0.16)] text-[var(--soil-neutral)] hover:bg-[hsl(40_62%_57%_/_0.24)]' },
+            { href: '/ai-advisor',      icon: Sparkles,       label: 'مشاور کشاورزی', color: 'bg-[hsl(153_30%_12%_/_0.08)] text-[var(--brand)] hover:bg-[hsl(153_30%_12%_/_0.14)]' },
           ].map(({ href, icon: Icon, label, color }) => (
             <Link
               key={href}

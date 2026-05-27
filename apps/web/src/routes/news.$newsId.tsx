@@ -35,8 +35,8 @@ function NewsDetailPage() {
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-border">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-[var(--brand)] text-white flex items-center justify-center font-black text-sm">ت</div>
-            <span className="font-black text-foreground">تجارت هوشمند</span>
+            <div className="h-8 w-8 rounded-lg bg-[var(--brand)] text-white flex items-center justify-center font-black text-sm">ک</div>
+            <span className="font-black text-foreground">ذینفعان کشاورزی</span>
           </Link>
           <Button variant="ghost" asChild><Link to="/news">{t('news.title')}</Link></Button>
         </div>
@@ -45,7 +45,7 @@ function NewsDetailPage() {
       <article className="max-w-4xl mx-auto px-4 py-8">
         <div className="bg-white rounded-xl border border-border p-6 md:p-10">
           {article.category && (
-            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full mb-3 inline-block">
+            <span className="text-xs bg-[hsl(195_56%_33%_/_0.12)] text-[var(--data-blue)] px-2 py-0.5 rounded-full mb-3 inline-block">
               {article.category}
             </span>
           )}
@@ -78,7 +78,7 @@ function NewsDetailPage() {
                 href={article.sourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-blue-600 hover:underline"
+                className="text-sm text-[var(--data-blue)] hover:underline"
               >
                 مشاهده منبع اصلی ←
               </a>

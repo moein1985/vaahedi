@@ -78,8 +78,8 @@ function AdminCircularsPage() {
     <div className="p-6 max-w-4xl" dir="rtl">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">مدیریت بخشنامه‌ها</h1>
-          <p className="text-sm text-gray-500 mt-1">ایجاد و مدیریت بخشنامه‌های تجاری</p>
+          <h1 className="text-2xl font-bold text-foreground">مدیریت بخشنامه‌ها</h1>
+          <p className="text-sm text-muted-foreground mt-1">ایجاد و مدیریت بخشنامه‌های تجاری</p>
         </div>
         <button
           onClick={() => setShowForm((v) => !v)}
@@ -91,8 +91,8 @@ function AdminCircularsPage() {
 
       {/* Create Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-xl p-5 mb-6 space-y-4">
-          <h2 className="font-semibold text-gray-800 border-b border-gray-100 pb-3">بخشنامه جدید</h2>
+        <form onSubmit={handleSubmit} className="bg-card border border-border rounded-xl p-5 mb-6 space-y-4">
+          <h2 className="font-semibold text-foreground border-b border-border pb-3">بخشنامه جدید</h2>
 
           <div>
             <label className="label-text">عنوان *</label>
@@ -132,9 +132,9 @@ function AdminCircularsPage() {
             <label className="label-text">برچسب‌ها</label>
             <div className="flex gap-2 flex-wrap mb-2">
               {form.tags.map((t) => (
-                <span key={t} className="flex items-center gap-1 bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">
+                <span key={t} className="flex items-center gap-1 bg-[hsl(195_56%_33%_/_0.12)] text-[var(--data-blue)] text-xs px-2 py-1 rounded-full">
                   {t}
-                  <button type="button" onClick={() => setForm((f) => ({ ...f, tags: f.tags.filter((x) => x !== t) }))} className="text-blue-400 hover:text-blue-700">×</button>
+                  <button type="button" onClick={() => setForm((f) => ({ ...f, tags: f.tags.filter((x) => x !== t) }))} className="text-[var(--data-blue)]/70 hover:text-[var(--agri-primary)]">×</button>
                 </span>
               ))}
             </div>
@@ -153,7 +153,7 @@ function AdminCircularsPage() {
           {/* File upload */}
           <div>
             <label className="label-text">فایل پیوست (اختیاری)</label>
-            <input ref={fileRef} type="file" accept=".pdf,.doc,.docx,.xlsx" onChange={handleFileSelect} className="hidden" />
+            <input ref={fileRef} type="file" accept=".pdf,.doc,.docx,.xlsx" onChange={handleFileSelect} className="hidden" title="انتخاب فایل بخشنامه" />
             {uploadedFile ? (
               <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
                 <span className="text-green-700 text-sm">✓ {uploadedFile.name}</span>
@@ -188,28 +188,28 @@ function AdminCircularsPage() {
 
       {/* List */}
       {isLoading ? (
-        <div className="text-center py-16 text-gray-400">در حال بارگذاری...</div>
+        <div className="text-center py-16 text-muted-foreground/70">در حال بارگذاری...</div>
       ) : !data?.items?.length ? (
-        <div className="text-center py-12 bg-white rounded-xl border border-gray-100">
-          <p className="text-gray-500">هیچ بخشنامه‌ای ثبت نشده است</p>
+        <div className="text-center py-12 bg-card rounded-xl border border-border">
+          <p className="text-muted-foreground">هیچ بخشنامه‌ای ثبت نشده است</p>
           <button onClick={() => setShowForm(true)} className="btn-primary mt-4">اولین بخشنامه را ایجاد کنید</button>
         </div>
       ) : (
         <div className="space-y-3">
           {data.items.map((c) => (
-            <div key={c.id} className="bg-white border border-gray-100 rounded-xl p-4">
+            <div key={c.id} className="bg-card border border-border rounded-xl p-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <h3 className="font-medium text-gray-900">{c.title}</h3>
-                  {c.summary && <p className="text-sm text-gray-500 mt-1">{c.summary}</p>}
+                  <h3 className="font-medium text-foreground">{c.title}</h3>
+                  {c.summary && <p className="text-sm text-muted-foreground mt-1">{c.summary}</p>}
                   <div className="flex items-center gap-3 mt-2 flex-wrap">
                     {c.publishedAt && (
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-muted-foreground/70">
                         {new Date(c.publishedAt).toLocaleDateString('fa-IR')}
                       </span>
                     )}
                     {c.tags?.map((tag: string) => (
-                      <span key={tag} className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{tag}</span>
+                      <span key={tag} className="text-xs bg-[hsl(195_56%_33%_/_0.12)] text-[var(--data-blue)] px-2 py-0.5 rounded-full">{tag}</span>
                     ))}
                   </div>
                 </div>
@@ -230,7 +230,7 @@ function AdminCircularsPage() {
               >
                 ‹ قبلی
               </button>
-              <span className="text-sm text-gray-600">{page} / {data.pages}</span>
+              <span className="text-sm text-muted-foreground">{page} / {data.pages}</span>
               <button
                 disabled={page >= data.pages}
                 onClick={() => setPage((p) => p + 1)}

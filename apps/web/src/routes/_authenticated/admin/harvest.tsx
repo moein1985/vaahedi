@@ -103,7 +103,7 @@ function AdminHarvestPage() {
         <div className="flex items-center gap-2">
           <Wheat className="h-6 w-6 text-green-600" />
           <h1 className="text-xl font-bold">مدیریت تقویم برداشت</h1>
-          {data && <span className="text-sm text-gray-400">({data.total} ردیف)</span>}
+          {data && <span className="text-sm text-muted-foreground/70">({data.total} ردیف)</span>}
         </div>
         <Button size="sm" onClick={() => { resetForm(); setShowForm(true); }}>
           <Plus className="h-4 w-4 ml-1" />
@@ -113,7 +113,7 @@ function AdminHarvestPage() {
 
       {/* فرم */}
       {showForm && (
-        <div className="bg-white border rounded-xl p-5 mb-6">
+        <div className="bg-card border border-border rounded-xl p-5 mb-6">
           <h2 className="font-semibold mb-4">{editingId ? 'ویرایش محصول' : 'محصول جدید'}</h2>
           <form onSubmit={(e) => { void handleSubmit(e); }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -140,7 +140,7 @@ function AdminHarvestPage() {
                 title="ماه شروع برداشت"
                 value={form.harvestStartMonth}
                 onChange={(e) => setForm((f) => ({ ...f, harvestStartMonth: parseInt(e.target.value) }))}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm"
+                className="w-full border border-input rounded-lg px-3 py-2.5 text-sm"
               >
                 {MONTH_NAMES.map((name, i) => (
                   <option key={i + 1} value={i + 1}>{name}</option>
@@ -153,7 +153,7 @@ function AdminHarvestPage() {
                 title="ماه پایان برداشت"
                 value={form.harvestEndMonth}
                 onChange={(e) => setForm((f) => ({ ...f, harvestEndMonth: parseInt(e.target.value) }))}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm"
+                className="w-full border border-input rounded-lg px-3 py-2.5 text-sm"
               >
                 {MONTH_NAMES.map((name, i) => (
                   <option key={i + 1} value={i + 1}>{name}</option>
@@ -184,7 +184,7 @@ function AdminHarvestPage() {
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 rows={2}
                 placeholder="توضیحات تکمیلی (اختیاری)"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none"
+                className="w-full border border-input rounded-lg px-3 py-2 text-sm resize-none"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -211,11 +211,11 @@ function AdminHarvestPage() {
 
       {/* لیست */}
       {isLoading ? (
-        <div className="text-center py-16 text-gray-400">در حال بارگذاری...</div>
+        <div className="text-center py-16 text-muted-foreground/70">در حال بارگذاری...</div>
       ) : (
-        <div className="bg-white border rounded-xl overflow-hidden">
+        <div className="bg-card border border-border rounded-xl overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-600">
+            <thead className="bg-muted/60 text-muted-foreground">
               <tr>
                 <th className="px-4 py-3 text-right">محصول</th>
                 <th className="px-4 py-3 text-right">بازه برداشت</th>
@@ -226,17 +226,17 @@ function AdminHarvestPage() {
             </thead>
             <tbody>
               {(data?.items ?? []).map((item) => (
-                <tr key={item.id} className="border-t border-gray-100 hover:bg-gray-50">
+                <tr key={item.id} className="border-t border-border/60 hover:bg-muted/50">
                   <td className="px-4 py-3">
                     <div className="font-medium">{item.cropNameFa}</div>
-                    {item.cropNameEn && <div className="text-xs text-gray-400" dir="ltr">{item.cropNameEn}</div>}
+                    {item.cropNameEn && <div className="text-xs text-muted-foreground/70" dir="ltr">{item.cropNameEn}</div>}
                     {item.variety && <div className="text-xs text-green-600">{item.variety}</div>}
                   </td>
-                  <td className="px-4 py-3 text-gray-600">
+                  <td className="px-4 py-3 text-foreground">
                     {MONTH_NAMES[item.harvestStartMonth - 1]}
                     {item.harvestStartMonth !== item.harvestEndMonth && ` — ${MONTH_NAMES[item.harvestEndMonth - 1]}`}
                   </td>
-                  <td className="px-4 py-3 text-gray-500">{item.province ?? '—'}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{item.province ?? '—'}</td>
                   <td className="px-4 py-3">
                     <Badge variant={item.isActive ? 'green' : 'secondary'} className="text-xs">
                       {item.isActive ? 'فعال' : 'غیرفعال'}
@@ -244,7 +244,7 @@ function AdminHarvestPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex gap-2">
-                      <button onClick={() => startEdit(item)} className="text-blue-500 hover:text-blue-700" title="ویرایش آیتم">
+                      <button onClick={() => startEdit(item)} className="text-[var(--data-blue)] hover:text-[var(--agri-primary)]" title="ویرایش آیتم">
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button onClick={() => void handleDelete(item.id, item.cropNameFa)} className="text-red-400 hover:text-red-600" title="حذف آیتم">
@@ -255,7 +255,7 @@ function AdminHarvestPage() {
                 </tr>
               ))}
               {!data?.items.length && (
-                <tr><td colSpan={5} className="px-4 py-12 text-center text-gray-400">ردیفی ثبت نشده</td></tr>
+                <tr><td colSpan={5} className="px-4 py-12 text-center text-muted-foreground/70">ردیفی ثبت نشده</td></tr>
               )}
             </tbody>
           </table>
@@ -268,7 +268,7 @@ function AdminHarvestPage() {
           <button title="صفحه قبل" disabled={page === 1} onClick={() => setPage(p => p - 1)} className="p-2 rounded-lg border disabled:opacity-40">
             <ChevronRight className="h-4 w-4" />
           </button>
-          <span className="text-sm text-gray-600">صفحه {page} از {totalPages}</span>
+          <span className="text-sm text-muted-foreground">صفحه {page} از {totalPages}</span>
           <button title="صفحه بعد" disabled={page === totalPages} onClick={() => setPage(p => p + 1)} className="p-2 rounded-lg border disabled:opacity-40">
             <ChevronLeft className="h-4 w-4" />
           </button>

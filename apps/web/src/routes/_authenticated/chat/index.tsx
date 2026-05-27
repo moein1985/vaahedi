@@ -139,14 +139,14 @@ function RouteComponent() {
       contextSuggestions.push(`پروفایل شما ${completion.percent}% تکمیل شده — پروفایل کامل اعتماد طرف مقابل را بیشتر می‌کند.`)
     }
     if (!hasProducts) {
-      contextSuggestions.push('هنوز کالایی ثبت نکرده‌اید — ثبت حداقل یک کالا در Marketplace دیده‌شدن شما را افزایش می‌دهد.')
+      contextSuggestions.push('هنوز کالایی ثبت نکرده اید — ثبت حداقل یک کالا در بازار محصولات دیده شدن شما را افزایش می دهد.')
     } else {
-      contextSuggestions.push(`${productStats!.total} کالا در Marketplace دارید — بررسی کنید که توضیحات و تصاویر به‌روز هستند.`)
+      contextSuggestions.push(`${productStats!.total} کالا در بازار محصولات دارید — بررسی کنید که توضیحات و تصاویر به روز هستند.`)
     }
     if (!hasActiveTrades) {
-      contextSuggestions.push('هیچ RFQ فعالی ندارید — ایجاد یک درخواست خرید یا فروش، فرصت تطابق با طرف مقابل را فراهم می‌کند.')
+      contextSuggestions.push('هیچ درخواست فعالی ندارید — ایجاد یک درخواست خرید یا فروش، فرصت تطابق با طرف مقابل را فراهم می کند.')
     } else {
-      contextSuggestions.push(`${(tradeStats?.pending ?? 0)} RFQ در انتظار تطابق دارید — پیگیری منظم احتمال بستن معامله را بالا می‌برد.`)
+      contextSuggestions.push(`${(tradeStats?.pending ?? 0)} درخواست در انتظار تطابق دارید — پیگیری منظم احتمال بستن همکاری را بالا می برد.`)
     }
     if (hasUnread) {
       contextSuggestions.push(`${unreadCount} اعلان خوانده نشده دارید — پاسخ سریع به پیام‌ها نرخ موفقیت مذاکره را افزایش می‌دهد.`)
@@ -176,21 +176,21 @@ function RouteComponent() {
   ]
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-[var(--field-mist)]">
       {/* Sidebar */}
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-        <div className="p-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">مرکز ارتباطات</h2>
+      <div className="w-80 bg-card border-r border-border flex flex-col">
+        <div className="p-4 border-b border-border">
+          <h2 className="text-lg font-semibold text-foreground">مرکز ارتباطات</h2>
           <div className="grid grid-cols-2 gap-2 mt-3">
             <button
               onClick={() => setActiveMode('messages')}
-              className={`rounded-lg px-3 py-2 text-sm border ${activeMode === 'messages' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-white text-gray-600 border-gray-200'}`}
+              className={`rounded-lg px-3 py-2 text-sm border transition-colors ${activeMode === 'messages' ? 'bg-[hsl(148_62%_24%_/_0.12)] text-[var(--agri-primary)] border-[hsl(148_40%_74%)]' : 'bg-background text-muted-foreground border-border hover:text-foreground'}`}
             >
               پیام ها
             </button>
             <button
               onClick={() => setActiveMode('advisor')}
-              className={`rounded-lg px-3 py-2 text-sm border ${activeMode === 'advisor' ? 'bg-violet-50 text-violet-700 border-violet-200' : 'bg-white text-gray-600 border-gray-200'}`}
+              className={`rounded-lg px-3 py-2 text-sm border transition-colors ${activeMode === 'advisor' ? 'bg-[hsl(195_56%_33%_/_0.12)] text-[var(--data-blue)] border-[hsl(195_36%_76%)]' : 'bg-background text-muted-foreground border-border hover:text-foreground'}`}
             >
               AI مشاور
             </button>
@@ -204,27 +204,27 @@ function RouteComponent() {
                 return (
                   <div
                     key={conversation.id}
-                    className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 ${
-                      selectedConversation?.id === conversation.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                    className={`p-4 border-b border-border/70 cursor-pointer hover:bg-[hsl(90_30%_97%)] ${
+                      selectedConversation?.id === conversation.id ? 'bg-[hsl(148_62%_24%_/_0.1)] border-l-4 border-l-[var(--agri-primary)]' : ''
                     }`}
                     onClick={() => setSelectedConversation(conversation as Conversation)}
                   >
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                      <div className="w-10 h-10 bg-[linear-gradient(145deg,var(--agri-primary),var(--agri-leaf))] rounded-full flex items-center justify-center">
                         <span className="text-white font-medium text-sm">
                           {otherUser?.userCode?.charAt(0)?.toUpperCase() || '?'}
                         </span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">
+                        <p className="text-sm font-medium text-foreground truncate">
                           {otherUser?.companyName || otherUser?.userCode || 'کاربر ناشناس'}
                         </p>
-                        <p className="text-sm text-gray-500 truncate">
+                        <p className="text-sm text-muted-foreground truncate">
                           {conversation.lastMessage?.content || 'پیامی وجود ندارد'}
                         </p>
                       </div>
                       {conversation.lastMessage && (
-                        <div className="text-xs text-gray-400">
+                        <div className="text-xs text-muted-foreground/70">
                           {new Date(conversation.lastMessage.createdAt).toLocaleTimeString('fa-IR', {
                             hour: '2-digit',
                             minute: '2-digit'
@@ -236,20 +236,20 @@ function RouteComponent() {
                 )
               })}
               {(!conversations || conversations.length === 0) && (
-                <div className="p-4 text-center text-gray-500">
+                <div className="p-4 text-center text-muted-foreground">
                   هنوز مکالمه ای وجود ندارد
                 </div>
               )}
             </>
           ) : (
             <div className="p-4 space-y-3">
-              <p className="text-sm font-medium text-gray-700">پیشنهادهای سریع:</p>
+              <p className="text-sm font-medium text-[var(--soil-neutral)]">پیشنهادهای سریع:</p>
               <div className="space-y-2">
                 {QUICK_PROMPTS.map((prompt) => (
                   <button
                     key={prompt}
                     onClick={() => setAdvisorInput(prompt)}
-                    className="w-full text-right text-xs text-gray-600 bg-gray-50 hover:bg-violet-50 hover:text-violet-700 rounded-lg px-3 py-2 border border-gray-100 transition-colors"
+                    className="w-full text-right text-xs text-[var(--soil-neutral)] bg-[hsl(90_30%_97%)] hover:bg-[hsl(148_62%_24%_/_0.12)] hover:text-[var(--agri-primary)] rounded-lg px-3 py-2 border border-[hsl(90_14%_88%)] transition-colors"
                   >
                     {prompt}
                   </button>
@@ -257,16 +257,16 @@ function RouteComponent() {
               </div>
               {/* Context summary */}
               {(productStats !== undefined || tradeStats !== undefined) && (
-                <div className="mt-3 rounded-lg bg-violet-50 border border-violet-100 p-3 space-y-1">
-                  <p className="text-xs font-semibold text-violet-700 mb-1.5">وضعیت فعلی حساب:</p>
+                <div className="mt-3 rounded-lg bg-[hsl(195_56%_33%_/_0.1)] border border-[hsl(195_36%_76%)] p-3 space-y-1">
+                  <p className="text-xs font-semibold text-[var(--data-blue)] mb-1.5">وضعیت فعلی حساب:</p>
                   {productStats !== undefined && (
-                    <p className="text-xs text-violet-600">{productStats.total} کالا در Marketplace</p>
+                    <p className="text-xs text-[var(--data-blue)]/90">{productStats.total} کالا در بازار محصولات</p>
                   )}
                   {tradeStats !== undefined && (
-                    <p className="text-xs text-violet-600">{(tradeStats.pending ?? 0) + (tradeStats.inNegotiation ?? 0)} درخواست تجاری فعال</p>
+                    <p className="text-xs text-[var(--data-blue)]/90">{(tradeStats.pending ?? 0) + (tradeStats.inNegotiation ?? 0)} درخواست تجاری فعال</p>
                   )}
                   {completion !== undefined && (
-                    <p className="text-xs text-violet-600">پروفایل: {completion.percent}% تکمیل شده</p>
+                    <p className="text-xs text-[var(--data-blue)]/90">پروفایل: {completion.percent}% تکمیل شده</p>
                   )}
                 </div>
               )}
@@ -279,15 +279,15 @@ function RouteComponent() {
       <div className="flex-1 flex flex-col">
         {activeMode === 'advisor' ? (
           <div className="flex-1 p-6 overflow-y-auto">
-            <Card className="max-w-3xl mx-auto p-5 border-violet-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">مشاور هوشمند کشاورزی</h3>
-              <p className="text-sm text-gray-600 mb-4">سوال خود را درباره صادرات، واردات، مجوزهای کشاورزی، قیمت‌گذاری یا مراحل تجاری ثبت کنید.</p>
+            <Card className="max-w-3xl mx-auto p-5 border-[hsl(195_36%_76%)] bg-card">
+              <h3 className="text-lg font-semibold text-foreground mb-2">مشاور هوشمند کشاورزی</h3>
+              <p className="text-sm text-muted-foreground mb-4">سوال خود را درباره صادرات، واردات، مجوزهای کشاورزی، قیمت‌گذاری یا مراحل تجاری ثبت کنید.</p>
               <div className="space-y-3">
                 <textarea
                   value={advisorInput}
                   onChange={(e) => setAdvisorInput(e.target.value)}
                   placeholder="مثال: چطور گواهی قرنطینه برای صادرات سیب دریافت کنم؟"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  className="w-full border border-input bg-background rounded-lg px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
                   rows={4}
                 />
                 <div className="flex justify-end">
@@ -297,8 +297,8 @@ function RouteComponent() {
                 </div>
               </div>
               {advisorReply && (
-                <div className="mt-4 bg-violet-50 border border-violet-100 rounded-lg p-4">
-                  <p className="text-sm text-gray-800 whitespace-pre-line leading-7">{advisorReply}</p>
+                <div className="mt-4 bg-[hsl(195_56%_33%_/_0.08)] border border-[hsl(195_36%_76%)] rounded-lg p-4">
+                  <p className="text-sm text-foreground whitespace-pre-line leading-7">{advisorReply}</p>
                 </div>
               )}
             </Card>
@@ -306,18 +306,18 @@ function RouteComponent() {
         ) : selectedConversation ? (
           <>
             {/* Chat Header */}
-            <div className="p-4 bg-white border-b border-gray-200">
+            <div className="p-4 bg-card border-b border-border">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-[linear-gradient(145deg,var(--agri-primary),var(--agri-leaf))] rounded-full flex items-center justify-center">
                   <span className="text-white font-medium text-sm">
                     {getOtherParticipant(selectedConversation)?.userCode?.charAt(0)?.toUpperCase() || '?'}
                   </span>
                 </div>
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900">
+                  <h3 className="text-lg font-medium text-foreground">
                     {getOtherParticipant(selectedConversation)?.companyName || getOtherParticipant(selectedConversation)?.userCode || 'کاربر ناشناس'}
                   </h3>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     {getOtherParticipant(selectedConversation)?.userCode}
                   </p>
                 </div>
@@ -334,13 +334,13 @@ function RouteComponent() {
                   <div
                     className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                       message.sender.userCode === user?.userCode
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-gray-200 text-gray-900'
+                        ? 'bg-[var(--agri-primary)] text-white'
+                        : 'bg-muted text-foreground'
                     }`}
                   >
                     <p className="text-sm">{message.content}</p>
                     <p className={`text-xs mt-1 ${
-                      message.sender.userCode === user?.userCode ? 'text-blue-100' : 'text-gray-500'
+                      message.sender.userCode === user?.userCode ? 'text-[hsl(90_22%_92%_/_0.9)]' : 'text-muted-foreground'
                     }`}>
                       {new Date(message.createdAt).toLocaleTimeString('fa-IR', {
                         hour: '2-digit',
@@ -351,14 +351,14 @@ function RouteComponent() {
                 </div>
               ))}
               {(!messages || messages.length === 0) && (
-                <div className="text-center text-gray-500 py-8">
+                <div className="text-center text-muted-foreground py-8">
                   هنوز پیامی در این مکالمه وجود ندارد
                 </div>
               )}
             </div>
 
             {/* Message Input */}
-            <div className="p-4 bg-white border-t border-gray-200">
+            <div className="p-4 bg-card border-t border-border">
               <div className="flex space-x-2">
                 <Input
                   type="text"
@@ -379,15 +379,15 @@ function RouteComponent() {
             </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center bg-gray-50">
+          <div className="flex-1 flex items-center justify-center bg-[hsl(90_30%_97%)]">
             <div className="text-center">
-              <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">یک مکالمه انتخاب کنید</h3>
-              <p className="text-gray-500">برای شروع، یک مکالمه را از ستون سمت چپ انتخاب کنید</p>
+              <h3 className="text-lg font-medium text-foreground mb-2">یک مکالمه انتخاب کنید</h3>
+              <p className="text-muted-foreground">برای شروع، یک مکالمه را از ستون سمت چپ انتخاب کنید</p>
             </div>
           </div>
         )}

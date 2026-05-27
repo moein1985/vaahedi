@@ -28,8 +28,8 @@ function HsCodesPage() {
   return (
     <div className="p-6" dir="rtl">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">کدهای تعرفه گمرکی</h1>
-        <p className="text-gray-500 text-sm mt-1">مرجع کدهای HS برای ثبت کالا و ایجاد RFQ دقیق</p>
+        <h1 className="text-2xl font-bold text-foreground">کدهای تعرفه گمرکی</h1>
+        <p className="text-muted-foreground text-sm mt-1">مرجع کدهای HS برای ثبت دقیق محصولات و درخواست ها</p>
       </div>
 
       <div className="mb-4">
@@ -46,37 +46,37 @@ function HsCodesPage() {
         />
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <div className="bg-card rounded-xl border border-border overflow-hidden">
         {isLoading ? (
-          <div className="text-center py-16 text-gray-400">در حال جستجو...</div>
+          <div className="text-center py-16 text-muted-foreground/70">در حال جستجو...</div>
         ) : items.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">
+          <div className="text-center py-12 text-muted-foreground/70">
             <div className="text-3xl mb-2">🔍</div>
             <p>نتیجه‌ای یافت نشد</p>
           </div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
+            <thead className="bg-muted/60">
               <tr>
-                <th className="text-right px-4 py-3 font-medium text-gray-700 w-36" dir="ltr">
+                <th className="text-right px-4 py-3 font-medium text-muted-foreground w-36" dir="ltr">
                   کد HS
                 </th>
-                <th className="text-right px-4 py-3 font-medium text-gray-700">
+                <th className="text-right px-4 py-3 font-medium text-muted-foreground">
                   توضیحات فارسی
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-700">
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">
                   English Description
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-border">
               {items.map((item: any) => (
-                <tr key={item.code} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-mono text-blue-600 font-medium" dir="ltr">
+                <tr key={item.code} className="hover:bg-muted/60">
+                  <td className="px-4 py-3 font-mono text-[var(--data-blue)] font-medium" dir="ltr">
                     {item.code}
                   </td>
-                  <td className="px-4 py-3 text-gray-700">{item.descriptionFa}</td>
-                  <td className="px-4 py-3 text-gray-500 text-xs" dir="ltr">
+                  <td className="px-4 py-3 text-foreground">{item.descriptionFa}</td>
+                  <td className="px-4 py-3 text-muted-foreground text-xs" dir="ltr">
                     {item.descriptionEn}
                   </td>
                 </tr>
@@ -96,7 +96,7 @@ function HsCodesPage() {
           >
             قبلی
           </Button>
-          <span className="px-3 py-1.5 text-sm text-gray-600">
+          <span className="px-3 py-1.5 text-sm text-muted-foreground">
             {page} / {totalPages}
           </span>
           <Button
@@ -111,7 +111,7 @@ function HsCodesPage() {
       )}
 
       {data && (
-        <p className="text-center text-xs text-gray-400 mt-4">
+        <p className="text-center text-xs text-muted-foreground/70 mt-4">
           {(data as any)?.total} نتیجه یافت شد
         </p>
       )}
