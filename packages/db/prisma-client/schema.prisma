@@ -58,6 +58,11 @@ enum DocumentType {
   ISO_CERTIFICATE // گواهی ایزو / استاندارد
   BUSINESS_CARD // کارت بازرگانی
   ID_DOCUMENT // تصویر مدرک شناسایی مخاطب
+  // ── کشاورزی ─────────────────────────────────────────────────────────────
+  AGRICULTURAL_LICENSE // مجوز کشاورزی (جهاد کشاورزی)
+  FARMING_CERTIFICATE // گواهینامه کشاورز
+  WATER_RIGHTS_DOCUMENT // سند حق آب و زمین
+  EXPORT_CERTIFICATE // گواهی صادراتی (بهداشت / قرنطینه)
 }
 
 enum VerificationStatus {
@@ -277,6 +282,14 @@ model UserProfile {
   experienceYears Int?
   description     String?
 
+  // ── تخصص کشاورزی ─────────────────────────────────────────────────────────
+  occupationCategoryId String?
+  occupationCategory   OccupationCategory? @relation(fields: [occupationCategoryId], references: [id])
+  farmingAreaHectares  Decimal? // مساحت زمین (هکتار)
+  irrigationType       String? // "آبی" | "دیم" | "گلخانه"
+  mainCrops            String[] // محصولات اصلی
+  tradeDirection       String? // "صادراتی" | "وارداتی" | "هر دو" | "داخلی"
+
   // اطلاعات پاسپورت
   passportNumber     String?
   passportExpiryDate DateTime?
@@ -290,13 +303,15 @@ model UserProfile {
   // گرید عضویت (⚠️ باید از کارفرما مشخص شود)
   membershipGrade Int @default(0)
 
-  documents Document[]
+  documents          Document[]
+  occupationMappings OccupationMapping[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([verificationStatus])
   @@index([commodityGroup])
+  @@index([occupationCategoryId])
   @@map("user_profiles")
 }
 
@@ -875,4 +890,110 @@ model Notification {
   @@index([isRead])
   @@index([createdAt])
   @@map("notifications")
+}
+
+model AuditLog {
+  id          String   @id
+  actorUserId String
+  actorRole   String?
+  action      String
+  entityType  String
+  entityId    String?
+  payload     Json?
+  createdAt   DateTime @default(now())
+
+  @@index([actorUserId, createdAt])
+  @@index([entityType, entityId])
+  @@index([action, createdAt])
+  @@map("audit_logs")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AGRICULTURE STAKEHOLDER PLATFORM — PHASE 1
+// سامانه ذینفعان حوزه کشاورزی
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// طبقه‌بندی سلسله‌مراتبی مشاغل حوزه کشاورزی
+model OccupationCategory {
+  id          String               @id @default(cuid())
+  code        String               @unique // e.g. "AGRI.FARMER.GRAIN"
+  nameFa      String
+  nameEn      String?
+  parentId    String?
+  parent      OccupationCategory?  @relation("OccCatParent", fields: [parentId], references: [id])
+  children    OccupationCategory[] @relation("OccCatParent")
+  description String?
+  isActive    Boolean              @default(true)
+  sortOrder   Int                  @default(0)
+
+  userProfiles       UserProfile[]
+  occupationMappings OccupationMapping[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([parentId])
+  @@index([code])
+  @@map("occupation_categories")
+}
+
+model OccupationMapping {
+  id                   String             @id @default(cuid())
+  profileId            String
+  occupationCategoryId String
+  profile              UserProfile        @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  occupationCategory   OccupationCategory @relation(fields: [occupationCategoryId], references: [id], onDelete: Cascade)
+  createdAt            DateTime           @default(now())
+
+  @@unique([profileId, occupationCategoryId])
+  @@index([profileId])
+  @@index([occupationCategoryId])
+  @@map("occupation_mappings")
+}
+
+/// تقویم برداشت محصول — فقط نمایشی در MVP (ادمین مدیریت می‌کند)
+model HarvestCalendar {
+  id                String         @id @default(cuid())
+  cropNameFa        String
+  cropNameEn        String?
+  commodityGroup    CommodityGroup @default(AGRICULTURAL)
+  harvestStartMonth Int // 1-12 (شمسی)
+  harvestEndMonth   Int // 1-12 (شمسی)
+  province          String? // null = سراسر کشور
+  variety           String? // رقم / واریته محصول
+  description       String?
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([commodityGroup])
+  @@index([harvestStartMonth, harvestEndMonth])
+  @@map("harvest_calendar")
+}
+
+/// بینش بازار — تحلیل عرضه/تقاضا/قیمت، فقط نمایشی در MVP
+model MarketInsight {
+  id          String    @id @default(cuid())
+  title       String
+  commodityFa String
+  commodityEn String?
+  insightType String // "price" | "demand" | "supply" | "trend" | "regulation"
+  content     String    @db.Text
+  dataDate    DateTime?
+  sourceUrl   String?
+  imageKey    String? // کلید در MinIO
+  tags        String[]  @default([])
+
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+  authorId    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([insightType])
+  @@index([isPublished, publishedAt])
+  @@map("market_insights")
 }

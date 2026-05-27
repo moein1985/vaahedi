@@ -193,6 +193,11 @@ exports.Prisma.UserProfileScalarFieldEnum = {
   position: 'position',
   experienceYears: 'experienceYears',
   description: 'description',
+  occupationCategoryId: 'occupationCategoryId',
+  farmingAreaHectares: 'farmingAreaHectares',
+  irrigationType: 'irrigationType',
+  mainCrops: 'mainCrops',
+  tradeDirection: 'tradeDirection',
   passportNumber: 'passportNumber',
   passportExpiryDate: 'passportExpiryDate',
   verificationStatus: 'verificationStatus',
@@ -526,6 +531,70 @@ exports.Prisma.NotificationScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.AuditLogScalarFieldEnum = {
+  id: 'id',
+  actorUserId: 'actorUserId',
+  actorRole: 'actorRole',
+  action: 'action',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  payload: 'payload',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.OccupationCategoryScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  nameFa: 'nameFa',
+  nameEn: 'nameEn',
+  parentId: 'parentId',
+  description: 'description',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.OccupationMappingScalarFieldEnum = {
+  id: 'id',
+  profileId: 'profileId',
+  occupationCategoryId: 'occupationCategoryId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.HarvestCalendarScalarFieldEnum = {
+  id: 'id',
+  cropNameFa: 'cropNameFa',
+  cropNameEn: 'cropNameEn',
+  commodityGroup: 'commodityGroup',
+  harvestStartMonth: 'harvestStartMonth',
+  harvestEndMonth: 'harvestEndMonth',
+  province: 'province',
+  variety: 'variety',
+  description: 'description',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.MarketInsightScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  commodityFa: 'commodityFa',
+  commodityEn: 'commodityEn',
+  insightType: 'insightType',
+  content: 'content',
+  dataDate: 'dataDate',
+  sourceUrl: 'sourceUrl',
+  imageKey: 'imageKey',
+  tags: 'tags',
+  isPublished: 'isPublished',
+  publishedAt: 'publishedAt',
+  authorId: 'authorId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -617,7 +686,11 @@ exports.DocumentType = exports.$Enums.DocumentType = {
   OTHER_LICENSES: 'OTHER_LICENSES',
   ISO_CERTIFICATE: 'ISO_CERTIFICATE',
   BUSINESS_CARD: 'BUSINESS_CARD',
-  ID_DOCUMENT: 'ID_DOCUMENT'
+  ID_DOCUMENT: 'ID_DOCUMENT',
+  AGRICULTURAL_LICENSE: 'AGRICULTURAL_LICENSE',
+  FARMING_CERTIFICATE: 'FARMING_CERTIFICATE',
+  WATER_RIGHTS_DOCUMENT: 'WATER_RIGHTS_DOCUMENT',
+  EXPORT_CERTIFICATE: 'EXPORT_CERTIFICATE'
 };
 
 exports.ProductOrigin = exports.$Enums.ProductOrigin = {
@@ -724,7 +797,12 @@ exports.Prisma.ModelName = {
   Conversation: 'Conversation',
   ConversationParticipant: 'ConversationParticipant',
   Message: 'Message',
-  Notification: 'Notification'
+  Notification: 'Notification',
+  AuditLog: 'AuditLog',
+  OccupationCategory: 'OccupationCategory',
+  OccupationMapping: 'OccupationMapping',
+  HarvestCalendar: 'HarvestCalendar',
+  MarketInsight: 'MarketInsight'
 };
 
 /**
