@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { randomUUID } from 'node:crypto';
 import { TRPCError } from '@trpc/server';
 import { router, protectedProcedure, activeProcedure } from '../trpc.js';
 import { createProfileSchema, updateProfileSchema } from '@repo/shared';
@@ -29,6 +30,86 @@ function isAllowedProfileDocMimeType(mimeType: string): boolean {
   return PROFILE_DOC_ALLOWED_MIME_TYPES.includes(mimeType as (typeof PROFILE_DOC_ALLOWED_MIME_TYPES)[number]);
 }
 
+type OccupationMappingRow = {
+  occupationCategoryId: string;
+  categoryId: string;
+  categoryCode: string;
+  categoryNameFa: string;
+  categoryNameEn: string | null;
+  categoryParentId: string | null;
+};
+
+function normalizeOccupationCategoryIds(input: {
+  occupationCategoryId?: string;
+  occupationCategoryIds?: string[];
+}): string[] {
+  const rawIds =
+    input.occupationCategoryIds && input.occupationCategoryIds.length > 0
+      ? input.occupationCategoryIds
+      : input.occupationCategoryId
+        ? [input.occupationCategoryId]
+        : [];
+
+  return Array.from(new Set(rawIds.filter((id): id is string => Boolean(id))));
+}
+
+async function ensureOccupationCategoriesExist(db: any, occupationCategoryIds: string[]): Promise<void> {
+  if (occupationCategoryIds.length === 0) return;
+
+  const existing = await db.occupationCategory.findMany({
+    where: { id: { in: occupationCategoryIds } },
+    select: { id: true },
+  });
+
+  if (existing.length !== occupationCategoryIds.length) {
+    throw new TRPCError({
+      code: 'BAD_REQUEST',
+      message: 'حداقل یکی از دسته‌بندی‌های شغلی انتخاب‌شده معتبر نیست',
+    });
+  }
+}
+
+async function syncOccupationMappings(db: any, profileId: string, occupationCategoryIds: string[]): Promise<void> {
+  await db.$executeRaw`
+    DELETE FROM "occupation_mappings"
+    WHERE "profileId" = ${profileId}
+  `;
+
+  for (const occupationCategoryId of occupationCategoryIds) {
+    await db.$executeRaw`
+      INSERT INTO "occupation_mappings" (
+        "id",
+        "profileId",
+        "occupationCategoryId",
+        "createdAt"
+      )
+      VALUES (
+        ${randomUUID()},
+        ${profileId},
+        ${occupationCategoryId},
+        NOW()
+      )
+      ON CONFLICT ("profileId", "occupationCategoryId") DO NOTHING
+    `;
+  }
+}
+
+async function loadOccupationMappings(db: any, profileId: string): Promise<OccupationMappingRow[]> {
+  return db.$queryRaw<OccupationMappingRow[]>`
+    SELECT
+      om."occupationCategoryId" AS "occupationCategoryId",
+      oc."id" AS "categoryId",
+      oc."code" AS "categoryCode",
+      oc."nameFa" AS "categoryNameFa",
+      oc."nameEn" AS "categoryNameEn",
+      oc."parentId" AS "categoryParentId"
+    FROM "occupation_mappings" om
+    JOIN "occupation_categories" oc ON oc."id" = om."occupationCategoryId"
+    WHERE om."profileId" = ${profileId}
+    ORDER BY oc."sortOrder" ASC, oc."nameFa" ASC
+  `;
+}
+
 // ─── Profile Router ───────────────────────────────────────────────────────────
 
 export const profileRouter = router({
@@ -38,6 +119,25 @@ export const profileRouter = router({
       where: { userId: ctx.user.id },
       include: { documents: true },
     });
+
+    const occupationMappings = profile
+      ? await loadOccupationMappings(ctx.db, profile.id)
+      : [];
+
+    const hydratedProfile = profile
+      ? {
+          ...profile,
+          occupationCategoryIds: occupationMappings.map((mapping) => mapping.occupationCategoryId),
+          occupationCategories: occupationMappings.map((mapping) => ({
+            id: mapping.categoryId,
+            code: mapping.categoryCode,
+            nameFa: mapping.categoryNameFa,
+            nameEn: mapping.categoryNameEn,
+            parentId: mapping.categoryParentId,
+          })),
+        }
+      : null;
+
     const user = await ctx.db.user.findUniqueOrThrow({
       where: { id: ctx.user.id },
       select: {
@@ -51,7 +151,7 @@ export const profileRouter = router({
         createdAt: true,
       },
     });
-    return { user, profile };
+    return { user, profile: hydratedProfile };
   }),
 
   // ایجاد یا آپدیت پروفایل
@@ -61,6 +161,15 @@ export const profileRouter = router({
       const passportExpiryDate = input.passportExpiryDate
         ? new Date(`${input.passportExpiryDate}T00:00:00.000Z`)
         : null;
+
+      const occupationCategoryIds = normalizeOccupationCategoryIds({
+        occupationCategoryId: input.occupationCategoryId,
+        occupationCategoryIds: input.occupationCategoryIds,
+      });
+
+      await ensureOccupationCategoriesExist(ctx.db, occupationCategoryIds);
+
+      const primaryOccupationCategoryId = occupationCategoryIds[0] ?? null;
 
       // Enforce uploading selected mandatory documents before profile completion.
       const existingProfile = await ctx.db.userProfile.findUnique({
@@ -89,71 +198,81 @@ export const profileRouter = router({
         });
       }
 
-      const profile = await ctx.db.userProfile.upsert({
-        where: { userId: ctx.user.id },
-        create: {
-          userId: ctx.user.id,
-          companyName: input.companyName,
-          unitName: input.unitName,
-          unitType: input.unitType,
-          guildCode: input.guildCode,
-          businessId: input.businessId,
-          producedGoods: input.producedGoods,
-          productIdNumber: input.productIdNumber,
-          singleProduct: input.singleProduct ?? false,
-          phone: input.phone,
-          fax: input.fax,
-          website: input.website,
-          province: input.address?.province,
-          city: input.address?.city,
-          addressLine: input.address?.addressLine,
-          postalCode: input.address?.postalCode,
-          activityType: input.activityType,
-          commodityGroup: input.commodityGroup,
-          position: input.position,
-          experienceYears: input.experienceYears,
-          passportNumber: input.passportNumber,
-          passportExpiryDate,
-          description: input.description,
-          // فیلدهای کشاورزی
-          occupationCategoryId: input.occupationCategoryId,
-          farmingAreaHectares: input.farmingAreaHectares,
-          irrigationType: input.irrigationType,
-          mainCrops: input.mainCrops ?? [],
-          tradeDirection: input.tradeDirection,
-        },
-        update: {
-          companyName: input.companyName,
-          unitName: input.unitName,
-          unitType: input.unitType,
-          guildCode: input.guildCode,
-          businessId: input.businessId,
-          producedGoods: input.producedGoods,
-          productIdNumber: input.productIdNumber,
-          singleProduct: input.singleProduct ?? false,
-          phone: input.phone,
-          fax: input.fax,
-          website: input.website,
-          province: input.address?.province,
-          city: input.address?.city,
-          addressLine: input.address?.addressLine,
-          postalCode: input.address?.postalCode,
-          activityType: input.activityType,
-          commodityGroup: input.commodityGroup,
-          position: input.position,
-          experienceYears: input.experienceYears,
-          passportNumber: input.passportNumber,
-          passportExpiryDate,
-          description: input.description,
-          // فیلدهای کشاورزی
-          occupationCategoryId: input.occupationCategoryId,
-          farmingAreaHectares: input.farmingAreaHectares,
-          irrigationType: input.irrigationType,
-          mainCrops: input.mainCrops ?? [],
-          tradeDirection: input.tradeDirection,
-        },
+      const profile = await ctx.db.$transaction(async (tx) => {
+        const upserted = await tx.userProfile.upsert({
+          where: { userId: ctx.user.id },
+          create: {
+            userId: ctx.user.id,
+            companyName: input.companyName,
+            unitName: input.unitName,
+            unitType: input.unitType,
+            guildCode: input.guildCode,
+            businessId: input.businessId,
+            producedGoods: input.producedGoods,
+            productIdNumber: input.productIdNumber,
+            singleProduct: input.singleProduct ?? false,
+            phone: input.phone,
+            fax: input.fax,
+            website: input.website,
+            province: input.address?.province,
+            city: input.address?.city,
+            addressLine: input.address?.addressLine,
+            postalCode: input.address?.postalCode,
+            activityType: input.activityType,
+            commodityGroup: input.commodityGroup,
+            position: input.position,
+            experienceYears: input.experienceYears,
+            passportNumber: input.passportNumber,
+            passportExpiryDate,
+            description: input.description,
+            // فیلدهای کشاورزی
+            occupationCategoryId: primaryOccupationCategoryId,
+            farmingAreaHectares: input.farmingAreaHectares,
+            irrigationType: input.irrigationType,
+            mainCrops: input.mainCrops ?? [],
+            tradeDirection: input.tradeDirection,
+          },
+          update: {
+            companyName: input.companyName,
+            unitName: input.unitName,
+            unitType: input.unitType,
+            guildCode: input.guildCode,
+            businessId: input.businessId,
+            producedGoods: input.producedGoods,
+            productIdNumber: input.productIdNumber,
+            singleProduct: input.singleProduct ?? false,
+            phone: input.phone,
+            fax: input.fax,
+            website: input.website,
+            province: input.address?.province,
+            city: input.address?.city,
+            addressLine: input.address?.addressLine,
+            postalCode: input.address?.postalCode,
+            activityType: input.activityType,
+            commodityGroup: input.commodityGroup,
+            position: input.position,
+            experienceYears: input.experienceYears,
+            passportNumber: input.passportNumber,
+            passportExpiryDate,
+            description: input.description,
+            // فیلدهای کشاورزی
+            occupationCategoryId: primaryOccupationCategoryId,
+            farmingAreaHectares: input.farmingAreaHectares,
+            irrigationType: input.irrigationType,
+            mainCrops: input.mainCrops ?? [],
+            tradeDirection: input.tradeDirection,
+          },
+        });
+
+        await syncOccupationMappings(tx, upserted.id, occupationCategoryIds);
+        return upserted;
       });
-      return profile;
+
+      const occupationMappings = await loadOccupationMappings(ctx.db, profile.id);
+      return {
+        ...profile,
+        occupationCategoryIds: occupationMappings.map((mapping) => mapping.occupationCategoryId),
+      };
     }),
 
   // به‌روزرسانی بخشی از پروفایل
@@ -166,37 +285,66 @@ export const profileRouter = router({
       if (!existing) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'پروفایل یافت نشد' });
       }
-      return ctx.db.userProfile.update({
-        where: { userId: ctx.user.id },
-        data: {
-          ...(input.companyName !== undefined && { companyName: input.companyName }),
-          ...(input.unitName !== undefined && { unitName: input.unitName }),
-          ...(input.phone !== undefined && { phone: input.phone }),
-          ...(input.fax !== undefined && { fax: input.fax }),
-          ...(input.website !== undefined && { website: input.website }),
-          ...(input.activityType !== undefined && { activityType: input.activityType }),
-          ...(input.position !== undefined && { position: input.position }),
-          ...(input.passportNumber !== undefined && { passportNumber: input.passportNumber }),
-          ...(input.passportExpiryDate !== undefined && {
-            passportExpiryDate: input.passportExpiryDate
-              ? new Date(`${input.passportExpiryDate}T00:00:00.000Z`)
-              : null,
-          }),
-          ...(input.commodityGroup !== undefined && { commodityGroup: input.commodityGroup }),
-          ...(input.address !== undefined && {
-            province: input.address.province,
-            city: input.address.city,
-            addressLine: input.address.addressLine,
-            postalCode: input.address.postalCode,
-          }),
-          // فیلدهای کشاورزی
-          ...(input.occupationCategoryId !== undefined && { occupationCategoryId: input.occupationCategoryId }),
-          ...(input.farmingAreaHectares !== undefined && { farmingAreaHectares: input.farmingAreaHectares }),
-          ...(input.irrigationType !== undefined && { irrigationType: input.irrigationType }),
-          ...(input.mainCrops !== undefined && { mainCrops: input.mainCrops }),
-          ...(input.tradeDirection !== undefined && { tradeDirection: input.tradeDirection }),
-        },
+
+      const occupationPayloadTouched =
+        input.occupationCategoryId !== undefined || input.occupationCategoryIds !== undefined;
+
+      const occupationCategoryIds = occupationPayloadTouched
+        ? normalizeOccupationCategoryIds({
+            occupationCategoryId: input.occupationCategoryId,
+            occupationCategoryIds: input.occupationCategoryIds,
+          })
+        : [];
+
+      if (occupationPayloadTouched) {
+        await ensureOccupationCategoriesExist(ctx.db, occupationCategoryIds);
+      }
+
+      const updated = await ctx.db.$transaction(async (tx) => {
+        const profile = await tx.userProfile.update({
+          where: { userId: ctx.user.id },
+          data: {
+            ...(input.companyName !== undefined && { companyName: input.companyName }),
+            ...(input.unitName !== undefined && { unitName: input.unitName }),
+            ...(input.phone !== undefined && { phone: input.phone }),
+            ...(input.fax !== undefined && { fax: input.fax }),
+            ...(input.website !== undefined && { website: input.website }),
+            ...(input.activityType !== undefined && { activityType: input.activityType }),
+            ...(input.position !== undefined && { position: input.position }),
+            ...(input.passportNumber !== undefined && { passportNumber: input.passportNumber }),
+            ...(input.passportExpiryDate !== undefined && {
+              passportExpiryDate: input.passportExpiryDate
+                ? new Date(`${input.passportExpiryDate}T00:00:00.000Z`)
+                : null,
+            }),
+            ...(input.commodityGroup !== undefined && { commodityGroup: input.commodityGroup }),
+            ...(input.address !== undefined && {
+              province: input.address.province,
+              city: input.address.city,
+              addressLine: input.address.addressLine,
+              postalCode: input.address.postalCode,
+            }),
+            // فیلدهای کشاورزی
+            ...(occupationPayloadTouched && { occupationCategoryId: occupationCategoryIds[0] ?? null }),
+            ...(input.farmingAreaHectares !== undefined && { farmingAreaHectares: input.farmingAreaHectares }),
+            ...(input.irrigationType !== undefined && { irrigationType: input.irrigationType }),
+            ...(input.mainCrops !== undefined && { mainCrops: input.mainCrops }),
+            ...(input.tradeDirection !== undefined && { tradeDirection: input.tradeDirection }),
+          },
+        });
+
+        if (occupationPayloadTouched) {
+          await syncOccupationMappings(tx, profile.id, occupationCategoryIds);
+        }
+
+        return profile;
       });
+
+      const occupationMappings = await loadOccupationMappings(ctx.db, updated.id);
+      return {
+        ...updated,
+        occupationCategoryIds: occupationMappings.map((mapping) => mapping.occupationCategoryId),
+      };
     }),
 
   // وضعیت تکمیل پروفایل

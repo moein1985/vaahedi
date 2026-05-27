@@ -21,6 +21,7 @@ import { Badge } from '../../../components/ui/badge.js';
 import { Button } from '../../../components/ui/button.js';
 import { Progress } from '../../../components/ui/progress.js';
 import { Skeleton } from '../../../components/ui/skeleton.js';
+import { cn } from '../../../lib/utils.js';
 
 function StatCard({
   title,

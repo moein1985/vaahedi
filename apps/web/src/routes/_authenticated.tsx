@@ -196,10 +196,6 @@ function Sidebar({ isAdmin, adminRole }: { isAdmin: boolean; adminRole?: string 
   return (
     <aside
       className={cn(
-        'hidden lg:flex flex-col min-h-screen transition-all duration-300 flex-shrink-0',
-        collapsed ? 'w-16' : 'w-60'
-      )}
-      className={cn(
         'hidden lg:flex flex-col min-h-screen transition-all duration-300 flex-shrink-0 bg-[var(--sidebar-bg)] border-l border-l-[var(--sidebar-border)]',
         collapsed ? 'w-16' : 'w-60'
       )}

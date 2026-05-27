@@ -25,6 +25,23 @@ ssh moein@192.168.85.41
 
 ---
 
+## متغیرهای مانیتورینگ (API)
+
+در فایل `.env` برای مانیتورینگ staging/production این موارد را ست کنید:
+
+```bash
+APP_ENV=production # یا staging
+LOG_LEVEL=info
+READINESS_TIMEOUT_MS=3000
+
+SENTRY_DSN=
+SENTRY_ENVIRONMENT=production # یا staging
+SENTRY_RELEASE=vaahedi@<git-sha>
+SENTRY_TRACES_SAMPLE_RATE=0.1
+```
+
+---
+
 ## وضعیت سرویس‌ها
 
 ```bash
@@ -110,14 +127,21 @@ sg docker -c "docker exec vaahedi-prod-postgres-1 pg_dump -U vaahedi_user vaahed
 ## تست endpoint‌ها
 
 ```bash
-# Health check
+# Liveness (فقط بالا بودن پروسه)
+curl http://localhost/live
+
+# Health (وضعیت پایه + DB)
 curl http://localhost/health
+
+# Readiness (DB + Redis + MinIO)
+curl http://localhost/ready
 
 # صفحه اصلی
 curl -o /dev/null -w "HTTP %{http_code}" http://localhost/
 
 # از خارج سرور
 curl http://192.168.85.41/health
+curl http://192.168.85.41/ready
 ```
 
 ---

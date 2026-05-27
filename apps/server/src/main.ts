@@ -15,20 +15,33 @@ import { RedisCacheService } from './infrastructure/cache/redis-cache.service.js
 import { MinioStorageService } from './infrastructure/storage/minio-storage.service.js';
 import { AvalaiChatService } from './infrastructure/ai/avalai-chat.service.js';
 
-// ─── Init Sentry ──────────────────────────────────────────────────────────────
-
-if (process.env['SENTRY_DSN']) {
-  Sentry.init({
-    dsn: process.env['SENTRY_DSN'],
-    environment: process.env['NODE_ENV'] ?? 'development',
-    tracesSampleRate: process.env['NODE_ENV'] === 'production' ? 0.1 : 1.0,
-  });
-}
-
 // ─── Bootstrap ────────────────────────────────────────────────────────────────
 
+const APP_ENV = process.env['APP_ENV'] ?? process.env['NODE_ENV'] ?? 'development';
 const PORT = parseInt(process.env['APP_PORT'] ?? '4000', 10);
 const HOST = '0.0.0.0';
+const LOG_LEVEL = process.env['LOG_LEVEL'] ?? (APP_ENV === 'production' ? 'info' : 'debug');
+const READINESS_TIMEOUT_MS = parseInt(process.env['READINESS_TIMEOUT_MS'] ?? '3000', 10);
+
+const SENTRY_DSN = process.env['SENTRY_DSN'] ?? '';
+const SENTRY_ENVIRONMENT = process.env['SENTRY_ENVIRONMENT'] ?? APP_ENV;
+const SENTRY_RELEASE = process.env['SENTRY_RELEASE'];
+const sentryTraceRateRaw = process.env['SENTRY_TRACES_SAMPLE_RATE']
+  ?? (APP_ENV === 'production' ? '0.1' : '1.0');
+const SENTRY_TRACES_SAMPLE_RATE = Number.parseFloat(sentryTraceRateRaw);
+
+// ─── Init Sentry ──────────────────────────────────────────────────────────────
+
+if (SENTRY_DSN) {
+  Sentry.init({
+    dsn: SENTRY_DSN,
+    environment: SENTRY_ENVIRONMENT,
+    release: SENTRY_RELEASE,
+    tracesSampleRate: Number.isFinite(SENTRY_TRACES_SAMPLE_RATE)
+      ? SENTRY_TRACES_SAMPLE_RATE
+      : 0.1,
+  });
+}
 
 // ─── Infrastructure Setup ─────────────────────────────────────────────────────
 
@@ -65,15 +78,17 @@ const emailQueue = new EmailQueueService();
 // ─── Fastify Instance ─────────────────────────────────────────────────────────
 
 const app = Fastify({
-  logger: process.env['NODE_ENV'] === 'production'
+  logger: APP_ENV === 'production'
     ? {
-        level: 'info',
+        level: LOG_LEVEL,
         // لاگ ساختاریافته برای سیستم‌های لاگ مانند Datadog/Loki
         serializers: {
           req: (req) => ({
+            id: req.id,
             method: req.method,
             url: req.url,
             ip: req.ip,
+            userAgent: req.headers['user-agent'],
           }),
           res: (res) => ({
             statusCode: res.statusCode,
@@ -81,7 +96,7 @@ const app = Fastify({
         },
       }
     : {
-        level: 'debug',
+        level: LOG_LEVEL,
         transport: {
           target: 'pino-pretty',
           options: { colorize: true, translateTime: 'SYS:standard', ignore: 'pid,hostname' },
@@ -179,15 +194,112 @@ await app.register(fastifyWebsocket);
 // Map برای نگه‌داشتن connection های فعال
 const activeConnections = new Map<string, Set<WebSocket>>();
 
-// ─── Health Check ─────────────────────────────────────────────────────────────
+// ─── Health / Readiness / Liveness ───────────────────────────────────────────
 
-app.get('/health', async () => {
+type DependencyStatus = {
+  status: 'ok' | 'error';
+  latencyMs: number;
+  error?: string;
+};
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return String(error);
+}
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
+  let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
   try {
-    await prisma.$queryRaw`SELECT 1`;
-    return { status: 'ok', timestamp: new Date().toISOString() };
-  } catch {
-    return { status: 'degraded', db: 'error' };
+    return await Promise.race([
+      promise,
+      new Promise<T>((_, reject) => {
+        timeoutHandle = setTimeout(() => {
+          reject(new Error(`${label} check timed out after ${timeoutMs}ms`));
+        }, timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeoutHandle) clearTimeout(timeoutHandle);
   }
+}
+
+async function runDependencyCheck(label: string, checker: () => Promise<void>): Promise<DependencyStatus> {
+  const startedAt = Date.now();
+  try {
+    await checker();
+    return { status: 'ok', latencyMs: Date.now() - startedAt };
+  } catch (error) {
+    return {
+      status: 'error',
+      latencyMs: Date.now() - startedAt,
+      error: getErrorMessage(error),
+    };
+  }
+}
+
+app.get('/live', async () => {
+  return {
+    status: 'alive',
+    environment: APP_ENV,
+    timestamp: new Date().toISOString(),
+    uptimeSec: Math.round(process.uptime()),
+  };
+});
+
+app.get('/health', async (_req, reply) => {
+  const database = await runDependencyCheck('database', async () => {
+    await withTimeout(prisma.$queryRaw`SELECT 1`, READINESS_TIMEOUT_MS, 'database');
+  });
+
+  const status = database.status === 'ok' ? 'ok' : 'degraded';
+  reply.code(status === 'ok' ? 200 : 503);
+  return {
+    status,
+    environment: APP_ENV,
+    timestamp: new Date().toISOString(),
+    uptimeSec: Math.round(process.uptime()),
+    checks: {
+      database,
+    },
+  };
+});
+
+app.get('/ready', async (_req, reply) => {
+  const [database, cacheCheck, storageCheck] = await Promise.all([
+    runDependencyCheck('database', async () => {
+      await withTimeout(prisma.$queryRaw`SELECT 1`, READINESS_TIMEOUT_MS, 'database');
+    }),
+    runDependencyCheck('cache', async () => {
+      const result = await withTimeout(cache.getClient().ping(), READINESS_TIMEOUT_MS, 'cache');
+      if (result !== 'PONG') {
+        throw new Error(`unexpected redis ping response: ${result}`);
+      }
+    }),
+    runDependencyCheck('storage', async () => {
+      await withTimeout(storage.ensureBucketExists(), READINESS_TIMEOUT_MS, 'storage');
+    }),
+  ]);
+
+  const status = (database.status === 'ok' && cacheCheck.status === 'ok' && storageCheck.status === 'ok')
+    ? 'ready'
+    : 'degraded';
+
+  reply.code(status === 'ready' ? 200 : 503);
+  return {
+    status,
+    environment: APP_ENV,
+    timestamp: new Date().toISOString(),
+    uptimeSec: Math.round(process.uptime()),
+    checks: {
+      database,
+      cache: cacheCheck,
+      storage: storageCheck,
+      ai: {
+        configured: !!ai,
+        available: ai?.isAvailable() ?? false,
+      },
+    },
+  };
 });
 
 // ─── Sitemap ──────────────────────────────────────────────────────────────────
@@ -324,7 +436,10 @@ async function start() {
     await app.listen({ port: PORT, host: HOST });
     console.log(`🚀 Server running at http://${HOST}:${PORT}`);
     console.log(`📡 tRPC API: http://${HOST}:${PORT}/trpc`);
+    console.log(`💚 Live: http://${HOST}:${PORT}/live`);
     console.log(`💊 Health: http://${HOST}:${PORT}/health`);
+    console.log(`🧪 Ready: http://${HOST}:${PORT}/ready`);
+    console.log(`🛰️ Monitoring: ${SENTRY_DSN ? 'Sentry enabled' : 'Sentry disabled'}`);
     console.log(`🤖 AI Chat: ${ai ? 'Enabled' : 'Disabled (AVALAI_API_KEY not set)'}`);
   } catch (err) {
     app.log.error(err);
@@ -349,12 +464,26 @@ process.on('SIGTERM', shutdown);
 
 app.setErrorHandler((error, request, reply) => {
   // گزارش خطاها به Sentry
-  if (process.env['SENTRY_DSN']) {
-    Sentry.captureException(error);
+  let sentryEventId: string | undefined;
+  if (SENTRY_DSN) {
+    sentryEventId = Sentry.captureException(error, {
+      tags: {
+        appEnv: APP_ENV,
+        method: request.method,
+      },
+      extra: {
+        path: request.url,
+        reqId: request.id,
+      },
+    });
   }
 
-  app.log.error(error);
-  reply.status(500).send({ error: 'Internal Server Error' });
+  app.log.error({ err: error, reqId: request.id, path: request.url, sentryEventId }, 'Unhandled request error');
+
+  reply.status(500).send({
+    error: 'Internal Server Error',
+    ...(sentryEventId ? { errorId: sentryEventId } : {}),
+  });
 });
 
 await start();

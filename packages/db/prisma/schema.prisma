@@ -304,6 +304,7 @@ model UserProfile {
   membershipGrade Int @default(0)
 
   documents Document[]
+  occupationMappings OccupationMapping[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -891,6 +892,22 @@ model Notification {
   @@map("notifications")
 }
 
+model AuditLog {
+  id          String   @id
+  actorUserId String
+  actorRole   String?
+  action      String
+  entityType  String
+  entityId    String?
+  payload     Json?
+  createdAt   DateTime @default(now())
+
+  @@index([actorUserId, createdAt])
+  @@index([entityType, entityId])
+  @@index([action, createdAt])
+  @@map("audit_logs")
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // AGRICULTURE STAKEHOLDER PLATFORM — PHASE 1
 // سامانه ذینفعان حوزه کشاورزی
@@ -910,6 +927,7 @@ model OccupationCategory {
   sortOrder   Int     @default(0)
 
   userProfiles UserProfile[]
+  occupationMappings OccupationMapping[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -917,6 +935,20 @@ model OccupationCategory {
   @@index([parentId])
   @@index([code])
   @@map("occupation_categories")
+}
+
+model OccupationMapping {
+  id                   String             @id @default(cuid())
+  profileId            String
+  occupationCategoryId String
+  profile              UserProfile        @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  occupationCategory   OccupationCategory @relation(fields: [occupationCategoryId], references: [id], onDelete: Cascade)
+  createdAt            DateTime           @default(now())
+
+  @@unique([profileId, occupationCategoryId])
+  @@index([profileId])
+  @@index([occupationCategoryId])
+  @@map("occupation_mappings")
 }
 
 /// تقویم برداشت محصول — فقط نمایشی در MVP (ادمین مدیریت می‌کند)

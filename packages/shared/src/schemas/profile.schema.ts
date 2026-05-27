@@ -56,6 +56,7 @@ export const createProfileSchema = z.object({
   website: websiteSchema,
   description: z.string().max(1000).optional(),
   // ── فیلدهای تخصصی کشاورزی ──────────────────────────────────────────────
+  occupationCategoryIds: z.array(z.string().cuid('شناسه دسته‌بندی شغلی معتبر نیست')).max(10).optional(),
   occupationCategoryId: z.string().cuid('شناسه دسته‌بندی شغلی معتبر نیست').optional(),
   farmingAreaHectares: z.number().positive('مساحت باید عدد مثبت باشد').max(100000).optional(),
   irrigationType: z.enum(['آبی', 'دیم', 'گلخانه']).optional(),

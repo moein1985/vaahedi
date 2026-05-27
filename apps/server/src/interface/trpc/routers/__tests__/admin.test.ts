@@ -3,8 +3,16 @@ import { createAuthenticatedContext } from '../../../../test/test-context.js';
 import { adminRouter } from '../admin.router.js';
 import { createTestUser, createTestProduct } from '@repo/db/test-utils';
 import { prisma } from '@repo/db';
+import { DocumentType } from '@repo/db';
 
 const caller = adminRouter.createCaller;
+
+type AuditRow = {
+  action: string;
+  entityType: string;
+  entityId: string;
+  actorUserId: string;
+};
 
 describe('Admin Router', () => {
   let ctx: any;
@@ -130,6 +138,56 @@ describe('Admin Router', () => {
       });
       expect(updatedProduct?.isApproved).toBe(false);
       expect(updatedProduct?.rejectionReason).toBe('دلیل رد');
+    });
+  });
+
+  describe('verifyDocument', () => {
+    let documentId: string;
+
+    beforeEach(async () => {
+      const member = await createTestUser(prisma, { status: 'PENDING' });
+      const profile = await prisma.userProfile.create({
+        data: {
+          userId: member.id,
+          verificationStatus: 'PENDING',
+        },
+      });
+
+      const document = await prisma.document.create({
+        data: {
+          profileId: profile.id,
+          type: DocumentType.BUSINESS_CARD,
+          fileName: 'business-card.pdf',
+          fileKey: 'documents/test/business-card.pdf',
+          fileSize: 1024,
+          mimeType: 'application/pdf',
+          status: 'PENDING',
+        },
+      });
+
+      documentId = document.id;
+    });
+
+    it('should write audit log when document is reviewed', async () => {
+      const result = await caller(ctx).verifyDocument({
+        documentId,
+        status: 'APPROVED',
+      });
+
+      expect(result.ok).toBe(true);
+
+      const rows = await prisma.$queryRaw<AuditRow[]>`
+        SELECT "action", "entityType", "entityId", "actorUserId"
+        FROM "audit_logs"
+        WHERE "action" = ${'ADMIN_DOCUMENT_REVIEWED'}
+          AND "entityId" = ${documentId}
+        ORDER BY "createdAt" DESC
+        LIMIT 1
+      `;
+
+      expect(rows[0]?.entityType).toBe('Document');
+      expect(rows[0]?.entityId).toBe(documentId);
+      expect(rows[0]?.actorUserId).toBe(adminUser.id);
     });
   });
 });

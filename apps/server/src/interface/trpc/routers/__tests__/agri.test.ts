@@ -17,6 +17,24 @@ async function makeAdminCtx() {
 
 const caller = agriRouter.createCaller;
 
+type AuditRow = {
+  action: string;
+  entityType: string;
+  entityId: string;
+  actorUserId: string;
+};
+
+async function getLatestAudit(action: string): Promise<AuditRow | null> {
+  const rows = await prisma.$queryRaw<AuditRow[]>`
+    SELECT "action", "entityType", "entityId", "actorUserId"
+    FROM "audit_logs"
+    WHERE "action" = ${action}
+    ORDER BY "createdAt" DESC
+    LIMIT 1
+  `;
+  return rows[0] ?? null;
+}
+
 // ─── Taxonomy ─────────────────────────────────────────────────────────────────
 
 describe('agri.taxonomy', () => {
@@ -42,6 +60,12 @@ describe('agri.taxonomy', () => {
     });
     expect(result).toHaveProperty('id');
     expect(result.code).toBe(unique);
+
+    const audit = await getLatestAudit('AGRI_TAXONOMY_CREATED');
+    expect(audit?.entityType).toBe('OccupationCategory');
+    expect(audit?.entityId).toBe(result.id);
+    expect(audit?.actorUserId).toBe(adminCtx.user.id);
+
     // cleanup
     await caller(adminCtx).taxonomy.delete({ id: result.id });
   });
@@ -103,6 +127,12 @@ describe('agri.harvest', () => {
     });
     expect(result).toHaveProperty('id');
     expect(result.cropNameFa).toBe('کلزا تستی');
+
+    const audit = await getLatestAudit('AGRI_HARVEST_CREATED');
+    expect(audit?.entityType).toBe('HarvestCalendar');
+    expect(audit?.entityId).toBe(result.id);
+    expect(audit?.actorUserId).toBe(adminCtx.user.id);
+
     createdId = result.id;
   });
 
@@ -170,6 +200,12 @@ describe('agri.market', () => {
     });
     expect(result).toHaveProperty('id');
     expect(result.isPublished).toBe(false); // پیش‌فرض: منتشرنشده
+
+    const audit = await getLatestAudit('AGRI_MARKET_INSIGHT_CREATED');
+    expect(audit?.entityType).toBe('MarketInsight');
+    expect(audit?.entityId).toBe(result.id);
+    expect(audit?.actorUserId).toBe(adminCtx.user.id);
+
     createdId = result.id;
   });
 
@@ -179,6 +215,11 @@ describe('agri.market', () => {
     const published = await caller(adminCtx).market.publish({ id: createdId, isPublished: true });
     expect(published.isPublished).toBe(true);
     expect(published.publishedAt).not.toBeNull();
+
+    const publishAudit = await getLatestAudit('AGRI_MARKET_INSIGHT_PUBLISH_TOGGLED');
+    expect(publishAudit?.entityType).toBe('MarketInsight');
+    expect(publishAudit?.entityId).toBe(createdId);
+    expect(publishAudit?.actorUserId).toBe(adminCtx.user.id);
 
     const unpublished = await caller(adminCtx).market.publish({ id: createdId, isPublished: false });
     expect(unpublished.isPublished).toBe(false);

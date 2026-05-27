@@ -53,7 +53,7 @@ const formSchema = z.object({
   licenseTypes: z.array(z.nativeEnum(DocumentType)).min(1, 'حداقل یک نوع مجوز انتخاب کنید'),
   description: z.string().max(1000).optional().or(z.literal('')),
   // کشاورزی
-  occupationCategoryId: z.string().cuid().optional().or(z.literal('')),
+  occupationCategoryIds: z.array(z.string().cuid()).max(10).optional(),
   farmingAreaHectares: z.coerce.number().positive().max(100000).optional(),
   irrigationType: z.enum(['آبی', 'دیم', 'گلخانه']).optional().or(z.literal('')),
   mainCropsInput: z.string().max(500).optional().or(z.literal('')),
@@ -124,6 +124,8 @@ function toProfilePayload(data: FormData) {
   const mainCrops = data.mainCropsInput
     ? data.mainCropsInput.split(',').map((s) => s.trim()).filter(Boolean)
     : [];
+  const occupationCategoryIds = Array.from(new Set((data.occupationCategoryIds ?? []).filter(Boolean)));
+
   return {
     ...data,
     companyName: sanitizeOptionalText(data.companyName),
@@ -143,7 +145,8 @@ function toProfilePayload(data: FormData) {
     passportExpiryDate: sanitizeOptionalText(data.passportExpiryDate),
     description: sanitizeOptionalText(data.description),
     // کشاورزی
-    occupationCategoryId: sanitizeOptionalText(data.occupationCategoryId),
+    occupationCategoryIds,
+    occupationCategoryId: occupationCategoryIds[0],
     irrigationType: sanitizeOptionalText(data.irrigationType) as FormData['irrigationType'],
     tradeDirection: sanitizeOptionalText(data.tradeDirection) as FormData['tradeDirection'],
     mainCrops,
@@ -244,6 +247,7 @@ function ProfilePage() {
       role: UserRole.TRADER,
       address: { province: '', city: '', addressLine: '', postalCode: '' },
       licenseTypes: [],
+      occupationCategoryIds: [],
     },
     values: data?.profile
       ? {
@@ -276,7 +280,9 @@ function ProfilePage() {
           licenseTypes: [],
           description: data.profile.description ?? '',
           // کشاورزی
-          occupationCategoryId: (profileWithPassport as any)?.occupationCategoryId ?? '',
+          occupationCategoryIds:
+            ((profileWithPassport as any)?.occupationCategoryIds as string[] | undefined)
+              ?? ((profileWithPassport as any)?.occupationCategoryId ? [(profileWithPassport as any).occupationCategoryId] : []),
           farmingAreaHectares: (profileWithPassport as any)?.farmingAreaHectares ?? undefined,
           irrigationType: ((profileWithPassport as any)?.irrigationType ?? '') as any,
           mainCropsInput: ((profileWithPassport as any)?.mainCrops as string[] | undefined)?.join(', ') ?? '',
@@ -666,12 +672,13 @@ function ProfilePage() {
           <p className="text-xs text-gray-500 mb-4">اگر در حوزه کشاورزی فعالیت می‌کنید این اطلاعات را تکمیل کنید</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">دسته‌بندی شغلی</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">دسته‌بندی‌های شغلی</label>
               <select
-                {...register('occupationCategoryId')}
+                {...register('occupationCategoryIds')}
+                multiple
+                size={8}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
               >
-                <option value="">انتخاب کنید...</option>
                 {(occupationCategories ?? []).filter(c => !c.parentId).map((parent) => (
                   <optgroup key={parent.id} label={parent.nameFa}>
                     {(occupationCategories ?? []).filter(c => c.parentId === parent.id).map((child) => (
@@ -681,6 +688,7 @@ function ProfilePage() {
                   </optgroup>
                 ))}
               </select>
+              <p className="text-[11px] text-gray-400 mt-0.5">چند گزینه را همزمان انتخاب کنید (در دسکتاپ با Ctrl یا Shift)</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">مساحت زمین کشاورزی (هکتار)</label>

@@ -58,6 +58,11 @@ beforeEach(async () => {
   // Clean up database before each test
   if (prisma) {
     const tables = [
+      'audit_logs',
+      'market_insights',
+      'harvest_calendar',
+      'occupation_categories',
+      'occupation_mappings',
       'users',
       'messages',
       'conversation_participants',

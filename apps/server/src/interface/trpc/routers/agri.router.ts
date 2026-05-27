@@ -12,6 +12,7 @@ import {
   updateMarketInsightSchema,
   marketInsightListSchema,
 } from '@repo/shared';
+import { writeAuditLog } from '../audit-log.js';
 
 // ─── Occupation Taxonomy Sub-router ──────────────────────────────────────────
 
@@ -52,34 +53,106 @@ const taxonomyRouter = router({
       if (existing) {
         throw new TRPCError({ code: 'CONFLICT', message: `کد "${input.code}" قبلاً ثبت شده است` });
       }
-      return ctx.db.occupationCategory.create({ data: input });
+      const created = await ctx.db.occupationCategory.create({ data: input });
+      await writeAuditLog(ctx.db, {
+        actorUserId: ctx.user!.id,
+        actorRole: ctx.user?.adminRole ?? null,
+        action: 'AGRI_TAXONOMY_CREATED',
+        entityType: 'OccupationCategory',
+        entityId: created.id,
+        payload: {
+          code: created.code,
+          nameFa: created.nameFa,
+          parentId: created.parentId,
+          isActive: created.isActive,
+          sortOrder: created.sortOrder,
+        },
+      });
+      return created;
     }),
 
   // ادمین: ویرایش دسته
   update: adminProcedure
     .input(z.object({ id: z.string().cuid(), data: updateOccupationCategorySchema }))
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.occupationCategory.update({
+      const before = await ctx.db.occupationCategory.findUniqueOrThrow({
+        where: { id: input.id },
+        select: {
+          id: true,
+          code: true,
+          nameFa: true,
+          nameEn: true,
+          parentId: true,
+          description: true,
+          isActive: true,
+          sortOrder: true,
+        },
+      });
+
+      const updated = await ctx.db.occupationCategory.update({
         where: { id: input.id },
         data: input.data,
       });
+
+      await writeAuditLog(ctx.db, {
+        actorUserId: ctx.user!.id,
+        actorRole: ctx.user?.adminRole ?? null,
+        action: 'AGRI_TAXONOMY_UPDATED',
+        entityType: 'OccupationCategory',
+        entityId: updated.id,
+        payload: { before, after: updated },
+      });
+
+      return updated;
     }),
 
   // ادمین: حذف دسته (فقط اگر فرزند یا کاربر نداشته باشد)
   delete: adminProcedure
     .input(z.object({ id: z.string().cuid() }))
     .mutation(async ({ ctx, input }) => {
-      const [childCount, profileCount] = await Promise.all([
+      const [childCount, profileCount, mappingCountRows] = await Promise.all([
         ctx.db.occupationCategory.count({ where: { parentId: input.id } }),
         ctx.db.userProfile.count({ where: { occupationCategoryId: input.id } }),
+        ctx.db.$queryRaw<{ count: bigint | number | string }[]>`
+          SELECT COUNT(*)::bigint AS "count"
+          FROM "occupation_mappings"
+          WHERE "occupationCategoryId" = ${input.id}
+        `,
       ]);
+      const mappingCount = Number(mappingCountRows[0]?.count ?? 0);
       if (childCount > 0) {
         throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'ابتدا دسته‌های فرزند را حذف کنید' });
       }
-      if (profileCount > 0) {
-        throw new TRPCError({ code: 'PRECONDITION_FAILED', message: `این دسته در ${profileCount} پروفایل استفاده شده است` });
+      if (profileCount + mappingCount > 0) {
+        throw new TRPCError({
+          code: 'PRECONDITION_FAILED',
+          message: `این دسته در ${profileCount + mappingCount} پروفایل استفاده شده است`,
+        });
       }
+
+      const target = await ctx.db.occupationCategory.findUniqueOrThrow({
+        where: { id: input.id },
+        select: {
+          id: true,
+          code: true,
+          nameFa: true,
+          parentId: true,
+          isActive: true,
+          sortOrder: true,
+        },
+      });
+
       await ctx.db.occupationCategory.delete({ where: { id: input.id } });
+
+      await writeAuditLog(ctx.db, {
+        actorUserId: ctx.user!.id,
+        actorRole: ctx.user?.adminRole ?? null,
+        action: 'AGRI_TAXONOMY_DELETED',
+        entityType: 'OccupationCategory',
+        entityId: target.id,
+        payload: target,
+      });
+
       return { success: true };
     }),
 });
@@ -114,24 +187,72 @@ const harvestRouter = router({
   create: adminProcedure
     .input(createHarvestCalendarSchema)
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.harvestCalendar.create({ data: input });
+      const created = await ctx.db.harvestCalendar.create({ data: input });
+      await writeAuditLog(ctx.db, {
+        actorUserId: ctx.user!.id,
+        actorRole: ctx.user?.adminRole ?? null,
+        action: 'AGRI_HARVEST_CREATED',
+        entityType: 'HarvestCalendar',
+        entityId: created.id,
+        payload: {
+          cropNameFa: created.cropNameFa,
+          harvestStartMonth: created.harvestStartMonth,
+          harvestEndMonth: created.harvestEndMonth,
+          province: created.province,
+          isActive: created.isActive,
+        },
+      });
+      return created;
     }),
 
   // ادمین: ویرایش
   update: adminProcedure
     .input(z.object({ id: z.string().cuid(), data: updateHarvestCalendarSchema }))
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.harvestCalendar.update({
+      const before = await ctx.db.harvestCalendar.findUniqueOrThrow({
+        where: { id: input.id },
+      });
+
+      const updated = await ctx.db.harvestCalendar.update({
         where: { id: input.id },
         data: input.data,
       });
+
+      await writeAuditLog(ctx.db, {
+        actorUserId: ctx.user!.id,
+        actorRole: ctx.user?.adminRole ?? null,
+        action: 'AGRI_HARVEST_UPDATED',
+        entityType: 'HarvestCalendar',
+        entityId: updated.id,
+        payload: { before, after: updated },
+      });
+
+      return updated;
     }),
 
   // ادمین: حذف
   delete: adminProcedure
     .input(z.object({ id: z.string().cuid() }))
     .mutation(async ({ ctx, input }) => {
+      const target = await ctx.db.harvestCalendar.findUniqueOrThrow({
+        where: { id: input.id },
+      });
       await ctx.db.harvestCalendar.delete({ where: { id: input.id } });
+
+      await writeAuditLog(ctx.db, {
+        actorUserId: ctx.user!.id,
+        actorRole: ctx.user?.adminRole ?? null,
+        action: 'AGRI_HARVEST_DELETED',
+        entityType: 'HarvestCalendar',
+        entityId: target.id,
+        payload: {
+          cropNameFa: target.cropNameFa,
+          harvestStartMonth: target.harvestStartMonth,
+          harvestEndMonth: target.harvestEndMonth,
+          province: target.province,
+        },
+      });
+
       return { success: true };
     }),
 });
@@ -208,7 +329,7 @@ const marketRouter = router({
     .input(createMarketInsightSchema)
     .mutation(async ({ ctx, input }) => {
       const { dataDate, ...rest } = input;
-      return ctx.db.marketInsight.create({
+      const created = await ctx.db.marketInsight.create({
         data: {
           ...rest,
           dataDate: dataDate ? new Date(`${dataDate}T00:00:00.000Z`) : null,
@@ -216,6 +337,22 @@ const marketRouter = router({
           authorId: ctx.user.id,
         },
       });
+
+      await writeAuditLog(ctx.db, {
+        actorUserId: ctx.user!.id,
+        actorRole: ctx.user?.adminRole ?? null,
+        action: 'AGRI_MARKET_INSIGHT_CREATED',
+        entityType: 'MarketInsight',
+        entityId: created.id,
+        payload: {
+          title: created.title,
+          commodityFa: created.commodityFa,
+          insightType: created.insightType,
+          isPublished: created.isPublished,
+        },
+      });
+
+      return created;
     }),
 
   // ادمین: ویرایش
@@ -223,8 +360,8 @@ const marketRouter = router({
     .input(z.object({ id: z.string().cuid(), data: updateMarketInsightSchema }))
     .mutation(async ({ ctx, input }) => {
       const { dataDate, isPublished, ...rest } = input.data;
-      const existing = await ctx.db.marketInsight.findUniqueOrThrow({ where: { id: input.id } });
-      return ctx.db.marketInsight.update({
+      const before = await ctx.db.marketInsight.findUniqueOrThrow({ where: { id: input.id } });
+      const updated = await ctx.db.marketInsight.update({
         where: { id: input.id },
         data: {
           ...rest,
@@ -232,18 +369,46 @@ const marketRouter = router({
           ...(isPublished !== undefined
             ? {
                 isPublished,
-                publishedAt: isPublished && !existing.isPublished ? new Date() : existing.publishedAt,
+                publishedAt: isPublished && !before.isPublished ? new Date() : before.publishedAt,
               }
             : {}),
         },
       });
+
+      await writeAuditLog(ctx.db, {
+        actorUserId: ctx.user!.id,
+        actorRole: ctx.user?.adminRole ?? null,
+        action: 'AGRI_MARKET_INSIGHT_UPDATED',
+        entityType: 'MarketInsight',
+        entityId: updated.id,
+        payload: { before, after: updated },
+      });
+
+      return updated;
     }),
 
   // ادمین: حذف
   delete: adminProcedure
     .input(z.object({ id: z.string().cuid() }))
     .mutation(async ({ ctx, input }) => {
+      const target = await ctx.db.marketInsight.findUniqueOrThrow({
+        where: { id: input.id },
+      });
       await ctx.db.marketInsight.delete({ where: { id: input.id } });
+
+      await writeAuditLog(ctx.db, {
+        actorUserId: ctx.user!.id,
+        actorRole: ctx.user?.adminRole ?? null,
+        action: 'AGRI_MARKET_INSIGHT_DELETED',
+        entityType: 'MarketInsight',
+        entityId: target.id,
+        payload: {
+          title: target.title,
+          commodityFa: target.commodityFa,
+          insightType: target.insightType,
+        },
+      });
+
       return { success: true };
     }),
 
@@ -251,13 +416,31 @@ const marketRouter = router({
   publish: adminProcedure
     .input(z.object({ id: z.string().cuid(), isPublished: z.boolean() }))
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.marketInsight.update({
+      const before = await ctx.db.marketInsight.findUniqueOrThrow({
+        where: { id: input.id },
+      });
+
+      const updated = await ctx.db.marketInsight.update({
         where: { id: input.id },
         data: {
           isPublished: input.isPublished,
           publishedAt: input.isPublished ? new Date() : null,
         },
       });
+
+      await writeAuditLog(ctx.db, {
+        actorUserId: ctx.user!.id,
+        actorRole: ctx.user?.adminRole ?? null,
+        action: 'AGRI_MARKET_INSIGHT_PUBLISH_TOGGLED',
+        entityType: 'MarketInsight',
+        entityId: updated.id,
+        payload: {
+          before: { isPublished: before.isPublished, publishedAt: before.publishedAt },
+          after: { isPublished: updated.isPublished, publishedAt: updated.publishedAt },
+        },
+      });
+
+      return updated;
     }),
 });
 

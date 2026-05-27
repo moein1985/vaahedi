@@ -4,6 +4,7 @@ import { TRPCError } from '@trpc/server';
 import { router, adminProcedure } from '../trpc.js';
 import { UserStatus, VerificationStatus, TradeRequestStatus } from '@repo/shared';
 import { DocumentType } from '@repo/db';
+import { writeAuditLog } from '../audit-log.js';
 
 const MANAGEABLE_ADMIN_ROLES = ['EXPERT', 'MEDIA_SUPERVISOR', 'ANALYST'] as const;
 const ALL_ADMIN_ROLES = ['SUPER_ADMIN', ...MANAGEABLE_ADMIN_ROLES] as const;
@@ -345,6 +346,16 @@ export const adminRouter = router({
       assertAdminRole(ctx.user, ['EXPERT']);
 
       const result = await ctx.db.$transaction(async (tx) => {
+        const before = await tx.document.findUniqueOrThrow({
+          where: { id: input.documentId },
+          select: {
+            id: true,
+            type: true,
+            status: true,
+            profile: { select: { id: true, userId: true } },
+          },
+        });
+
         const doc = await tx.document.update({
           where: { id: input.documentId },
           data: {
@@ -365,7 +376,7 @@ export const adminRouter = router({
             },
           });
 
-          return { doc, activated: false };
+          return { doc, activated: false, previousStatus: before.status, documentType: before.type };
         }
 
         const profileDocuments = await tx.document.findMany({
@@ -378,7 +389,7 @@ export const adminRouter = router({
           profileDocuments.every((profileDoc) => profileDoc.status === VerificationStatus.APPROVED);
 
         if (!allDocumentsApproved) {
-          return { doc, activated: false };
+          return { doc, activated: false, previousStatus: before.status, documentType: before.type };
         }
 
         await tx.userProfile.update({
@@ -396,7 +407,7 @@ export const adminRouter = router({
           data: { status: UserStatus.ACTIVE },
         });
 
-        return { doc, activated: true };
+        return { doc, activated: true, previousStatus: before.status, documentType: before.type };
       });
 
       // ایجاد اعلان برای کاربر
@@ -414,6 +425,23 @@ export const adminRouter = router({
             : input.status === 'APPROVED'
               ? 'یکی از مدارک شما تأیید شد. پس از تأیید همه مدارک، حساب شما فعال می‌شود.'
               : `مدرک شما رد شد. دلیل: ${input.rejectionReason || 'نامشخص'}`,
+        },
+      });
+
+      await writeAuditLog(ctx.db, {
+        actorUserId: ctx.user!.id,
+        actorRole: ctx.user?.adminRole ?? null,
+        action: 'ADMIN_DOCUMENT_REVIEWED',
+        entityType: 'Document',
+        entityId: result.doc.id,
+        payload: {
+          documentType: result.documentType,
+          previousStatus: result.previousStatus,
+          newStatus: input.status,
+          rejectionReason: input.rejectionReason ?? null,
+          activatedUser: result.activated,
+          profileId: result.doc.profile.id,
+          userId: result.doc.profile.userId,
         },
       });
 
