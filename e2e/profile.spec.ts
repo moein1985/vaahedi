@@ -1,24 +1,24 @@
 import { test, expect } from '@playwright/test';
+import { loginAsSeedUser, navigateSpa } from './helpers/auth';
 
 test.describe('پروفایل', () => {
   test.beforeEach(async ({ page }) => {
-    // ورود با حساب تست
-    await page.goto('/auth/login');
-    await page.getByPlaceholder(/شماره موبایل|نام کاربری/).fill('09121234567');
-    await page.getByPlaceholder(/رمز عبور/).fill('Password@123');
-    await page.getByRole('button', { name: /ورود/ }).click();
-    await page.waitForURL(/dashboard/);
+    await loginAsSeedUser(page);
+    await navigateSpa(page, '/profile');
   });
 
-  test('تکمیل پروفایل کاربر', async ({ page }) => {
-    await page.goto('/profile');
-    await expect(page.getByRole('heading', { name: /پروفایل/ })).toBeVisible();
+  test('اعتبارسنجی مدارک هنگام ذخیره پروفایل فعال است', async ({ page }) => {
+    await expect(page.getByRole('heading', { name: /پروفایل کاربری|پروفایل/ })).toBeVisible({ timeout: 10000 });
 
-    // پر کردن فیلدهای اجباری
-    await page.getByLabel(/نام شرکت/).fill('شرکت آزمایشی');
-    await page.getByLabel(/تلفن/).fill('02112345678');
-    await page.getByRole('button', { name: /ذخیره/ }).click();
+    await page.locator('input[name="companyName"]').fill('شرکت آزمایشی');
+    await page.locator('input[name="phone"]').fill('02112345678');
+    await page.locator('input[name="address.province"]').fill('تهران');
+    await page.locator('input[name="address.city"]').fill('تهران');
+    await page.locator('textarea[name="address.addressLine"]').fill('خیابان تست پروفایل، کوچه تست، پلاک ۱۰');
+    await page.locator('input[name="address.postalCode"]').fill('1234567890');
+    await page.getByRole('checkbox', { name: 'آگهی تأسیس' }).check();
+    await page.getByRole('button', { name: /ذخیره تغییرات|ذخیره/ }).click();
 
-    await expect(page.getByText(/ذخیره شد|موفق/)).toBeVisible();
+    await expect(page.getByText(/ابتدا فایل مربوط به|هنوز مدرکی آپلود نشده است/).first()).toBeVisible({ timeout: 10000 });
   });
 });

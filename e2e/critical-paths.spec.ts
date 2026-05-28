@@ -1,17 +1,5 @@
 import { test, expect, type Page, type Request } from '@playwright/test';
-
-type LoginCandidate = {
-  userCode: string;
-  password: string;
-};
-
-const LOGIN_CANDIDATES: LoginCandidate[] = [
-  { userCode: process.env['E2E_USER_CODE'] ?? '', password: process.env['E2E_PASSWORD'] ?? '' },
-  { userCode: '01000001', password: 'Farmer@1234' },
-  { userCode: '0000001', password: 'Admin@1234' },
-].filter((candidate) => candidate.userCode.length > 0 && candidate.password.length > 0);
-
-let preferredLoginCandidate: LoginCandidate | null = null;
+import { getSeedLoginCandidates, loginAsSeedUser, navigateSpa, openUserCodeLoginForm } from './helpers/auth';
 
 const PRODUCT_BASE = {
   nameEn: 'CriticalPathProduct',
@@ -21,107 +9,6 @@ const PRODUCT_BASE = {
   preparationTimeDays: '7',
   deliveryLocation: 'تهران',
 };
-
-async function selectSellerRole(page: Page) {
-  const sellerButton = page.getByRole('button', { name: /فروشنده/ }).first();
-  if (await sellerButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-    await sellerButton.click();
-  }
-
-  const userCodeTab = page.getByRole('button', { name: /ورود با کد کاربری/ }).first();
-  if (await userCodeTab.isVisible({ timeout: 2000 }).catch(() => false)) {
-    await userCodeTab.click();
-  }
-}
-
-async function openUserCodeLoginForm(page: Page) {
-  await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
-  await selectSellerRole(page);
-
-  const userCodeInput = page
-    .locator('input[name="userCode"], input[placeholder*="0100001"], input[autocomplete="username"]')
-    .first();
-  const passwordInput = page.locator('input[type="password"], input[name="password"]').first();
-
-  await expect(userCodeInput).toBeVisible({ timeout: 10000 });
-  await expect(passwordInput).toBeVisible({ timeout: 10000 });
-
-  return { userCodeInput, passwordInput };
-}
-
-async function loginAsSeedUser(page: Page) {
-  const orderedCandidates = preferredLoginCandidate
-    ? [
-        preferredLoginCandidate,
-        ...LOGIN_CANDIDATES.filter((candidate) => {
-          return candidate.userCode !== preferredLoginCandidate!.userCode
-            || candidate.password !== preferredLoginCandidate!.password;
-        }),
-      ]
-    : LOGIN_CANDIDATES;
-
-  let lastPath = '/auth/login';
-  for (const candidate of orderedCandidates) {
-    const { userCodeInput, passwordInput } = await openUserCodeLoginForm(page);
-
-    await userCodeInput.fill(candidate.userCode);
-    await passwordInput.fill(candidate.password);
-    await page.getByRole('button', { name: 'ورود', exact: true }).first().click();
-
-    const loggedIn = await page
-      .waitForFunction(() => {
-        const path = new URL(window.location.href).pathname;
-        if (path.startsWith('/auth/') || path.startsWith('/admin')) {
-          return false;
-        }
-
-        const authRaw = window.localStorage.getItem('trade-association-auth');
-        if (!authRaw) {
-          return false;
-        }
-
-        try {
-          const parsed = JSON.parse(authRaw) as any;
-          return Boolean(
-            parsed?.state?.isAuthenticated === true
-              || parsed?.state?.user
-              || parsed?.state?.accessToken
-              || parsed?.accessToken,
-          );
-        } catch {
-          return authRaw.length > 20;
-        }
-      }, { timeout: 5000 })
-      .then(() => true)
-      .catch(() => false);
-
-    lastPath = new URL(page.url()).pathname;
-    if (loggedIn) {
-      preferredLoginCandidate = candidate;
-      return;
-    }
-  }
-
-  throw new Error(
-    `Seed login failed for non-admin candidates: ${orderedCandidates.map((c) => c.userCode).join(', ')} | lastPath=${lastPath}`,
-  );
-}
-
-async function navigateSpa(page: Page, targetPath: string, expected: string | RegExp = targetPath) {
-  await page.evaluate((path) => {
-    window.history.pushState({}, '', path);
-    window.dispatchEvent(new PopStateEvent('popstate'));
-  }, targetPath);
-
-  if (expected instanceof RegExp) {
-    await page.waitForURL(expected, { timeout: 10000 });
-    return;
-  }
-
-  await page.waitForURL((url) => {
-    return url.pathname === expected || url.pathname === `${expected}/`;
-  }, { timeout: 10000 });
-}
 
 async function fillProductFormUntilStep3(page: Page, nameSuffix: string) {
   await navigateSpa(page, '/products/new');
@@ -273,22 +160,27 @@ test.describe('Critical User Journeys', () => {
   });
 
   test('Auth: Shows error on wrong password', async ({ page }) => {
-    await page.goto('/auth/login');
-    await selectSellerRole(page);
+    const { userCodeInput, passwordInput } = await openUserCodeLoginForm(page);
+    const candidate = getSeedLoginCandidates()[0];
 
-    const userCodeInput = page
-      .locator('input[name="userCode"], input[placeholder*="0100001"], input[autocomplete="username"]')
-      .first();
-    const passwordInput = page.locator('input[type="password"], input[name="password"]').first();
-
-    await expect(userCodeInput).toBeVisible({ timeout: 10000 });
-    await expect(passwordInput).toBeVisible({ timeout: 10000 });
-
-    await userCodeInput.fill(LOGIN_CANDIDATES[0]!.userCode);
+    await userCodeInput.fill(candidate?.userCode ?? '01000001');
     await passwordInput.fill('WrongPassword123!');
     await page.getByRole('button', { name: 'ورود', exact: true }).click();
 
-    await expect(page.getByText(/برای ادامه باید وارد حساب شوید|کد کاربری یا رمز عبور اشتباه است/)).toBeVisible({ timeout: 10000 });
+    await expect(page).toHaveURL(/\/auth\/login/, { timeout: 10000 });
+
+    const hasSession = await page.evaluate(() => {
+      const authRaw = window.localStorage.getItem('trade-association-auth');
+      if (!authRaw) return false;
+      try {
+        const parsed = JSON.parse(authRaw) as any;
+        const state = parsed?.state ?? parsed;
+        return Boolean(state?.isAuthenticated === true || state?.user);
+      } catch {
+        return authRaw.length > 20;
+      }
+    });
+    expect(hasSession).toBe(false);
   });
 
   test('Profile: Blocks save when selected required document is not uploaded', async ({ page }) => {

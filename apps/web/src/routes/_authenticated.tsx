@@ -202,11 +202,11 @@ function Sidebar({ isAdmin, adminRole }: { isAdmin: boolean; adminRole?: string 
     >
       {/* Logo */}
       <div className={cn('flex items-center gap-3 px-4 py-5 border-b border-b-[var(--sidebar-border)]', collapsed && 'justify-center px-2')}>
-        <div
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-black text-base bg-[linear-gradient(135deg,var(--agri-leaf),var(--brand))] text-white"
-        >
-          ک
-        </div>
+        <img
+          src="/brand/logo_without_persian_words.png"
+          alt="ذینفعان کشاورزی"
+          className="h-9 w-9 shrink-0 rounded-xl border border-white/20 bg-white/90 object-contain p-1"
+        />
         {!collapsed && (
           <div>
             <div className="text-sm font-black text-[hsl(0_0%_95%)]">ذینفعان کشاورزی</div>
@@ -283,7 +283,11 @@ function TopHeader() {
   return (
     <header className="lg:hidden sticky top-0 z-30 px-4 py-3 flex items-center justify-between bg-[var(--sidebar-bg)] border-b border-b-[var(--sidebar-border)]" dir="rtl">
       <div className="flex items-center gap-2">
-        <div className="h-7 w-7 rounded-lg flex items-center justify-center font-black text-xs bg-[linear-gradient(135deg,var(--agri-leaf),var(--brand))] text-white">ک</div>
+        <img
+          src="/brand/logo_without_persian_words.png"
+          alt="ذینفعان کشاورزی"
+          className="h-7 w-7 rounded-lg border border-white/20 bg-white/90 object-contain p-0.5"
+        />
         <span className="text-sm font-black text-[hsl(0_0%_95%)]">ذینفعان کشاورزی</span>
       </div>
       <div className="flex items-center gap-2">

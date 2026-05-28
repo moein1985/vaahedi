@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('simple page load', async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle(/تجارت/);
+  await expect(page).toHaveTitle(/سامانه یکپارچه ذینفعان حوزه کشاورزی|ذینفعان حوزه کشاورزی/);
   await expect(page.getByRole('link', { name: /ورود|login/i })).toBeVisible();
   const registerCta = page.locator('a[aria-label="register-cta"]');
   await expect(registerCta).toBeVisible();

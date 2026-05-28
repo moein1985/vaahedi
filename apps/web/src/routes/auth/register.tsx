@@ -116,9 +116,11 @@ function RegisterPage() {
       <div className="mx-auto w-full max-w-6xl">
         <header className="mb-6 flex flex-col gap-3 rounded-2xl border border-[hsl(148_26%_72%_/_0.3)] bg-[hsl(153_35%_14%_/_0.55)] p-4 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between">
           <Link to="/" className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[linear-gradient(150deg,var(--agri-primary),var(--agri-leaf))] text-base font-black text-white shadow-[0_10px_24px_hsl(148_62%_24%_/_0.35)]">
-              ز
-            </div>
+            <img
+              src="/brand/logo_without_persian_words.png"
+              alt="سامانه ذینفعان کشاورزی"
+              className="h-10 w-10 rounded-xl border border-white/20 bg-white/90 object-contain p-1 shadow-[0_10px_24px_hsl(148_62%_24%_/_0.35)]"
+            />
             <div>
               <p className="text-sm font-black text-white">سامانه ذینفعان کشاورزی</p>
               <p className="text-xs text-[hsl(90_22%_88%_/_0.78)]">عضویت در شبکه تخصصی حوزه کشاورزی</p>

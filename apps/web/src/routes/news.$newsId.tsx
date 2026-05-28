@@ -35,7 +35,11 @@ function NewsDetailPage() {
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-border">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-[var(--brand)] text-white flex items-center justify-center font-black text-sm">ک</div>
+            <img
+              src="/brand/logo_without_persian_words.png"
+              alt="ذینفعان کشاورزی"
+              className="h-8 w-8 rounded-lg border border-slate-200 bg-white object-contain p-0.5"
+            />
             <span className="font-black text-foreground">ذینفعان کشاورزی</span>
           </Link>
           <Button variant="ghost" asChild><Link to="/news">{t('news.title')}</Link></Button>

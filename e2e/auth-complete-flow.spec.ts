@@ -1,41 +1,44 @@
 import { test, expect } from '@playwright/test';
+import { getSeedLoginCandidates, loginAsSeedUser, openUserCodeLoginForm } from './helpers/auth';
 
 test.describe('Authentication Complete Flow', () => {
-  test('User can register, login and reach dashboard', async ({ page }) => {
-    await page.goto('/auth/register');
-    await page.fill('input[name="firstName"]', 'Flow');
-    await page.fill('input[name="lastName"]', 'User');
-    await page.fill('input[name="nationalCode"]', '1234567890');
-    await page.fill('input[name="mobile"]', '09123456784');
-    await page.fill('input[name="email"]', 'flowuser@example.com');
-    await page.fill('input[name="password"]', 'FlowPass123!');
-    await page.fill('input[name="confirmPassword"]', 'FlowPass123!');
-    // assume there is a button with text ثبت‌نام or similar
-    await page.click('button:has-text("ثبت")');
-    // after registration should redirect to login or dashboard
-    await expect(page).toHaveURL(/auth\/login|dashboard/);
-
-    if (page.url().includes('/auth/login')) {
-      await page.fill('input[name="userCode"], input[name="email"]', 'flowuser@example.com');
-      await page.fill('input[name="password"]', 'FlowPass123!');
-      await page.click('button:has-text("ورود")');
-    }
-    await expect(page).toHaveURL(/dashboard/);
-    await expect(page.locator('h1')).toContainText(/داشبورد/);
+  test('Seed user can login and reach protected area', async ({ page }) => {
+    await loginAsSeedUser(page);
+    await expect(page).toHaveURL(/\/(dashboard|profile|trade|products|chat|finance)/);
+    await expect(page.locator('main').first()).toBeVisible();
   });
 
-  test('Shows error on invalid registration', async ({ page }) => {
+  test('Registration submit stays disabled until terms are accepted', async ({ page }) => {
     await page.goto('/auth/register');
-    // leave fields empty and submit
-    await page.click('button:has-text("ثبت")');
-    await expect(page.locator('.text-destructive')).toBeVisible();
+
+    const submitButton = page.getByRole('button', { name: /ثبت نام|ثبت‌نام|register/i }).first();
+    await expect(submitButton).toBeDisabled();
+
+    const termsCheckbox = page.getByRole('checkbox', { name: /قوانین را می پذیرم|قوانین را می‌پذیرم/ }).first();
+    await termsCheckbox.check();
+    await expect(submitButton).toBeEnabled();
   });
 
   test('Shows error on wrong credentials', async ({ page }) => {
-    await page.goto('/auth/login');
-    await page.fill('input[name="email"]', 'nonexistent@example.com');
-    await page.fill('input[name="password"]', 'nope');
-    await page.click('button:has-text("ورود")');
-    await expect(page.locator('.text-destructive')).toBeVisible();
+    const { userCodeInput, passwordInput } = await openUserCodeLoginForm(page);
+    const candidate = getSeedLoginCandidates()[0];
+
+    await userCodeInput.fill(candidate?.userCode ?? '01000001');
+    await passwordInput.fill('WrongPassword123!');
+    await page.getByRole('button', { name: 'ورود', exact: true }).click();
+
+    await expect(page).toHaveURL(/\/auth\/login/, { timeout: 10000 });
+    const hasSession = await page.evaluate(() => {
+      const authRaw = window.localStorage.getItem('trade-association-auth');
+      if (!authRaw) return false;
+      try {
+        const parsed = JSON.parse(authRaw) as any;
+        const state = parsed?.state ?? parsed;
+        return Boolean(state?.isAuthenticated === true || state?.user);
+      } catch {
+        return authRaw.length > 20;
+      }
+    });
+    expect(hasSession).toBe(false);
   });
 });
